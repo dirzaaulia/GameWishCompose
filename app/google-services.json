@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "203885987594",
+    "project_id": "gamewish-f7e0c",
+    "storage_bucket": "gamewish-f7e0c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:203885987594:android:950f13b6084065c5f95cf3",
+        "android_client_info": {
+          "package_name": "com.dirzaaulia.gamewish"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "203885987594-jr4t6eaoji8jh2rh0035ttu78t1efu4f.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.dirzaaulia.gamewish",
+            "certificate_hash": "cce59710e9f07e17e5c8e97bd191487afcfc632d"
+          }
+        },
+        {
+          "client_id": "203885987594-4u6tk8rbssjram2c5jf5jsls5ejeig0s.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDWH-6wjnXwAtS0Cbt4H6uedPEZaTA1Qr4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "203885987594-4u6tk8rbssjram2c5jf5jsls5ejeig0s.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

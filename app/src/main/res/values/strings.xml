@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">GameWish</string>
+    <string name="wishlist">Wishlist</string>
+    <string name="deals">Deals</string>
+    <string name="about">About</string>
+    <string name="search">Search</string>
+    <string name="exit_info">Please click back again to exit</string>
+</resources>
