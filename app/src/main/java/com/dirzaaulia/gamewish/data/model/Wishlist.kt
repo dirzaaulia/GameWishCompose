@@ -12,4 +12,12 @@ data class Wishlist(
     var id : Long? = null,
     var name : String? = null,
     val image : String? = null
-) : Parcelable
+) : Parcelable {
+    companion object {
+        fun mock() = Wishlist(
+            3328,
+            "The Witcher 3: Wild Hult",
+            "https://media.rawg.io/media/games/618/618c2031a07bbff6b4f611f10b6bcdbc.jpg"
+        )
+    }
+}

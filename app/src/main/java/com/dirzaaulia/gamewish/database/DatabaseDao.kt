@@ -16,7 +16,7 @@ interface DatabaseDao {
     suspend fun delete(wishlist: Wishlist)
 
     @Query("SELECT * FROM wishlist_table")
-    fun getAllWishlist() : Flow<List<Wishlist>>
+    fun getAllWishlist() : PagingSource<Int, Wishlist>
 
     @Query("SELECT * FROM wishlist_table WHERE name LIKE '%' || :gameName || '%'")
     fun getFilteredWishlist(gameName : String) : PagingSource<Int, Wishlist>

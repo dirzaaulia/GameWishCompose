@@ -26,6 +26,12 @@ class DatabaseRepository @Inject constructor(
         }.flow
     }
 
+    fun getAllWishlist() : Flow<PagingData<Wishlist>> {
+        return Pager (config = PagingConfig(pageSize = DatabaseConstant.DATABASE_PAGING_SIZE)) {
+            dao.getAllWishlist()
+        }.flow
+    }
+
     suspend fun removeFromWishlist(wishlist: Wishlist) {
         return dao.delete(wishlist)
     }

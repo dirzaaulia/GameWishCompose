@@ -4,31 +4,22 @@ import androidx.annotation.StringRes
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.paging.compose.LazyPagingItems
-import androidx.paging.compose.collectAsLazyPagingItems
 import com.dirzaaulia.gamewish.R
 import com.dirzaaulia.gamewish.base.LocalBaseViewModel
-import com.dirzaaulia.gamewish.data.model.Wishlist
 import com.dirzaaulia.gamewish.ui.theme.GameWishTheme
-import com.dirzaaulia.gamewish.ui.theme.LocalImages
-import com.dirzaaulia.gamewish.ui.theme.White
 import com.google.accompanist.insets.navigationBarsHeight
 import com.google.accompanist.insets.navigationBarsPadding
 import com.google.accompanist.insets.statusBarsPadding
@@ -41,16 +32,15 @@ fun Home(
 ) {
     val menu = HomeBottomNavMenu.values()
     val menuId: Int by viewModel.selectedBottomNav.collectAsState(initial = 0)
-    val lazyListWishlist: LazyPagingItems<Wishlist> =
-        viewModel.listWishlist.collectAsLazyPagingItems()
     val showSnackbar: Boolean by LocalBaseViewModel.current.isShowSnackbar.collectAsState()
+    val openGameFilterDialog = remember { mutableStateOf(false) }
 
     Scaffold(
         backgroundColor = MaterialTheme.colors.primarySurface,
-        topBar ={
+        topBar = {
             Crossfade(HomeBottomNavMenu.getHomeBottomNavMenuFromResource(menuId)) { destination ->
                 when (destination) {
-                    HomeBottomNavMenu.WISHLIST -> GameAppBar()
+                    HomeBottomNavMenu.WISHLIST -> GameAppBar(openGameFilterDialog)
                     HomeBottomNavMenu.DEALS -> AnimeAppBar()
                     HomeBottomNavMenu.ABOUT -> AnimeAppBar()
                 }
@@ -62,21 +52,7 @@ fun Home(
                     if (showSnackbar) {
                         SnackbarInfo()
                     }
-                    BottomNavigation (
-                        modifier = Modifier.navigationBarsHeight(56.dp)
-                    ) {
-                        menu.forEach { menu ->
-                            BottomNavigationItem(
-                                icon = { Icon(imageVector = menu.icon, contentDescription = null) } ,
-                                label = { Text(stringResource(menu.title).uppercase(Locale.getDefault())) },
-                                selected = menu == HomeBottomNavMenu.getHomeBottomNavMenuFromResource(menuId),
-                                onClick = { viewModel.selectBottomNavMenu(menu.title) },
-                                selectedContentColor = MaterialTheme.colors.secondary,
-                                unselectedContentColor = LocalContentColor.current,
-                                modifier = Modifier.navigationBarsPadding()
-                            )
-                        }
-                    }
+                    HomeBottomBar(menu = menu, menuId = menuId, viewModel = viewModel)
                 }
             }
         }
@@ -84,9 +60,52 @@ fun Home(
         val modifier = Modifier.padding(innerPadding)
         Crossfade(HomeBottomNavMenu.getHomeBottomNavMenuFromResource(menuId)) { destination ->
             when (destination) {
-                //TODO Need to add TabLayout for Wishlist category ( Game, Anime & Manga )
-
+                //TODO Need to add TabLayout for Wishlist category ( Anime & Manga )
+                HomeBottomNavMenu.WISHLIST -> Wishlist(
+                    modifier = modifier,
+                    viewModel = viewModel,
+                    navigateToDetailsWishlist = navigateToWishlistDetails
+                )
+                HomeBottomNavMenu.DEALS -> Wishlist(
+                    modifier = modifier,
+                    viewModel = viewModel,
+                    navigateToDetailsWishlist = navigateToWishlistDetails
+                )
+                HomeBottomNavMenu.ABOUT -> Wishlist(
+                    modifier = modifier,
+                    viewModel = viewModel,
+                    navigateToDetailsWishlist = navigateToWishlistDetails
+                )
             }
+        }
+        GameFilterDialog(
+            searchQuery = "",
+            openDialog = openGameFilterDialog.value
+        ) {
+            openGameFilterDialog.value = false
+        }
+    }
+}
+
+@Composable
+fun HomeBottomBar(
+    menu : Array<HomeBottomNavMenu>,
+    menuId : Int,
+    viewModel : HomeViewModel
+) {
+    BottomNavigation (
+        modifier = Modifier.navigationBarsHeight(56.dp)
+    ) {
+        menu.forEach { menu ->
+            BottomNavigationItem(
+                icon = { Icon(imageVector = menu.icon, contentDescription = null) },
+                label = { Text(stringResource(menu.title).uppercase(Locale.getDefault())) },
+                selected = menu == HomeBottomNavMenu.getHomeBottomNavMenuFromResource(menuId),
+                onClick = { viewModel.selectBottomNavMenu(menu.title) },
+                selectedContentColor = MaterialTheme.colors.secondary,
+                unselectedContentColor = LocalContentColor.current,
+                modifier = Modifier.navigationBarsPadding()
+            )
         }
     }
 }
@@ -101,18 +120,20 @@ fun SnackbarInfo(
 }
 
 @Composable
-fun GameAppBar() {
+fun GameAppBar(openGameFilterDialog: MutableState<Boolean>) {
     TopAppBar(
         elevation = 0.dp,
-        modifier = Modifier.height(80.dp).statusBarsPadding()
+        modifier = Modifier
+            .height(80.dp)
+            .statusBarsPadding()
     ) {
         Image(
             modifier = Modifier
                 .padding(0.dp, 16.dp, 0.dp, 16.dp)
-                .size(125.dp, 0.dp)
+                .size(100.dp, 0.dp)
                 .align(Alignment.CenterVertically)
                 .aspectRatio(1.0f),
-            painter = painterResource(GameWishTheme.images.lockupLogo),
+            painter = painterResource(id = R.drawable.ic_gamewish_dark),
             contentDescription = null,
             contentScale = ContentScale.Fit
         )
@@ -122,6 +143,15 @@ fun GameAppBar() {
                 .weight(1f)
                 .fillMaxWidth()
         ) {
+            IconButton(
+                modifier = Modifier.align(Alignment.CenterVertically),
+                onClick = { openGameFilterDialog.value = true }
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.FilterList,
+                    contentDescription = null,
+                )
+            }
             IconButton(
                 modifier = Modifier.align(Alignment.CenterVertically),
                 onClick = { /* todo */ }
@@ -139,12 +169,14 @@ fun GameAppBar() {
 fun AnimeAppBar() {
     TopAppBar(
         elevation = 0.dp,
-        modifier = Modifier.height(80.dp).statusBarsPadding()
+        modifier = Modifier
+            .height(80.dp)
+            .statusBarsPadding()
     ) {
         Image(
             modifier = Modifier
                 .padding(0.dp, 16.dp, 0.dp, 16.dp)
-                .size(125.dp, 0.dp)
+                .size(100.dp, 0.dp)
                 .align(Alignment.CenterVertically)
                 .aspectRatio(1.0f),
             painter = painterResource(id = R.drawable.ic_gamewish_dark),
@@ -172,17 +204,19 @@ fun AnimeAppBar() {
 
 @Preview
 @Composable
-fun AnimeAppBarPreviewLight() {
+fun AppBarPreviewLight() {
     GameWishTheme(darkTheme = false) {
-        AnimeAppBar()
+        val openGameFilterDialog = remember { mutableStateOf(true) }
+        GameAppBar(openGameFilterDialog)
     }
 }
 
 @Preview
 @Composable
-fun AnimeAppBarPreviewDark() {
+fun AppBarPreviewDark() {
     GameWishTheme(darkTheme = true) {
-        AnimeAppBar()
+        val openGameFilterDialog = remember { mutableStateOf(true) }
+        GameAppBar(openGameFilterDialog)
     }
 }
 
