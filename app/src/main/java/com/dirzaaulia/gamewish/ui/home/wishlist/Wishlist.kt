@@ -1,28 +1,23 @@
-package com.dirzaaulia.gamewish.ui.home
+package com.dirzaaulia.gamewish.ui.home.wishlist
 
 import androidx.annotation.StringRes
 import androidx.compose.animation.Crossfade
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.dirzaaulia.gamewish.R
 import com.dirzaaulia.gamewish.data.model.Wishlist
-import com.dirzaaulia.gamewish.ui.common.GameList
-import com.dirzaaulia.gamewish.ui.common.GameListItem
-import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+import com.dirzaaulia.gamewish.ui.home.HomeViewModel
+import com.dirzaaulia.gamewish.ui.home.wishlist.tab.WishlistGame
 
 @Composable
 fun Wishlist(
     viewModel: HomeViewModel,
-    modifier: Modifier = Modifier,
-    navigateToDetailsWishlist: (Long) -> Unit
+    navigateToGameDetails: (Long) -> Unit
 ) {
     val menu = WishlistTab.values()
     val menuId: Int by viewModel.selectedWishlistTab.collectAsState(initial = 0)
@@ -38,15 +33,15 @@ fun Wishlist(
                 //TODO Need to update with Anime & Manga layout
                 WishlistTab.GAME -> WishlistGame(
                     data = lazyListWishlist,
-                    navigateToDetailsWishlist = navigateToDetailsWishlist
+                    navigateToDetailsWishlist = navigateToGameDetails
                 )
                 WishlistTab.ANIME -> WishlistGame(
                     data = lazyListWishlist,
-                    navigateToDetailsWishlist = navigateToDetailsWishlist
+                    navigateToDetailsWishlist = navigateToGameDetails
                 )
                 WishlistTab.MANGA -> WishlistGame(
                     data = lazyListWishlist,
-                    navigateToDetailsWishlist = navigateToDetailsWishlist
+                    navigateToDetailsWishlist = navigateToGameDetails
                 )
             }
         }
@@ -54,28 +49,9 @@ fun Wishlist(
 }
 
 @Composable
-fun WishlistGame(
-    modifier: Modifier = Modifier,
-    data: LazyPagingItems<Wishlist>,
-    navigateToDetailsWishlist: (Long) -> Unit
-) {
-    GameList(
-        modifier = modifier,
-        data = data,
-        state = rememberSwipeRefreshState(data.loadState.refresh is LoadState.Loading)
-    ) { wishlist ->
-        GameListItem(
-            wishlist = wishlist,
-            navigateToDetailsWishlist = navigateToDetailsWishlist
-        )
-    }
-}
-
-
-@Composable
 fun WishlistTabMenu(
-    menu : Array<WishlistTab>,
-    menuId : Int,
+    menu: Array<WishlistTab>,
+    menuId: Int,
     viewModel: HomeViewModel
 ) {
     TabRow(selectedTabIndex = menuId) {
@@ -97,7 +73,7 @@ enum class WishlistTab(
     MANGA(R.string.manga);
 
     companion object {
-        fun getTabFromResource(@StringRes resource : Int) : WishlistTab {
+        fun getTabFromResource(@StringRes resource: Int): WishlistTab {
             return when (resource) {
                 R.string.game -> GAME
                 R.string.anime -> ANIME

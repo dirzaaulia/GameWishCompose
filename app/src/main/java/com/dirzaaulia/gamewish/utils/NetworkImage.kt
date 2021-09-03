@@ -29,13 +29,8 @@ import androidx.compose.ui.layout.ContentScale
 import coil.annotation.ExperimentalCoilApi
 import coil.compose.ImagePainter
 import coil.compose.rememberImagePainter
-import coil.intercept.Interceptor
-import coil.request.ImageResult
-import coil.size.PixelSize
 import com.dirzaaulia.gamewish.R
 import com.dirzaaulia.gamewish.ui.theme.compositedOnSurface
-import okhttp3.HttpUrl
-import okhttp3.HttpUrl.Companion.toHttpUrl
 
 /**
  * A wrapper around [Image] and [rememberImagePainter], setting a

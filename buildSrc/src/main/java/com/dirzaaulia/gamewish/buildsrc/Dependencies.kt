@@ -13,12 +13,14 @@ object Libs {
         const val insets = "com.google.accompanist:accompanist-insets:$version"
         const val swipeRefresh = "com.google.accompanist:accompanist-swiperefresh:$version"
         const val systemUiController = "com.google.accompanist:accompanist-systemuicontroller:$version"
+        const val pager = "com.google.accompanist:accompanist-pager:$version"
     }
 
     object AndroidX {
         const val coreKtx = "androidx.core:core-ktx:1.6.0"
         const val splashScreen = "androidx.core:core-splashscreen:1.0.0-alpha01"
         const val navigation = "androidx.navigation:navigation-compose:2.4.0-alpha06"
+        const val materialDesign = "com.google.android.material:material:1.4.0"
 
 
         object Activity {

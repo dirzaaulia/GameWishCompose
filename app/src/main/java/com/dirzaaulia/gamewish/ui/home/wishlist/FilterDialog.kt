@@ -13,15 +13,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
-import com.dirzaaulia.gamewish.ui.theme.White
 
 @Composable
 fun GameFilterDialog(
-    searchQuery : String,
-    openDialog : Boolean,
-    dismissDialog : () -> Unit
+    viewModel: HomeViewModel,
+    searchQuery: String,
+    openDialog: Boolean,
+    dismissDialog: () -> Unit
 ) {
-    var text by rememberSaveable { mutableStateOf(searchQuery) }
+    var query by rememberSaveable { mutableStateOf(searchQuery) }
 
     if (openDialog) {
         AlertDialog(
@@ -29,18 +29,20 @@ fun GameFilterDialog(
             onDismissRequest = {
                 dismissDialog()
             },
-            title = { Text(
-                text = "Filter List",
-                style = MaterialTheme.typography.h6
-            ) },
+            title = {
+                Text(
+                    text = "Filter List",
+                    style = MaterialTheme.typography.h6
+                )
+            },
             text = {
                 Column(
                     verticalArrangement = Arrangement.Center,
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     OutlinedTextField(
-                        value = text,
-                        onValueChange = { text = it },
+                        value = query,
+                        onValueChange = { query = it },
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(top = 8.dp),
@@ -52,14 +54,14 @@ fun GameFilterDialog(
                             )
                         },
                         placeholder = {
-                            if (text.isEmpty()) {
+                            if (query.isEmpty()) {
                                 Text(
                                     text = "Game Name",
                                     color = MaterialTheme.colors.onSurface
                                 )
                             } else {
                                 Text(
-                                    text = text,
+                                    text = query,
                                     color = MaterialTheme.colors.onSurface
                                 )
                             }
@@ -73,7 +75,10 @@ fun GameFilterDialog(
                 }
             },
             confirmButton = {
-                Button(onClick = { dismissDialog() }) {
+                Button(onClick = {
+                    viewModel.setSearchQuery(query)
+                    dismissDialog()
+                }) {
                     Text("Filter")
                 }
             }

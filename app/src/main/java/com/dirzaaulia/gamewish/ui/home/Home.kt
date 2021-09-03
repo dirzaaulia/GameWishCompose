@@ -14,11 +14,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.dirzaaulia.gamewish.R
 import com.dirzaaulia.gamewish.base.LocalBaseViewModel
+import com.dirzaaulia.gamewish.ui.details.GameDetails
+import com.dirzaaulia.gamewish.ui.home.wishlist.Wishlist
 import com.dirzaaulia.gamewish.ui.theme.GameWishTheme
 import com.google.accompanist.insets.navigationBarsHeight
 import com.google.accompanist.insets.navigationBarsPadding
@@ -28,12 +29,14 @@ import java.util.*
 @Composable
 fun Home(
     viewModel: HomeViewModel,
-    navigateToWishlistDetails: (Long) -> Unit
+    navigateToGameDetails: (Long) -> Unit,
+    upPress: () -> Unit
 ) {
     val menu = HomeBottomNavMenu.values()
     val menuId: Int by viewModel.selectedBottomNav.collectAsState(initial = 0)
     val showSnackbar: Boolean by LocalBaseViewModel.current.isShowSnackbar.collectAsState()
     val openGameFilterDialog = remember { mutableStateOf(false) }
+    val searchQuery: String by viewModel.query.collectAsState()
 
     Scaffold(
         backgroundColor = MaterialTheme.colors.primarySurface,
@@ -56,30 +59,28 @@ fun Home(
                 }
             }
         }
-    ) { innerPadding ->
-        val modifier = Modifier.padding(innerPadding)
-        Crossfade(HomeBottomNavMenu.getHomeBottomNavMenuFromResource(menuId)) { destination ->
+    ) {
+        Crossfade(
+            targetState = HomeBottomNavMenu.getHomeBottomNavMenuFromResource(menuId)
+        ) { destination ->
             when (destination) {
-                //TODO Need to add TabLayout for Wishlist category ( Anime & Manga )
                 HomeBottomNavMenu.WISHLIST -> Wishlist(
-                    modifier = modifier,
                     viewModel = viewModel,
-                    navigateToDetailsWishlist = navigateToWishlistDetails
+                    navigateToGameDetails = navigateToGameDetails
                 )
                 HomeBottomNavMenu.DEALS -> Wishlist(
-                    modifier = modifier,
                     viewModel = viewModel,
-                    navigateToDetailsWishlist = navigateToWishlistDetails
+                    navigateToGameDetails = navigateToGameDetails
                 )
                 HomeBottomNavMenu.ABOUT -> Wishlist(
-                    modifier = modifier,
                     viewModel = viewModel,
-                    navigateToDetailsWishlist = navigateToWishlistDetails
+                    navigateToGameDetails = navigateToGameDetails
                 )
             }
         }
         GameFilterDialog(
-            searchQuery = "",
+            viewModel = viewModel,
+            searchQuery = searchQuery,
             openDialog = openGameFilterDialog.value
         ) {
             openGameFilterDialog.value = false
@@ -89,11 +90,11 @@ fun Home(
 
 @Composable
 fun HomeBottomBar(
-    menu : Array<HomeBottomNavMenu>,
-    menuId : Int,
-    viewModel : HomeViewModel
+    menu: Array<HomeBottomNavMenu>,
+    menuId: Int,
+    viewModel: HomeViewModel
 ) {
-    BottomNavigation (
+    BottomNavigation(
         modifier = Modifier.navigationBarsHeight(56.dp)
     ) {
         menu.forEach { menu ->
@@ -229,7 +230,7 @@ enum class HomeBottomNavMenu(
     ABOUT(R.string.about, Icons.Filled.Info);
 
     companion object {
-        fun getHomeBottomNavMenuFromResource(@StringRes resource : Int) :HomeBottomNavMenu {
+        fun getHomeBottomNavMenuFromResource(@StringRes resource: Int): HomeBottomNavMenu {
             return when (resource) {
                 R.string.wishlist -> WISHLIST
                 R.string.deals -> DEALS

@@ -4,12 +4,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
@@ -21,14 +19,13 @@ import com.dirzaaulia.gamewish.data.model.Wishlist
 import com.dirzaaulia.gamewish.extension.visible
 import com.dirzaaulia.gamewish.ui.theme.GameWishTheme
 import com.dirzaaulia.gamewish.utils.NetworkImage
-import com.google.accompanist.insets.statusBarsPadding
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
 import com.google.accompanist.swiperefresh.SwipeRefreshState
 import timber.log.Timber
 
 @Composable
-fun<T : Any> GameList(
+fun <T : Any> GameList(
     modifier: Modifier = Modifier,
     data: LazyPagingItems<T>,
     state: SwipeRefreshState,
@@ -38,7 +35,7 @@ fun<T : Any> GameList(
         SwipeRefresh(
             state = state,
             onRefresh = { data.refresh() },
-            indicator ={ indicatorState, refreshTrigger ->
+            indicator = { indicatorState, refreshTrigger ->
                 SwipeRefreshIndicator(
                     state = indicatorState,
                     refreshTriggerDistance = refreshTrigger,
@@ -48,7 +45,7 @@ fun<T : Any> GameList(
             modifier = modifier
                 .fillMaxSize()
                 .background(MaterialTheme.colors.background)
-            ) {
+        ) {
             LazyColumn(
                 modifier = Modifier
                     .visible(data.loadState.refresh !is LoadState.Loading)
@@ -61,7 +58,7 @@ fun<T : Any> GameList(
                 data.apply {
                     when {
                         loadState.append is LoadState.Loading -> {
-                            item { LoadingItem() }
+                            item { CommonLoadingItem() }
                         }
                         loadState.refresh is LoadState.Error -> {
                             val error = data.loadState.refresh as LoadState.Error
@@ -109,6 +106,15 @@ fun GameListItem(
                     contentScale = ContentScale.FillBounds
                 )
             }
+            wishlist.status?.let { status ->
+                Text(
+                    text = status,
+                    style = MaterialTheme.typography.body2,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 4.dp, start = 8.dp)
+                )
+            }
             wishlist.name?.let { name ->
                 Text(
                     text = name,
@@ -120,16 +126,6 @@ fun GameListItem(
             }
         }
     }
-}
-
-@Composable
-fun LoadingItem() {
-    CircularProgressIndicator(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp)
-            .wrapContentWidth(Alignment.CenterHorizontally)
-    )
 }
 
 @Preview

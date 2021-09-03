@@ -73,9 +73,9 @@ fun GameWishTheme(
 }
 
 /**
-* Alternate to [MaterialTheme] allowing us to add our own theme systems (e.g. [Elevations]) or to
-* extend [MaterialTheme]'s types e.g. return our own [Colors] extension
-*/
+ * Alternate to [MaterialTheme] allowing us to add our own theme systems (e.g. [Elevations]) or to
+ * extend [MaterialTheme]'s types e.g. return our own [Colors] extension
+ */
 object GameWishTheme {
 
     /**

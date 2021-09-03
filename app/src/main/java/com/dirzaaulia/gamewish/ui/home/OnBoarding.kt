@@ -8,11 +8,13 @@ import androidx.compose.runtime.Composable
 @Composable
 fun OnBoarding(
     viewModel: HomeViewModel,
-    navigateToDetailsWishlist: (Long) -> Unit
+    navigateToGameDetails: (Long) -> Unit,
+    upPress: () -> Unit
 ) {
     //TODO Need to add Google SignIn before go to Home
     Home(
         viewModel = viewModel,
-        navigateToWishlistDetails = navigateToDetailsWishlist
+        navigateToGameDetails = navigateToGameDetails,
+        upPress = upPress
     )
 }

@@ -8,4 +8,18 @@
     <string name="game">Game</string>
     <string name="anime">Anime</string>
     <string name="manga">Manga</string>
+    <string name="no_connection">No connection established. Turn on the internet and repeat.</string>
+    <string name="no_connection_button">Repeat</string>
+    <string name="label_back">Back</string>
+    <string name="link">Link</string>
+    <string name="description">Description</string>
+
+    <!-- Game Details -->
+    <string name="data_by_rawg">Game Data by <u>RAWG</u></string>
+    <string name="release_date">Release Date</string>
+    <string name="developer">Developer</string>
+    <string name="publishers">Publishers</string>
+    <string name="esrb_rating">ESRB Rating</string>
+    <string name="platforms">Platforms</string>
+    <string name="stores">Stores</string>
 </resources>

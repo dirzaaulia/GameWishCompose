@@ -3,7 +3,7 @@ package com.dirzaaulia.gamewish.ui.main
 import androidx.navigation.NavHostController
 
 class MainActions(navController: NavHostController) {
-    val navigateToDetailsWishlist: (Long) -> Unit = { id: Long ->
+    val navigateToGameDetails: (Long) -> Unit = { id: Long ->
         NavScreen.DetailsWishlist.apply {
             navController.navigate(routeWithArgument.replace("{$argument0}", id.toString()))
         }

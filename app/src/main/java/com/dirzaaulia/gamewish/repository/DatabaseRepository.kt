@@ -10,9 +10,9 @@ import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class DatabaseRepository @Inject constructor(
-    private val dao : DatabaseDao
+    private val dao: DatabaseDao
 ) {
-    fun getWishlist(gameId : Int) = dao.getWishlist(gameId)
+    fun getWishlist(gameId: Int) = dao.getWishlist(gameId)
 
 //    suspend fun getFilteredWishlist(gameName : String) : Flow<List<Wishlist>> {
 //        return dao.getFilteredWishlist(gameName)
@@ -20,14 +20,14 @@ class DatabaseRepository @Inject constructor(
 //            .conflate()
 //    }
 
-    fun getFilteredWishlist(query : String) : Flow<PagingData<Wishlist>> {
-        return Pager (config = PagingConfig(pageSize = DatabaseConstant.DATABASE_PAGING_SIZE)) {
+    fun getFilteredWishlist(query: String): Flow<PagingData<Wishlist>> {
+        return Pager(config = PagingConfig(pageSize = DatabaseConstant.DATABASE_PAGING_SIZE)) {
             dao.getFilteredWishlist(query)
         }.flow
     }
 
-    fun getAllWishlist() : Flow<PagingData<Wishlist>> {
-        return Pager (config = PagingConfig(pageSize = DatabaseConstant.DATABASE_PAGING_SIZE)) {
+    fun getAllWishlist(): Flow<PagingData<Wishlist>> {
+        return Pager(config = PagingConfig(pageSize = DatabaseConstant.DATABASE_PAGING_SIZE)) {
             dao.getAllWishlist()
         }.flow
     }
