@@ -12,7 +12,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import com.dirzaaulia.gamewish.R
 import com.dirzaaulia.gamewish.data.model.Wishlist
 import com.dirzaaulia.gamewish.ui.home.HomeViewModel
-import com.dirzaaulia.gamewish.ui.home.wishlist.tab.WishlistGame
+import com.dirzaaulia.gamewish.ui.home.wishlist.game.WishlistGame
 
 @Composable
 fun Wishlist(

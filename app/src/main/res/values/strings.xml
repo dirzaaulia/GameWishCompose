@@ -9,7 +9,7 @@
     <string name="anime">Anime</string>
     <string name="manga">Manga</string>
     <string name="no_connection">No connection established. Turn on the internet and repeat.</string>
-    <string name="no_connection_button">Repeat</string>
+    <string name="no_connection_button">Try Again</string>
     <string name="label_back">Back</string>
     <string name="link">Link</string>
     <string name="description">Description</string>
@@ -22,4 +22,7 @@
     <string name="esrb_rating">ESRB Rating</string>
     <string name="platforms">Platforms</string>
     <string name="stores">Stores</string>
+    <string name="game_details_error">Something went wrong went getting Game Details data.
+        Check your internet connection and try again.
+    </string>
 </resources>

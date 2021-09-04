@@ -13,6 +13,9 @@ interface DatabaseDao {
     @Delete
     suspend fun delete(wishlist: Wishlist)
 
+    @Query("DELETE FROM wishlist_table WHERE id = :gameId")
+    suspend fun deleteById(gameId: Long)
+
     @Query("SELECT * FROM wishlist_table")
     fun getAllWishlist(): PagingSource<Int, Wishlist>
 
@@ -20,5 +23,5 @@ interface DatabaseDao {
     fun getFilteredWishlist(gameName: String): PagingSource<Int, Wishlist>
 
     @Query("SELECT * FROM wishlist_table WHERE id = :gameId LIMIT 1")
-    fun getWishlist(gameId: Int): Flow<Wishlist>
+    fun getWishlist(gameId: Long): Flow<Wishlist>
 }

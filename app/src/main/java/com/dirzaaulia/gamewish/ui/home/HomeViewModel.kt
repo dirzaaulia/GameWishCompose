@@ -32,10 +32,6 @@ class HomeViewModel @Inject constructor(
             databaseRepository.getFilteredWishlist(it)
         }
 
-    init {
-        addToWishlist(Wishlist.mock())
-    }
-
     @MainThread
     fun setSearchQuery(searchQuery: String) {
         query.value = searchQuery

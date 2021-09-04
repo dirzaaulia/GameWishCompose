@@ -7,12 +7,13 @@ import com.dirzaaulia.gamewish.data.model.Wishlist
 import com.dirzaaulia.gamewish.database.DatabaseDao
 import com.dirzaaulia.gamewish.utils.DatabaseConstant
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import javax.inject.Inject
 
 class DatabaseRepository @Inject constructor(
     private val dao: DatabaseDao
 ) {
-    fun getWishlist(gameId: Int) = dao.getWishlist(gameId)
+    fun getWishlist(gameId: Long) = dao.getWishlist(gameId).distinctUntilChanged()
 
 //    suspend fun getFilteredWishlist(gameName : String) : Flow<List<Wishlist>> {
 //        return dao.getFilteredWishlist(gameName)
@@ -32,11 +33,15 @@ class DatabaseRepository @Inject constructor(
         }.flow
     }
 
-    suspend fun removeFromWishlist(wishlist: Wishlist) {
-        return dao.delete(wishlist)
-    }
-
     suspend fun addToWishlist(wishlist: Wishlist) {
         dao.insert(wishlist)
+    }
+
+    suspend fun deleteWishlist(wishlist: Wishlist) {
+        dao.delete(wishlist)
+    }
+
+    suspend fun deleteWishlistById(gameId: Long) {
+        return dao.deleteById(gameId)
     }
 }

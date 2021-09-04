@@ -1,10 +1,17 @@
 package com.dirzaaulia.gamewish.repository
 
+import androidx.annotation.WorkerThread
+import com.dirzaaulia.gamewish.base.NotFoundException
+import com.dirzaaulia.gamewish.base.ResponseResult
 import com.dirzaaulia.gamewish.data.model.rawg.GameDetails
 import com.dirzaaulia.gamewish.data.model.rawg.Screenshots
 import com.dirzaaulia.gamewish.network.rawg.RawgService
 import com.dirzaaulia.gamewish.utils.RawgConstant
 import com.dirzaaulia.gamewish.utils.Resource
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
 
 
@@ -19,23 +26,30 @@ class RawgRepository @Inject constructor(
 //        ).flow
 //    }
 
-
-    suspend fun getGameDetails(gameId: Long): Resource<GameDetails> {
-        val response = try {
-            service.getGameDetails(gameId, RawgConstant.RAWG_KEY).body()
+    @WorkerThread
+    fun getGameDetails(gameId: Long) = flow {
+        try {
+            service.getGameDetails(gameId, RawgConstant.RAWG_KEY).body()?.let {
+                emit(ResponseResult.Success(it))
+            } ?: run {
+                throw NotFoundException()
+            }
         } catch (e: Exception) {
-            return Resource.Error("An unknown error occured!")
+            emit(ResponseResult.Error(e))
         }
-        return Resource.Success(response!!)
     }
 
-    suspend fun getGameDetailsScreenshots(gameId: Long): Resource<List<Screenshots>> {
-        val response = try {
-            service.getGameDetailsScreenshots(gameId, RawgConstant.RAWG_KEY).body()?.results
+    @WorkerThread
+    fun getGameDetailsScreenshots(gameId: Long) = flow {
+        try {
+            service.getGameDetailsScreenshots(gameId, RawgConstant.RAWG_KEY).body()?.let {
+                emit(ResponseResult.Success(it))
+            } ?: run {
+                throw NotFoundException()
+            }
         } catch (e: Exception) {
-            return Resource.Error("An unknown error occured!")
+            emit(ResponseResult.Error(e))
         }
-        return Resource.Success(response!!)
     }
 
 //    fun getGenres() : Flow<PagingData<Genre>> {

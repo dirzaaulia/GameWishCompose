@@ -4,7 +4,7 @@ import androidx.navigation.NavHostController
 
 class MainActions(navController: NavHostController) {
     val navigateToGameDetails: (Long) -> Unit = { id: Long ->
-        NavScreen.DetailsWishlist.apply {
+        NavScreen.GameDetails.apply {
             navController.navigate(routeWithArgument.replace("{$argument0}", id.toString()))
         }
     }

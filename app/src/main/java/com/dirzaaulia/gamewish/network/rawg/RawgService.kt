@@ -1,5 +1,8 @@
 package com.dirzaaulia.gamewish.network.rawg
 
+import android.content.Context
+import com.chuckerteam.chucker.api.ChuckerCollector
+import com.chuckerteam.chucker.api.ChuckerInterceptor
 import com.dirzaaulia.gamewish.data.model.rawg.GameDetails
 import com.dirzaaulia.gamewish.data.response.rawg.*
 import com.dirzaaulia.gamewish.utils.RawgConstant
@@ -61,15 +64,21 @@ interface RawgService {
     ): PlatformsResponse
 
     companion object {
-        fun create(): RawgService {
+        fun create(context: Context): RawgService {
             val logger =
                 HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY }
 
+            val chuckerLogger = ChuckerInterceptor.Builder(context)
+                .collector(ChuckerCollector(context))
+                .maxContentLength(250000L)
+                .redactHeaders(emptySet())
+                .alwaysReadResponseBody(false)
+                .build()
+
             val client = OkHttpClient.Builder()
                 .addInterceptor(logger)
-                .connectTimeout(10, TimeUnit.SECONDS)
-                .readTimeout(10, TimeUnit.SECONDS)
-                .writeTimeout(10, TimeUnit.SECONDS)
+                .addInterceptor(chuckerLogger)
+                .retryOnConnectionFailure(false)
                 .build()
 
             val moshi = Moshi.Builder()

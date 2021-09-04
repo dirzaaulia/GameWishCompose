@@ -3,12 +3,12 @@ package com.dirzaaulia.gamewish.ui.main
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navArgument
+import com.dirzaaulia.gamewish.ui.details.DetailsViewModel
 import com.dirzaaulia.gamewish.ui.details.GameDetails
 import com.dirzaaulia.gamewish.ui.home.OnBoarding
 
@@ -28,16 +28,19 @@ fun NavGraph(navController: NavHostController) {
             )
         }
         composable(
-            route = NavScreen.DetailsWishlist.routeWithArgument,
-            arguments = listOf(navArgument(NavScreen.DetailsWishlist.argument0) {
+            route = NavScreen.GameDetails.routeWithArgument,
+            arguments = listOf(navArgument(NavScreen.GameDetails.argument0) {
                 type = NavType.LongType
             })
         ) { backStackEntry ->
-            backStackEntry.arguments.let {
-                GameDetails(
-                    viewModel = hiltViewModel(),
-                    upPress = actions.upPress
-                )
+            backStackEntry.arguments.let { bundle ->
+                bundle?.let { argument ->
+                    GameDetails(
+                        gameId = argument.getLong(NavScreen.GameDetails.argument0),
+                        viewModel = hiltViewModel(),
+                        upPress = actions.upPress
+                    )
+                }
             }
         }
     }

@@ -89,11 +89,10 @@ fun GameListItem(
     Surface(
         modifier = modifier
             .fillMaxWidth()
-            .padding(4.dp)
             .clickable(
                 onClick = { wishlist.id?.let { navigateToDetailsWishlist(it) } }
             ),
-        elevation = 8.dp,
+        elevation = 0.dp,
     ) {
         Column {
             wishlist.image?.let { imageUrl ->

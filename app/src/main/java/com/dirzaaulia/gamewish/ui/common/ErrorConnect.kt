@@ -19,13 +19,17 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.dirzaaulia.gamewish.R
 import com.dirzaaulia.gamewish.ui.theme.GameWishTheme
+import com.dirzaaulia.gamewish.ui.theme.White
 
 @Composable
-fun ErrorConnect(repeat: () -> Unit) {
+fun ErrorConnect(
+    text: String,
+    repeat: () -> Unit,
+) {
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colors.background)
+            .background(MaterialTheme.colors.primarySurface)
     ) {
         val (constraintLayout) = createRefs()
         ConstraintLayout(
@@ -49,21 +53,17 @@ fun ErrorConnect(repeat: () -> Unit) {
                     modifier = Modifier.size(100.dp)
                 )
                 Text(
-                    text = stringResource(id = R.string.no_connection),
+                    text = text,
                     textAlign = TextAlign.Center,
                     color = MaterialTheme.colors.onSurface,
                     style = MaterialTheme.typography.h6,
                     modifier = Modifier
                         .padding(30.dp)
                 )
-                Button(
+                OutlinedButton(
                     onClick = repeat,
-                    colors = ButtonDefaults.textButtonColors(backgroundColor = Color.White)
                 ) {
-                    Text(
-                        text = stringResource(id = R.string.no_connection_button),
-                        color = MaterialTheme.colors.onSurface
-                    )
+                    Text(text = stringResource(id = R.string.no_connection_button),)
                 }
 
             }
@@ -75,7 +75,7 @@ fun ErrorConnect(repeat: () -> Unit) {
 @Composable
 fun ErrorConnectPreviewLight() {
     GameWishTheme(darkTheme = false) {
-        ErrorConnect {}
+        ErrorConnect(stringResource(id = R.string.no_connection)) {}
     }
 }
 
@@ -83,6 +83,6 @@ fun ErrorConnectPreviewLight() {
 @Composable
 fun ErrorConnectPreviewDark() {
     GameWishTheme(darkTheme = true) {
-        ErrorConnect {}
+        ErrorConnect(stringResource(id = R.string.no_connection)) {}
     }
 }

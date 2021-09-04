@@ -1,9 +1,11 @@
 package com.dirzaaulia.gamewish.di
 
+import android.content.Context
 import com.dirzaaulia.gamewish.network.rawg.RawgService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
@@ -19,8 +21,8 @@ class NetworkModule {
 
     @Singleton
     @Provides
-    fun provideRawgServer(): RawgService {
-        return RawgService.create()
+    fun provideRawgServer(@ApplicationContext context: Context): RawgService {
+        return RawgService.create(context)
     }
 
 //    @Singleton

@@ -1,4 +1,4 @@
-package com.dirzaaulia.gamewish.ui.home.wishlist.tab
+package com.dirzaaulia.gamewish.ui.home.wishlist.game
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier

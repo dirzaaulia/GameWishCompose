@@ -6,7 +6,7 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class GameDetails(
-    val id: Int?,
+    val id: Long?,
     val slug: String?,
     val name: String?,
     @Json(name = "name_original")
