@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+option java_package = "com.dirzaaulia.gamewish";
+option java_multiple_files = true;
+
+message UserPreferences {
+  //MyAnimeList
+  string accessToken = 1;
+  string refreshToken = 2;
+  int32 expiresIn = 3;
+
+  //Room
+  bool isLocalData = 4;
+
+  //Firebase
+  string userAuthId = 5;
+}

@@ -3,6 +3,7 @@ package com.dirzaaulia.gamewish.di
 import android.content.Context
 import com.dirzaaulia.gamewish.database.AppDatabase
 import com.dirzaaulia.gamewish.database.DatabaseDao
+import com.dirzaaulia.gamewish.repository.ProtoRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -22,5 +23,11 @@ class DatabaseModule {
     @Provides
     fun provideDatabaseDao(appDatabase: AppDatabase): DatabaseDao {
         return appDatabase.databaseDao()
+    }
+
+    @Singleton
+    @Provides
+    fun provideProtoRepository(@ApplicationContext context: Context): ProtoRepository {
+        return ProtoRepository(context)
     }
 }

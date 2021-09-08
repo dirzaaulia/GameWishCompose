@@ -108,6 +108,7 @@ dependencies {
 
     implementation Libs.Coroutines.android
     implementation Libs.Coroutines.core
+    implementation Libs.Coroutines.playServices
 
     implementation platform(Libs.Firebase.bom)
     implementation Libs.Firebase.database

@@ -8,7 +8,7 @@ object Libs {
     const val androidGradlePlugin = "com.android.tools.build:gradle:7.0.1"
 
     object Accompanist {
-        const val version = "0.16.0"
+        const val version = "0.18.0"
         const val animation = "com.google.accompanist:accompanist-navigation-animation:$version"
         const val insets = "com.google.accompanist:accompanist-insets:$version"
         const val swipeRefresh = "com.google.accompanist:accompanist-swiperefresh:$version"
@@ -19,9 +19,8 @@ object Libs {
     object AndroidX {
         const val coreKtx = "androidx.core:core-ktx:1.6.0"
         const val splashScreen = "androidx.core:core-splashscreen:1.0.0-alpha01"
-        const val navigation = "androidx.navigation:navigation-compose:2.4.0-alpha06"
+        const val navigation = "androidx.navigation:navigation-compose:2.4.0-alpha07"
         const val materialDesign = "com.google.android.material:material:1.4.0"
-
 
         object Activity {
             const val activityCompose = "androidx.activity:activity-compose:1.3.1"
@@ -91,6 +90,7 @@ object Libs {
         private const val version = "1.5.1"
         const val core = "org.jetbrains.kotlinx:kotlinx-coroutines-core:$version"
         const val android = "org.jetbrains.kotlinx:kotlinx-coroutines-android:$version"
+        const val playServices = "org.jetbrains.kotlinx:kotlinx-coroutines-play-services:$version"
         const val test = "org.jetbrains.kotlinx:kotlinx-coroutines-test:$version"
     }
 
@@ -156,6 +156,7 @@ object Libs {
         const val photoView = "com.github.chrisbanes:photoview:2.2.0"
         const val timber = "com.jakewharton.timber:timber:4.7.1"
         const val currencyConverter = "com.github.vinisauter:currencyconverter:1.0"
+//        const val currencyConverter = "com.github.tobiasschuerg:android-money:v0.3"
     }
 
     object Paging {

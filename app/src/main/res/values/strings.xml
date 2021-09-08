@@ -25,4 +25,12 @@
     <string name="game_details_error">Something went wrong went getting Game Details data.
         Check your internet connection and try again.
     </string>
+
+    <!-- Deals -->
+    <string name="deals_error">Something went wrong went getting Deals.
+        Check your internet connection and try again.
+    </string>
+    <string name="stores_error">Something went wrong went getting Stores List.
+        Check your internet connection and try again.
+    </string>
 </resources>

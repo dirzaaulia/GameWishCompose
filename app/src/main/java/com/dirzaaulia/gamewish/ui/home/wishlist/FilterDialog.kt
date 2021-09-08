@@ -1,4 +1,4 @@
-package com.dirzaaulia.gamewish.ui.home
+package com.dirzaaulia.gamewish.ui.home.wishlist
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -13,73 +13,54 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
+import com.dirzaaulia.gamewish.ui.home.HomeViewModel
+import com.google.accompanist.insets.navigationBarsWithImePadding
 
 @Composable
 fun GameFilterDialog(
     viewModel: HomeViewModel,
-    searchQuery: String,
-    openDialog: Boolean,
-    dismissDialog: () -> Unit
+    searchQuery: String
 ) {
     var query by rememberSaveable { mutableStateOf(searchQuery) }
 
-    if (openDialog) {
-        AlertDialog(
-            shape = MaterialTheme.shapes.large,
-            onDismissRequest = {
-                dismissDialog()
+    Column(
+        modifier = Modifier
+            .navigationBarsWithImePadding()
+            .padding(8.dp)
+            .fillMaxWidth()
+    ) {
+        Text(
+            text = "Filter Game",
+            style = MaterialTheme.typography.h6
+        )
+        OutlinedTextField(
+            singleLine = true,
+            value = query,
+            onValueChange = {
+                query = it
+                viewModel.setSearchQuery(it)
             },
-            title = {
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 8.dp),
+            textStyle = TextStyle(color = MaterialTheme.colors.onSurface),
+            label = {
                 Text(
-                    text = "Filter List",
-                    style = MaterialTheme.typography.h6
+                    text = "Game Name",
+                    color = MaterialTheme.colors.onSurface
                 )
             },
-            text = {
-                Column(
-                    verticalArrangement = Arrangement.Center,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    OutlinedTextField(
-                        value = query,
-                        onValueChange = { query = it },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 8.dp),
-                        textStyle = TextStyle(color = MaterialTheme.colors.onSurface),
-                        label = {
-                            Text(
-                                text = "Game Name",
-                                color = MaterialTheme.colors.onSurface
-                            )
-                        },
-                        placeholder = {
-                            if (query.isEmpty()) {
-                                Text(
-                                    text = "Game Name",
-                                    color = MaterialTheme.colors.onSurface
-                                )
-                            } else {
-                                Text(
-                                    text = query,
-                                    color = MaterialTheme.colors.onSurface
-                                )
-                            }
-                        }
+            placeholder = {
+                if (query.isEmpty()) {
+                    Text(
+                        text = "Game Name",
+                        color = MaterialTheme.colors.onSurface
                     )
-                }
-            },
-            dismissButton = {
-                Button(onClick = { dismissDialog() }) {
-                    Text("Dismiss")
-                }
-            },
-            confirmButton = {
-                Button(onClick = {
-                    viewModel.setSearchQuery(query)
-                    dismissDialog()
-                }) {
-                    Text("Filter")
+                } else {
+                    Text(
+                        text = query,
+                        color = MaterialTheme.colors.onSurface
+                    )
                 }
             }
         )

@@ -73,7 +73,7 @@ fun openMyAnimeListLink(context: Context) {
     startActivity(context, intent, null)
 }
 
-fun openDealsId(context: Context, dealsId: String?) {
+fun openDeals(context: Context, dealsId: String?) {
     val url = String.format("https://www.cheapshark.com/redirect?dealID=%s", dealsId)
     val intent = Intent(Intent.ACTION_VIEW)
     intent.data = Uri.parse(url)

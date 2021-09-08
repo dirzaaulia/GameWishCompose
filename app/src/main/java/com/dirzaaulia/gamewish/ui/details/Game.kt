@@ -1,9 +1,6 @@
 package com.dirzaaulia.gamewish.ui.details
 
 import androidx.compose.animation.*
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.LinearOutSlowInEasing
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -31,9 +28,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.dirzaaulia.gamewish.R
 import com.dirzaaulia.gamewish.data.model.Wishlist
 import com.dirzaaulia.gamewish.data.model.rawg.GameDetails
@@ -53,8 +50,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun GameDetails(
     gameId: Long,
-    viewModel: DetailsViewModel,
-    upPress: () -> Unit
+    upPress: () -> Unit,
+    viewModel: DetailsViewModel = hiltViewModel(),
 ) {
     val scope = rememberCoroutineScope()
     val scaffoldState = rememberBottomSheetScaffoldState()
@@ -437,7 +434,7 @@ fun GameWishlistSheetContent(
                 }
             }
         }
-        Button(
+        OutlinedButton(
             modifier = Modifier
                 .padding(top = 4.dp, bottom = 16.dp)
                 .fillMaxWidth(),

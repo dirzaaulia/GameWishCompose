@@ -16,42 +16,6 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.*
 
-fun currencyConverterLocaletoUSD(inputValue: Int): Int {
-    var convertedValue = 0.0
-
-    CurrencyConverter.calculate(
-        inputValue.toDouble(),
-        Currency.getInstance(Locale.getDefault()),
-        Currency.getInstance("USD")
-    ) { value, e ->
-        if (e != null) {
-            Timber.i(e.localizedMessage)
-        } else {
-            convertedValue = value
-        }
-    }
-
-    return convertedValue.toInt()
-}
-
-fun currencyConverterUSDtoLocale(inputValue: Int): Double {
-    var convertedValue = 0.0
-
-    CurrencyConverter.calculate(
-        inputValue.toDouble(),
-        Currency.getInstance("USD"),
-        Currency.getInstance(Locale.getDefault())
-    ) { value, e ->
-        if (e != null) {
-            Timber.i(e.localizedMessage)
-        } else {
-            convertedValue = value
-        }
-    }
-
-    return convertedValue
-}
-
 fun htmlToTextFormatter(value: String?): Spanned? {
     return Html.fromHtml(value, Html.FROM_HTML_MODE_COMPACT)
 }
@@ -61,8 +25,8 @@ fun numberFormatter(value: Double): String {
     return format.format(value)
 }
 
-fun currencyFormatter(value: Double?): String {
-    val format: NumberFormat = NumberFormat.getCurrencyInstance(Locale.getDefault())
+fun currencyFormatter(value: Double?, currency: Locale): String {
+    val format: NumberFormat = NumberFormat.getCurrencyInstance(currency)
     format.maximumFractionDigits = 2
 
     return format.format(value)
@@ -156,4 +120,27 @@ fun getSubReddit(url: String): String {
     val uri = Uri.parse(url)
     val segment = uri.path?.split("/")
     return String.format("r/%s", segment?.get(segment.size - 2))
+}
+
+fun currencyConvertAndFormat(
+    from: String,
+    to: String,
+    price: String
+): String {
+    var formattedPrice = ""
+    val localeCurrent = Locale.getDefault()
+    localeCurrent.let {
+        CurrencyConverter.calculate(
+            price.toDouble(),
+            Currency.getInstance(from),
+            Currency.getInstance(to),
+        ) { value, e ->
+            if (e != null) {
+                Timber.i(e.localizedMessage)
+            } else {
+                formattedPrice = currencyFormatter(value, Locale.getDefault())
+            }
+        }
+    }
+    return formattedPrice
 }

@@ -1,6 +1,8 @@
 package com.dirzaaulia.gamewish.di
 
 import android.content.Context
+import com.dirzaaulia.gamewish.network.cheapshark.CheapSharkService
+import com.dirzaaulia.gamewish.network.myanimelist.MyAnimeListBaseUrlService
 import com.dirzaaulia.gamewish.network.rawg.RawgService
 import dagger.Module
 import dagger.Provides
@@ -13,11 +15,11 @@ import javax.inject.Singleton
 @Module
 class NetworkModule {
 
-//    @Singleton
-//    @Provides
-//    fun provideCheapSharkService(@ApplicationContext context: Context): CheapSharkService {
-//        return CheapSharkService.create(context)
-//    }
+    @Singleton
+    @Provides
+    fun provideCheapSharkService(@ApplicationContext context: Context): CheapSharkService {
+        return CheapSharkService.create(context)
+    }
 
     @Singleton
     @Provides
@@ -25,11 +27,11 @@ class NetworkModule {
         return RawgService.create(context)
     }
 
-//    @Singleton
-//    @Provides
-//    fun provideMyAnimeListBaseUrlService() : MyAnimeListBaseUrlService {
-//        return MyAnimeListBaseUrlService.create()
-//    }
+    @Singleton
+    @Provides
+    fun provideMyAnimeListBaseUrlService() : MyAnimeListBaseUrlService {
+        return MyAnimeListBaseUrlService.create()
+    }
 //
 //    @Singleton
 //    @Provides
