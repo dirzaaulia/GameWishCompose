@@ -5,16 +5,16 @@ import com.squareup.moshi.Json
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class MyAnimeListTokenResponse (
+data class MyAnimeListTokenResponse(
     @Json(name = "token_type")
-    val tokenType : String?,
+    val tokenType: String?,
     @Json(name = "expires_in")
-    val expiresIn : Int?,
+    val expiresIn: Int?,
     @Json(name = "access_token")
-    val accessToken : String?,
+    val accessToken: String?,
     @Json(name = "refresh_token")
-    val refreshToken : String?,
-    val error : String?,
-    val message : String?,
-    val hint : String?
+    val refreshToken: String?,
+    val error: String?,
+    val message: String?,
+    val hint: String?
 ) : Parcelable

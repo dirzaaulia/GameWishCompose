@@ -1,7 +1,6 @@
 package com.dirzaaulia.gamewish.ui.common
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.graphics.Bitmap
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
@@ -23,7 +22,6 @@ import com.dirzaaulia.gamewish.utils.MyAnimeListConstant.MYANIMELIST_CLIENT_ID
 import com.dirzaaulia.gamewish.utils.MyAnimeListConstant.MYANIMELIST_CODE_CHALLENGE
 import com.dirzaaulia.gamewish.utils.MyAnimeListConstant.MYANIMELIST_STATE
 import com.dirzaaulia.gamewish.utils.MyAnimeListConstant.MYANIMELIST_URL
-import com.google.accompanist.insets.navigationBarsWithImePadding
 import kotlinx.coroutines.launch
 import okhttp3.HttpUrl
 import timber.log.Timber
@@ -86,6 +84,8 @@ fun WebViewMyAnimeList(
                                             "authorization_code"
                                         )
                                         viewModel.getAccessToken()
+                                        viewModel.getMyAnimeListUser()
+                                        viewModel.setAnimeStatus("")
                                     } else if (error != null) {
                                         scope.launch {
                                             scaffoldState.snackbarHostState.showSnackbar(error)

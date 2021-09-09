@@ -1,29 +1,58 @@
 package com.dirzaaulia.gamewish.ui.home.wishlist.anime
 
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.paging.compose.LazyPagingItems
 import com.dirzaaulia.gamewish.base.ResponseResult
+import com.dirzaaulia.gamewish.data.model.myanimelist.ParentNode
 import com.dirzaaulia.gamewish.extension.isError
 import com.dirzaaulia.gamewish.extension.isSucceeded
+import com.dirzaaulia.gamewish.ui.common.AnimeItem
+import com.dirzaaulia.gamewish.ui.common.CommonVerticalList
 import com.dirzaaulia.gamewish.ui.common.WebViewMyAnimeList
 import com.dirzaaulia.gamewish.ui.home.HomeViewModel
+import com.dirzaaulia.gamewish.utils.capitalizeWords
 
 @Composable
 fun WishlistAnime(
     accessTokenResult: ResponseResult<String>?,
-    accessToken: String?,
-    viewModel: HomeViewModel
+    viewModel: HomeViewModel,
+    lazyListState: LazyListState,
+    data: LazyPagingItems<ParentNode>,
+    animeStatus: String
 ) {
+    var animeStatusFormatted = animeStatus
+    animeStatusFormatted = animeStatusFormatted.replace("_", " ")
+    animeStatusFormatted = animeStatusFormatted.capitalizeWords()
+
+    if (animeStatusFormatted.isBlank()) {
+        animeStatusFormatted = "All"
+    }
+
     when {
         accessTokenResult.isSucceeded -> {
-            Box(contentAlignment = Alignment.Center,) {
+            Column(modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)) {
                 Text(
-                    text = "MyAnimeList Token Saved! $accessToken",
-                    style = MaterialTheme.typography.h3
+                    text = "Sort by : $animeStatusFormatted",
+                    style = MaterialTheme.typography.subtitle1,
+                    modifier = Modifier
+                        .padding(bottom = 4.dp)
+                        .align(Alignment.End)
                 )
+                CommonVerticalList(
+                    data = data,
+                    lazyListState = lazyListState,
+                    emptyString = "Your Anime list is still empty!"
+                ) { parentNode ->
+                    AnimeItem(parentNode = parentNode)
+                }
             }
         }
         accessTokenResult.isError -> {

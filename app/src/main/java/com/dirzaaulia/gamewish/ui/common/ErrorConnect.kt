@@ -19,7 +19,6 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.dirzaaulia.gamewish.R
 import com.dirzaaulia.gamewish.ui.theme.GameWishTheme
-import com.dirzaaulia.gamewish.ui.theme.White
 
 @Composable
 fun ErrorConnect(
@@ -63,7 +62,7 @@ fun ErrorConnect(
                 OutlinedButton(
                     onClick = repeat,
                 ) {
-                    Text(text = stringResource(id = R.string.no_connection_button),)
+                    Text(text = stringResource(id = R.string.no_connection_button))
                 }
 
             }

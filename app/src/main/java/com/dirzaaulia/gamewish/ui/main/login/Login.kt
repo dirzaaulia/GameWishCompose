@@ -1,6 +1,5 @@
 package com.dirzaaulia.gamewish.ui.main.login
 
-import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -19,8 +18,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.dirzaaulia.gamewish.R
+import com.dirzaaulia.gamewish.ui.home.HomeViewModel
 import com.dirzaaulia.gamewish.utils.FirebaseConstant
 import com.dirzaaulia.gamewish.utils.FirebaseState
 import com.google.accompanist.insets.statusBarsPadding
@@ -32,32 +31,32 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 @Composable
-fun Login(repeat: () -> Unit) {
+fun Login(viewModel: HomeViewModel) {
 
-    val viewModel: LoginViewModel = hiltViewModel()
     val scope = rememberCoroutineScope()
     val scaffoldState = rememberScaffoldState()
     val state by viewModel.loadingState.collectAsState()
     val context = LocalContext.current
     val token = FirebaseConstant.GOOGLE_SIGN_IN_WEB_CLIENT_ID
 
-    val launcher = rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult()) {
-        val task = GoogleSignIn.getSignedInAccountFromIntent(it.data)
-        try {
-            val account = task.getResult(ApiException::class.java)!!
-            val credential = GoogleAuthProvider.getCredential(account.idToken!!, null)
-            viewModel.signWithCredential(credential)
-        } catch (e: ApiException) {
-            Timber.w("Google sign in failed: ${e.message}")
-            scope.launch {
-                e.message?.let { message ->
-                    scaffoldState.snackbarHostState.showSnackbar(
-                        message
-                    )
+    val launcher =
+        rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult()) {
+            val task = GoogleSignIn.getSignedInAccountFromIntent(it.data)
+            try {
+                val account = task.getResult(ApiException::class.java)!!
+                val credential = GoogleAuthProvider.getCredential(account.idToken!!, null)
+                viewModel.signWithCredential(credential)
+            } catch (e: ApiException) {
+                Timber.w("Google sign in failed: ${e.message}")
+                scope.launch {
+                    e.message?.let { message ->
+                        scaffoldState.snackbarHostState.showSnackbar(
+                            message
+                        )
+                    }
                 }
             }
         }
-    }
 
     Scaffold(
         modifier = Modifier
@@ -69,13 +68,13 @@ fun Login(repeat: () -> Unit) {
                 LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
             }
         },
-        backgroundColor =  MaterialTheme.colors.primarySurface,
+        backgroundColor = MaterialTheme.colors.primarySurface,
     ) {
-        when(state.status) {
+        when (state.status) {
             FirebaseState.Status.SUCCESS -> {
                 val auth = viewModel.getFirebaseAuth()
                 auth.currentUser?.uid?.let { uid -> viewModel.setUserAuthId(uid) }
-                repeat()
+                viewModel.getUserAuthStatus()
             }
             FirebaseState.Status.FAILED -> {
                 scope.launch {
@@ -84,7 +83,8 @@ fun Login(repeat: () -> Unit) {
                     )
                 }
             }
-            else -> { }
+            else -> {
+            }
         }
 
         Column(

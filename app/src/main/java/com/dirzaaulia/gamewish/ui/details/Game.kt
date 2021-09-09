@@ -1,6 +1,6 @@
 package com.dirzaaulia.gamewish.ui.details
 
-import androidx.compose.animation.*
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -38,7 +38,9 @@ import com.dirzaaulia.gamewish.data.model.rawg.Screenshots
 import com.dirzaaulia.gamewish.extension.isError
 import com.dirzaaulia.gamewish.extension.isSucceeded
 import com.dirzaaulia.gamewish.extension.visible
-import com.dirzaaulia.gamewish.ui.common.*
+import com.dirzaaulia.gamewish.ui.common.CommonGameCarousel
+import com.dirzaaulia.gamewish.ui.common.CommonLoading
+import com.dirzaaulia.gamewish.ui.common.ErrorConnect
 import com.dirzaaulia.gamewish.ui.theme.Red700
 import com.dirzaaulia.gamewish.ui.theme.White
 import com.dirzaaulia.gamewish.utils.*
@@ -80,7 +82,8 @@ fun GameDetails(
                                 wishlistData,
                                 viewModel,
                                 scope,
-                                scaffoldState)
+                                scaffoldState
+                            )
                         }
                     },
                     scaffoldState = scaffoldState,
@@ -359,7 +362,7 @@ fun GameWishlistSheetContent(
     val status = wishlist?.status ?: "Plan To Buy"
     val statusList = listOf("Playing", "Completed", "On-Hold", "Dropped", "Plan To Buy")
     var statusText by remember { mutableStateOf(status) }
-    var textfieldSize by remember { mutableStateOf(Size.Zero)}
+    var textfieldSize by remember { mutableStateOf(Size.Zero) }
     val icon = if (expanded)
         Icons.Filled.ArrowDropUp //it requires androidx.compose.material:material-icons-extended
     else
@@ -408,7 +411,7 @@ fun GameWishlistSheetContent(
                     //This value is used to assign to the DropDown the same width
                     textfieldSize = coordinates.size.toSize()
                 },
-            label = {Text("Status")},
+            label = { Text("Status") },
             trailingIcon = {
                 Icon(
                     imageVector = icon,
@@ -421,7 +424,7 @@ fun GameWishlistSheetContent(
             expanded = expanded,
             onDismissRequest = { expanded = false },
             modifier = Modifier
-                .width(with(LocalDensity.current){textfieldSize.width.toDp()})
+                .width(with(LocalDensity.current) { textfieldSize.width.toDp() })
         ) {
             statusList.forEach { item ->
                 DropdownMenuItem(

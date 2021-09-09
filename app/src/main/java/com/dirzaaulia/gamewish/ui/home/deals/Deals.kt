@@ -24,14 +24,15 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
 import androidx.paging.compose.LazyPagingItems
-import androidx.paging.compose.collectAsLazyPagingItems
 import com.dirzaaulia.gamewish.R
 import com.dirzaaulia.gamewish.data.model.cheapshark.Deals
 import com.dirzaaulia.gamewish.data.model.rawg.Stores
 import com.dirzaaulia.gamewish.data.request.cheapshark.DealsRequest
 import com.dirzaaulia.gamewish.extension.isError
 import com.dirzaaulia.gamewish.extension.isSucceeded
-import com.dirzaaulia.gamewish.ui.common.*
+import com.dirzaaulia.gamewish.ui.common.CommonVerticalList
+import com.dirzaaulia.gamewish.ui.common.DealsItem
+import com.dirzaaulia.gamewish.ui.common.ErrorConnect
 import com.dirzaaulia.gamewish.ui.home.HomeViewModel
 import com.google.accompanist.insets.navigationBarsWithImePadding
 import com.google.accompanist.insets.statusBarsPadding
@@ -68,11 +69,12 @@ fun Deals(
         modifier = modifier
     ) {
         dealsRequest.storeID?.let {
-            stores?.get(it.toInt() - 1)?.storeName?.let {
-                    storeName -> Text(
-                text = storeName,
-                style = MaterialTheme.typography.h6,
-                modifier = Modifier.padding(horizontal = 8.dp))
+            stores?.get(it.toInt() - 1)?.storeName?.let { storeName ->
+                Text(
+                    text = storeName,
+                    style = MaterialTheme.typography.h6,
+                    modifier = Modifier.padding(horizontal = 8.dp)
+                )
             }
         }
         DealsList(data = lazyDeals, lazyListState)
@@ -95,7 +97,7 @@ fun DealsFilter(
     var storeIndex by rememberSaveable { mutableStateOf(1) }
     var storeQuery by rememberSaveable { mutableStateOf("Steam") }
     var storeExpanded by remember { mutableStateOf(false) }
-    var storeFieldSize by remember { mutableStateOf(Size.Zero)}
+    var storeFieldSize by remember { mutableStateOf(Size.Zero) }
     var lowPrice by rememberSaveable { mutableStateOf<Long>(0) }
     var upperPrice by rememberSaveable { mutableStateOf<Long>(1000) }
     var titleQuery by rememberSaveable { mutableStateOf("") }
@@ -140,7 +142,7 @@ fun DealsFilter(
             expanded = storeExpanded,
             onDismissRequest = { storeExpanded = false },
             modifier = Modifier
-                .width(with(LocalDensity.current){storeFieldSize.width.toDp()})
+                .width(with(LocalDensity.current) { storeFieldSize.width.toDp() })
         ) {
             stores?.forEachIndexed { index, item ->
                 DropdownMenuItem(
@@ -150,7 +152,7 @@ fun DealsFilter(
                         storeExpanded = false
                         viewModel.setDealsRequest(
                             DealsRequest(
-                                (index+1).toString(),
+                                (index + 1).toString(),
                                 lowPrice,
                                 upperPrice,
                                 titleQuery,
@@ -286,7 +288,11 @@ fun DealsList(data: LazyPagingItems<Deals>, lazyListState: LazyListState) {
     Box(
         modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
     ) {
-        GridList(data = data, lazyListState = lazyListState) { deals ->
+        CommonVerticalList(
+            data = data,
+            lazyListState = lazyListState,
+            emptyString = "There is no Deals found! Try again with different search parameters using filter button on top right"
+        ) { deals ->
             DealsItem(deals = deals)
         }
     }

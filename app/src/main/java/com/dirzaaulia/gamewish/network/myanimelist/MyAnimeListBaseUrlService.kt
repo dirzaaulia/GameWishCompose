@@ -18,23 +18,24 @@ interface MyAnimeListBaseUrlService {
     @FormUrlEncoded
     @POST("v1/oauth2/token")
     suspend fun getMyAnimeListToken(
-        @Field("client_id") client_id : String,
-        @Field("code") code : String,
-        @Field("code_verifier") code_verifier : String,
-        @Field("grant_type") grant_type : String
-    ) : Response<MyAnimeListTokenResponse>
+        @Field("client_id") client_id: String,
+        @Field("code") code: String,
+        @Field("code_verifier") code_verifier: String,
+        @Field("grant_type") grant_type: String
+    ): Response<MyAnimeListTokenResponse>
 
     @FormUrlEncoded
     @POST("v1/oauth2/token")
     suspend fun getMyAnimeListRefreshToken(
         @Field("client_id") client_id: String,
         @Field("grant_type") grant_type: String,
-        @Field("refresh_token") refresh_token : String
-    ) : Response<MyAnimeListTokenResponse>
+        @Field("refresh_token") refresh_token: String
+    ): Response<MyAnimeListTokenResponse>
 
     companion object {
         fun create(): MyAnimeListBaseUrlService {
-            val logger = HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY }
+            val logger =
+                HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY }
 
             val client = OkHttpClient.Builder()
                 .addInterceptor(logger)

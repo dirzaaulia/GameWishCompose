@@ -1,7 +1,5 @@
 package com.dirzaaulia.gamewish.utils
 
-import com.firebase.ui.database.paging.LoadingState
-
 data class FirebaseState private constructor(val status: Status, val msg: String? = null) {
     companion object {
         val LOADED = FirebaseState(Status.SUCCESS)

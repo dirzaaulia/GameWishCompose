@@ -15,7 +15,6 @@ import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Query
-import java.util.concurrent.TimeUnit
 
 interface CheapSharkService {
     @GET("deals")
@@ -30,11 +29,12 @@ interface CheapSharkService {
     ): Response<List<Deals>>
 
     @GET("stores")
-    suspend fun getStoresList() : Response<List<Stores>>
+    suspend fun getStoresList(): Response<List<Stores>>
 
     companion object {
         fun create(context: Context): CheapSharkService {
-            val logger = HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY }
+            val logger =
+                HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY }
             val chuckerLogger = ChuckerInterceptor.Builder(context)
                 .collector(ChuckerCollector(context))
                 .maxContentLength(250000L)

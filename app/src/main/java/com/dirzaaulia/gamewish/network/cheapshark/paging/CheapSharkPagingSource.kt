@@ -7,10 +7,10 @@ import com.dirzaaulia.gamewish.data.request.cheapshark.DealsRequest
 import com.dirzaaulia.gamewish.extension.pagingSucceeded
 import com.dirzaaulia.gamewish.repository.CheapSharkRepository
 
-class CheapSharkPagingSource (
+class CheapSharkPagingSource(
     private val repository: CheapSharkRepository,
     private val request: DealsRequest
-): PagingSource<Int, Deals>() {
+) : PagingSource<Int, Deals>() {
 
     override fun getRefreshKey(state: PagingState<Int, Deals>): Int? {
         return state.anchorPosition?.let {

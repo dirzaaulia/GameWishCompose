@@ -3,7 +3,8 @@ package com.dirzaaulia.gamewish.ui.common
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
@@ -22,9 +23,12 @@ import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.items
 import com.dirzaaulia.gamewish.R
+import com.dirzaaulia.gamewish.data.model.Wishlist
 import com.dirzaaulia.gamewish.data.model.cheapshark.Deals
+import com.dirzaaulia.gamewish.data.model.myanimelist.ParentNode
 import com.dirzaaulia.gamewish.extension.visible
 import com.dirzaaulia.gamewish.utils.NetworkImage
+import com.dirzaaulia.gamewish.utils.capitalizeWords
 import com.dirzaaulia.gamewish.utils.currencyFormatter
 import com.dirzaaulia.gamewish.utils.openDeals
 import com.google.accompanist.swiperefresh.SwipeRefresh
@@ -33,12 +37,12 @@ import com.google.accompanist.swiperefresh.SwipeRefreshState
 import timber.log.Timber
 import java.util.*
 
-
 @Composable
-fun <T: Any> GridSwipeRefreshList(
-    modifier: Modifier = Modifier,
+fun <T : Any> CommonVerticalSwipeList(
     data: LazyPagingItems<T>,
     state: SwipeRefreshState,
+    lazyListState: LazyListState,
+    emptyString: String,
     content: @Composable (T) -> Unit
 ) {
     if (data.itemCount != 0) {
@@ -52,22 +56,21 @@ fun <T: Any> GridSwipeRefreshList(
                     contentColor = MaterialTheme.colors.primary
                 )
             },
-            modifier = modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colors.background)
         ) {
-            LazyVerticalGrid(
-                cells = GridCells.Fixed(2),
+            LazyColumn(
+                state = lazyListState,
                 modifier = Modifier
                     .visible(data.loadState.refresh !is LoadState.Loading)
             ) {
-                items(data.itemCount) { index ->
-                    data[index]?.let { item -> content.invoke(item) }
+                items(data) { data ->
+                    data?.let {
+                        content.invoke(data)
+                    }
                 }
                 data.apply {
                     when {
                         loadState.append is LoadState.Loading -> {
-                            item { CommonLoadingGridItem() }
+                            item { CommonLoadingItem() }
                         }
                         loadState.refresh is LoadState.Error -> {
                             val error = data.loadState.refresh as LoadState.Error
@@ -86,13 +89,32 @@ fun <T: Any> GridSwipeRefreshList(
             }
         }
     }
-    CommonLoading(data.loadState.refresh is LoadState.Loading)
+
+    when {
+        data.loadState.refresh is LoadState.Loading -> {
+            CommonLoading(visibility = data.loadState.refresh is LoadState.Loading)
+        }
+        data.loadState.refresh is LoadState.Error -> {
+            ErrorConnect(text = stringResource(id = R.string.deals_error)) {
+                data.retry()
+            }
+        }
+        data.itemCount == 0 && data.loadState.refresh is LoadState.NotLoading -> {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(text = emptyString, style = MaterialTheme.typography.subtitle1)
+            }
+        }
+    }
 }
 
 @Composable
-fun <T: Any> GridList(
+fun <T : Any> CommonVerticalList(
     data: LazyPagingItems<T>,
     lazyListState: LazyListState,
+    emptyString: String,
     content: @Composable (T) -> Unit
 ) {
     if (data.itemCount != 0) {
@@ -132,22 +154,71 @@ fun <T: Any> GridList(
         }
     }
 
-    if (data.itemCount == 0 && data.loadState.refresh is LoadState.Error) {
-        ErrorConnect(text = stringResource(id = R.string.deals_error)) {
-            data.retry()
+    when {
+        data.loadState.refresh is LoadState.Loading -> {
+            CommonLoading(visibility = data.loadState.refresh is LoadState.Loading)
+        }
+        data.loadState.refresh is LoadState.Error -> {
+            ErrorConnect(text = stringResource(id = R.string.deals_error)) {
+                data.retry()
+            }
+        }
+        data.itemCount == 0 && data.loadState.refresh is LoadState.NotLoading -> {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(text = emptyString, style = MaterialTheme.typography.subtitle1)
+            }
         }
     }
+}
 
-    if (data.itemCount == 0 && (data.loadState.append is LoadState.NotLoading
-                || data.loadState.refresh is LoadState.NotLoading )) {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(text = "There no Deals found!", style = MaterialTheme.typography.subtitle1)
+@Composable
+fun GameListItem(
+    wishlist: Wishlist,
+    modifier: Modifier = Modifier,
+    selectGame: (Long) -> Unit = { }
+) {
+    Surface(
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable(
+                onClick = { wishlist.id?.let { selectGame(it) } }
+            ),
+        elevation = 0.dp,
+    ) {
+        Column {
+            wishlist.image?.let { imageUrl ->
+                NetworkImage(
+                    url = imageUrl,
+                    contentDescription = null,
+                    modifier = modifier
+                        .fillMaxWidth()
+                        .height(200.dp),
+                    contentScale = ContentScale.FillBounds
+                )
+            }
+            wishlist.status?.let { status ->
+                Text(
+                    text = status,
+                    style = MaterialTheme.typography.body2,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 4.dp, start = 8.dp)
+                )
+            }
+            wishlist.name?.let { name ->
+                Text(
+                    text = name,
+                    style = MaterialTheme.typography.h5,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 8.dp, bottom = 4.dp)
+                )
+            }
         }
     }
-
 }
 
 @Composable
@@ -217,6 +288,76 @@ fun DealsItem(
                         text = currencyFormatter(it.toDouble(), Locale.US),
                         style = MaterialTheme.typography.caption
                     )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun AnimeItem(
+    parentNode: ParentNode,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(150.dp)
+            .padding(vertical = 4.dp)
+            .clickable(
+                onClick = { /* TODO */ }
+            ),
+        shape = MaterialTheme.shapes.large,
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            parentNode.node?.mainPicture?.large?.let {
+                NetworkImage(
+                    url = it,
+                    contentDescription = null,
+                    modifier = modifier
+                        .width(100.dp)
+                        .fillMaxHeight(),
+                    contentScale = ContentScale.FillBounds
+                )
+            }
+            Column(
+                modifier = modifier
+                    .padding(vertical = 4.dp, horizontal = 8.dp)
+                    .weight(1f)
+            ) {
+                parentNode.listStatus?.status?.let {
+                    var statusFormatted = it.replace("_"," ")
+                    statusFormatted = statusFormatted.capitalizeWords()
+
+                    Text(
+                        text = statusFormatted,
+                        style = MaterialTheme.typography.body2
+                    )
+                }
+                parentNode.node?.title?.let {
+                    Text(
+                        text = it,
+                        style = MaterialTheme.typography.subtitle1
+                    )
+                }
+                parentNode.listStatus?.status?.let { status ->
+                    if (!status.equals("plan_to_watch", true)) {
+                        parentNode.listStatus?.episodes?.let {
+                            Text(
+                                text = "$it Episodes Watched",
+                                style = MaterialTheme.typography.caption
+                            )
+                        }
+                    } else if (!status.equals("plan_to_read", true)) {
+                        parentNode.listStatus?.chapters?.let {
+                            Text(
+                                text = "$it Chapters Watched",
+                                style = MaterialTheme.typography.caption
+                            )
+                        }
+                    }
                 }
             }
         }

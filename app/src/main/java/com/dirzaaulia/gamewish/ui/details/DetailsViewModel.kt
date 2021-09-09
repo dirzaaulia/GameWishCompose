@@ -11,7 +11,6 @@ import com.dirzaaulia.gamewish.data.response.rawg.ScreenshotsResponse
 import com.dirzaaulia.gamewish.extension.success
 import com.dirzaaulia.gamewish.repository.DatabaseRepository
 import com.dirzaaulia.gamewish.repository.RawgRepository
-import com.dirzaaulia.gamewish.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -26,20 +25,19 @@ class DetailsViewModel @Inject constructor(
     val loading = mutableStateOf(true)
     val wishlistedData = mutableStateOf<Wishlist?>(null)
 
-    private val _gameDetailsResult : MutableStateFlow<ResponseResult<GameDetails>?>
-            = MutableStateFlow(null)
+    private val _gameDetailsResult: MutableStateFlow<ResponseResult<GameDetails>?> =
+        MutableStateFlow(null)
     val gameDetailsResult = _gameDetailsResult.asStateFlow()
 
-    private val _gameDetails : MutableStateFlow<GameDetails?>
-            = MutableStateFlow(null)
+    private val _gameDetails: MutableStateFlow<GameDetails?> = MutableStateFlow(null)
     val gameDetails = _gameDetails.asStateFlow()
 
-    private val _gameDetailsScreenshotsResult : MutableStateFlow<ResponseResult<ScreenshotsResponse>?>
-            = MutableStateFlow(null)
+    private val _gameDetailsScreenshotsResult: MutableStateFlow<ResponseResult<ScreenshotsResponse>?> =
+        MutableStateFlow(null)
     val gameDetailsScreenshotsResult = _gameDetailsScreenshotsResult.asStateFlow()
 
-    private val _gameDetailsScreenshots : MutableStateFlow<ScreenshotsResponse?>
-            = MutableStateFlow(null)
+    private val _gameDetailsScreenshots: MutableStateFlow<ScreenshotsResponse?> =
+        MutableStateFlow(null)
     val gameDetailsScreenshots = _gameDetailsScreenshots.asStateFlow()
 
     fun getGameDetails(gameId: Long) {

@@ -6,8 +6,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.LocalOffer
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
@@ -17,6 +21,7 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.dirzaaulia.gamewish.R
 import com.dirzaaulia.gamewish.data.model.cheapshark.Deals
+import com.dirzaaulia.gamewish.ui.home.about.About
 import com.dirzaaulia.gamewish.ui.home.deals.Deals
 import com.dirzaaulia.gamewish.ui.home.wishlist.Wishlist
 import com.google.accompanist.insets.navigationBarsHeight
@@ -32,6 +37,9 @@ fun Home(
     val menuId: Int by viewModel.selectedBottomNav.collectAsState(initial = 0)
     val lazyListStateDeals = rememberLazyListState()
     val lazyDeals: LazyPagingItems<Deals> = viewModel.deals.collectAsLazyPagingItems()
+    val googleProfileImage by viewModel.googleProfileImage.collectAsState()
+    val googleUsername by viewModel.googleUsername.collectAsState()
+    val myAnimeListUser by viewModel.myAnimeListUser.collectAsState()
 
     Scaffold(
         backgroundColor = MaterialTheme.colors.primarySurface,
@@ -55,10 +63,11 @@ fun Home(
                     lazyListStateDeals,
                     lazyDeals
                 )
-                HomeBottomNavMenu.ABOUT -> Wishlist(
-                    modifier = innerModifier,
+                HomeBottomNavMenu.ABOUT -> About(
                     viewModel = viewModel,
-                    navigateToGameDetails = navigateToGameDetails
+                    googleProfileImage = googleProfileImage,
+                    googleUsername = googleUsername,
+                    myAnimeListUser = myAnimeListUser
                 )
             }
         }

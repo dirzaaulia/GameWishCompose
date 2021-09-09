@@ -22,9 +22,13 @@ class FirebaseRepository {
     private val auth = Firebase.auth
     private val realtimeDatabase = FirebaseDatabase.getInstance(FIREBASE_DATABASE_URL)
 
-    fun getFirebaseAuth(): FirebaseAuth { return auth }
+    fun getFirebaseAuth(): FirebaseAuth {
+        return auth
+    }
 
-    fun getGoogleLoginStatus() : Boolean { return auth.currentUser != null }
+    fun getGoogleLoginStatus(): Boolean {
+        return auth.currentUser != null
+    }
 
     fun authGoogleLogin(idToken: String): AuthCredential {
         return GoogleAuthProvider.getCredential(idToken, null)
@@ -51,11 +55,11 @@ class FirebaseRepository {
         return realtimeDatabase.reference.child(FIREBASE_TABLE_NAME).child(uid)
     }
 
-    fun getWishlistFromRealtimeDatabase(uid: String, gameId : String): DatabaseReference {
+    fun getWishlistFromRealtimeDatabase(uid: String, gameId: String): DatabaseReference {
         return realtimeDatabase.reference.child(FIREBASE_TABLE_NAME).child(uid).child(gameId)
     }
 
-    fun addWishlistToRealtimeDatabase(uid : String, wishlist: Wishlist) {
+    fun addWishlistToRealtimeDatabase(uid: String, wishlist: Wishlist) {
         realtimeDatabase.reference
             .child(FIREBASE_TABLE_NAME)
             .child(uid)
@@ -63,7 +67,10 @@ class FirebaseRepository {
             .setValue(
                 wishlist, DatabaseReference.CompletionListener { error, ref ->
                     if (error != null) {
-                        Timber.w("Unable to write wishlist to database : %s", error.toException().toString())
+                        Timber.w(
+                            "Unable to write wishlist to database : %s",
+                            error.toException().toString()
+                        )
                         return@CompletionListener
                     } else {
                         Timber.i("Database Reference : %s", ref.toString())
@@ -71,7 +78,7 @@ class FirebaseRepository {
                 })
     }
 
-    fun removeWishlistFromRealtimeDatabase(uid : String, wishlist: Wishlist) {
+    fun removeWishlistFromRealtimeDatabase(uid: String, wishlist: Wishlist) {
         realtimeDatabase.reference
             .child(FIREBASE_TABLE_NAME)
             .child(uid)

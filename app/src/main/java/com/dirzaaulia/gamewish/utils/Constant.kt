@@ -6,8 +6,9 @@ object MyAnimeListConstant {
     const val MYANIMELIST_BASE_URL = "https://myanimelist.net"
     const val MYANIMELIST_API_URL = "https://api.myanimelist.net"
     const val MYANIMELIST_CLIENT_ID = "fb4e767cff574de2df92708d060a323c"
-    const val MYANIMELIST_CODE_CHALLENGE = "u2Rs-9MLEb-eah-avSTbv8qrxVFLwpEfPwhBwsMAuXOTn_D0mlDFhMwPNVSQkLdZE70cpn5IuJW" +
-            "_6vfkSOMZA36zAZ8b-BTmgokAjx-ecGDf1ddZ_0b5gg_SQsTauMdJ"
+    const val MYANIMELIST_CODE_CHALLENGE =
+        "u2Rs-9MLEb-eah-avSTbv8qrxVFLwpEfPwhBwsMAuXOTn_D0mlDFhMwPNVSQkLdZE70cpn5IuJW" +
+                "_6vfkSOMZA36zAZ8b-BTmgokAjx-ecGDf1ddZ_0b5gg_SQsTauMdJ"
     const val MYANIMELIST_STATE = "gameWishRequest"
     const val MYANIMELIST_BASE_URL_CALLBACK = "https://dirzaaulia.com/callback"
 }
@@ -31,8 +32,10 @@ object ProtoConstant {
 }
 
 object FirebaseConstant {
-    const val GOOGLE_SIGN_IN_WEB_CLIENT_ID = "203885987594-4u6tk8rbssjram2c5jf5jsls5ejeig0s.apps.googleusercontent.com"
-    const val FIREBASE_DATABASE_URL = "https://gamewish-f7e0c-default-rtdb.asia-southeast1.firebasedatabase.app/"
+    const val GOOGLE_SIGN_IN_WEB_CLIENT_ID =
+        "203885987594-4u6tk8rbssjram2c5jf5jsls5ejeig0s.apps.googleusercontent.com"
+    const val FIREBASE_DATABASE_URL =
+        "https://gamewish-f7e0c-default-rtdb.asia-southeast1.firebasedatabase.app/"
     const val FIREBASE_TABLE_NAME = "wishlist"
 }
 
