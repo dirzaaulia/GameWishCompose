@@ -44,46 +44,50 @@ fun Deals(
     viewModel: HomeViewModel,
     modifier: Modifier = Modifier,
     lazyListState: LazyListState,
-    lazyDeals: LazyPagingItems<Deals>
+    data: LazyPagingItems<Deals>
 ) {
     val scope = rememberCoroutineScope()
     val scaffoldState = rememberBottomSheetScaffoldState()
-//    val lazyDeals: LazyPagingItems<Deals> = viewModel.deals.collectAsLazyPagingItems()
     val dealsRequest by viewModel.dealsRequest.collectAsState()
     val storesResult by viewModel.storesResult.collectAsState()
     val stores by viewModel.stores.collectAsState()
 
-    BottomSheetScaffold(
-        scaffoldState = scaffoldState,
-        topBar = { DealsAppBar(scope, scaffoldState) },
-        sheetShape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp),
-        sheetPeekHeight = 0.dp,
-        sheetContent = {
-            when {
-                storesResult.isSucceeded -> {
+    when {
+        storesResult.isSucceeded -> {
+            BottomSheetScaffold(
+                scaffoldState = scaffoldState,
+                topBar = { DealsAppBar(scope, scaffoldState) },
+                sheetShape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp),
+                sheetPeekHeight = 0.dp,
+                sheetContent = {
                     DealsFilter(viewModel, stores)
+                },
+                backgroundColor = MaterialTheme.colors.background,
+                modifier = modifier
+            ) {
+                dealsRequest.storeID?.let {
+                    stores?.get(it.toInt() - 1)?.storeName?.let { storeName ->
+                        Text(
+                            text = storeName,
+                            style = MaterialTheme.typography.h6,
+                            modifier = Modifier.padding(horizontal = 8.dp)
+                        )
+                    }
                 }
-            }
-        },
-        backgroundColor = MaterialTheme.colors.background,
-        modifier = modifier
-    ) {
-        dealsRequest.storeID?.let {
-            stores?.get(it.toInt() - 1)?.storeName?.let { storeName ->
-                Text(
-                    text = storeName,
-                    style = MaterialTheme.typography.h6,
-                    modifier = Modifier.padding(horizontal = 8.dp)
+                DealsList(
+                    data = data,
+                    lazyListState = lazyListState,
+                    viewModel = viewModel
                 )
             }
         }
-        DealsList(data = lazyDeals, lazyListState)
     }
 
     when {
         storesResult.isError -> {
             ErrorConnect(text = stringResource(id = R.string.stores_error)) {
                 viewModel.getStores()
+                data.retry()
             }
         }
     }
@@ -284,14 +288,19 @@ fun DealsFilter(
 }
 
 @Composable
-fun DealsList(data: LazyPagingItems<Deals>, lazyListState: LazyListState) {
+fun DealsList(
+    data: LazyPagingItems<Deals>,
+    lazyListState: LazyListState,
+    viewModel: HomeViewModel
+) {
     Box(
         modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
     ) {
         CommonVerticalList(
             data = data,
             lazyListState = lazyListState,
-            emptyString = "There is no Deals found! Try again with different search parameters using filter button on top right"
+            emptyString = "There is no Deals found! Try again with different search parameters using filter button on top right",
+            errorString = stringResource(id = R.string.deals_error),
         ) { deals ->
             DealsItem(deals = deals)
         }

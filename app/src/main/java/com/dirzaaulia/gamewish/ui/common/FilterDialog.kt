@@ -1,4 +1,4 @@
-package com.dirzaaulia.gamewish.ui.home.wishlist
+package com.dirzaaulia.gamewish.ui.common
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -25,9 +25,23 @@ import com.google.accompanist.insets.navigationBarsWithImePadding
 @Composable
 fun GameFilterDialog(
     viewModel: HomeViewModel,
+    gameStatus: String,
     searchQuery: String
 ) {
+
     var query by rememberSaveable { mutableStateOf(searchQuery) }
+    val statusList = listOf("All", "Playing", "Completed", "On Hold", "Dropped", "Plan To Buy")
+    var status by rememberSaveable { mutableStateOf(gameStatus) }
+    var textfieldSize by remember { mutableStateOf(Size.Zero) }
+    var expanded by remember { mutableStateOf(false) }
+    val icon = if (expanded)
+        Icons.Filled.ArrowDropUp //it requires androidx.compose.material:material-icons-extended
+    else
+        Icons.Filled.ArrowDropDown
+
+    if (status.isBlank()) {
+        status = "All"
+    }
 
     Column(
         modifier = Modifier
@@ -40,36 +54,76 @@ fun GameFilterDialog(
             style = MaterialTheme.typography.h6
         )
         OutlinedTextField(
-            singleLine = true,
             value = query,
             onValueChange = {
                 query = it
-                viewModel.setSearchQuery(it)
+                viewModel.setSearchQuery(query)
             },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 8.dp),
-            textStyle = TextStyle(color = MaterialTheme.colors.onSurface),
-            label = {
-                Text(
-                    text = "Game Name",
-                    color = MaterialTheme.colors.onSurface
-                )
-            },
+            modifier = Modifier.fillMaxWidth(),
+            label = { Text("Game Name") },
             placeholder = {
-                if (query.isEmpty()) {
-                    Text(
-                        text = "Game Name",
-                        color = MaterialTheme.colors.onSurface
-                    )
+                if (query.isBlank()) {
+                    Text(text = "Game Name")
                 } else {
-                    Text(
-                        text = query,
-                        color = MaterialTheme.colors.onSurface
-                    )
+                    Text(text = query)
                 }
             }
         )
+        Text(
+            text = "Sort Game",
+            style = MaterialTheme.typography.h6
+        )
+        OutlinedTextField(
+            readOnly = true,
+            value = status,
+            onValueChange = { status = it },
+            modifier = Modifier
+                .fillMaxWidth()
+                .onGloballyPositioned { coordinates ->
+                    //This value is used to assign to the DropDown the same width
+                    textfieldSize = coordinates.size.toSize()
+                },
+            label = { Text("Status") },
+            trailingIcon = {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    modifier = Modifier.clickable { expanded = !expanded }
+                )
+            },
+            placeholder = {
+                if (gameStatus.isBlank()) {
+                    Text(text = "All")
+                } else {
+                    Text(text = status)
+                }
+            }
+        )
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            modifier = Modifier
+                .width(with(LocalDensity.current) { textfieldSize.width.toDp() })
+        ) {
+            statusList.forEach { item ->
+                DropdownMenuItem(
+                    onClick = {
+                        status = item
+                        expanded = false
+
+                        var listStatus = status
+
+                        if (listStatus.equals("All", true)) {
+                            listStatus = ""
+                        }
+
+                        viewModel.setGameStatus(listStatus)
+                    }
+                ) {
+                    Text(text = item)
+                }
+            }
+        }
     }
 }
 

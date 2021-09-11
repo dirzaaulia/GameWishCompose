@@ -8,14 +8,18 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
+import com.dirzaaulia.gamewish.R
 import com.dirzaaulia.gamewish.base.ResponseResult
 import com.dirzaaulia.gamewish.data.model.myanimelist.ParentNode
 import com.dirzaaulia.gamewish.extension.isError
 import com.dirzaaulia.gamewish.extension.isSucceeded
+import com.dirzaaulia.gamewish.extension.visible
 import com.dirzaaulia.gamewish.ui.common.AnimeItem
-import com.dirzaaulia.gamewish.ui.common.CommonVerticalList
+import com.dirzaaulia.gamewish.ui.common.AnimeVerticalList
 import com.dirzaaulia.gamewish.ui.common.WebViewMyAnimeList
 import com.dirzaaulia.gamewish.ui.home.HomeViewModel
 import com.dirzaaulia.gamewish.utils.capitalizeWords
@@ -26,7 +30,8 @@ fun WishlistAnime(
     viewModel: HomeViewModel,
     lazyListState: LazyListState,
     data: LazyPagingItems<ParentNode>,
-    animeStatus: String
+    animeStatus: String,
+    navigateToMyAnimeListLogin: () -> Unit
 ) {
     var animeStatusFormatted = animeStatus
     animeStatusFormatted = animeStatusFormatted.replace("_", " ")
@@ -45,18 +50,21 @@ fun WishlistAnime(
                     modifier = Modifier
                         .padding(bottom = 4.dp)
                         .align(Alignment.End)
+                        .visible(data.loadState.refresh is LoadState.NotLoading)
                 )
-                CommonVerticalList(
+                AnimeVerticalList(
                     data = data,
                     lazyListState = lazyListState,
-                    emptyString = "Your Anime list is still empty!"
+                    emptyString = "Your Anime list is still empty!",
+                    errorString = stringResource(id = R.string.anime_list_error),
+                    viewModel = viewModel
                 ) { parentNode ->
                     AnimeItem(parentNode = parentNode)
                 }
             }
         }
         accessTokenResult.isError -> {
-            WebViewMyAnimeList(viewModel = viewModel)
+            WebViewMyAnimeList(viewModel = viewModel, upPress = {})
         }
     }
 }

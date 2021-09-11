@@ -32,6 +32,7 @@ import java.util.*
 fun Home(
     viewModel: HomeViewModel = hiltViewModel(),
     navigateToGameDetails: (Long) -> Unit,
+    navigateToMyAnimeListLogin: () -> Unit
 ) {
     val menu = HomeBottomNavMenu.values()
     val menuId: Int by viewModel.selectedBottomNav.collectAsState(initial = 0)
@@ -39,6 +40,7 @@ fun Home(
     val lazyDeals: LazyPagingItems<Deals> = viewModel.deals.collectAsLazyPagingItems()
     val googleProfileImage by viewModel.googleProfileImage.collectAsState()
     val googleUsername by viewModel.googleUsername.collectAsState()
+    val myAnimeListUserResult by viewModel.myAnimeListUserResult.collectAsState(null)
     val myAnimeListUser by viewModel.myAnimeListUser.collectAsState()
 
     Scaffold(
@@ -55,19 +57,22 @@ fun Home(
                 HomeBottomNavMenu.WISHLIST -> Wishlist(
                     modifier = innerModifier,
                     viewModel = viewModel,
-                    navigateToGameDetails = navigateToGameDetails
+                    navigateToGameDetails = navigateToGameDetails,
+                    navigateToMyAnimeListLogin = navigateToMyAnimeListLogin
                 )
                 HomeBottomNavMenu.DEALS -> Deals(
                     viewModel = viewModel,
                     modifier = innerModifier,
-                    lazyListStateDeals,
-                    lazyDeals
+                    lazyListState = lazyListStateDeals,
+                    data = lazyDeals
                 )
                 HomeBottomNavMenu.ABOUT -> About(
                     viewModel = viewModel,
                     googleProfileImage = googleProfileImage,
                     googleUsername = googleUsername,
-                    myAnimeListUser = myAnimeListUser
+                    myAnimeListUserResult = myAnimeListUserResult,
+                    myAnimeListUser = myAnimeListUser,
+                    navigateToMyAnimeListLogin = navigateToMyAnimeListLogin,
                 )
             }
         }

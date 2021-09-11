@@ -11,6 +11,7 @@ import com.dirzaaulia.gamewish.ui.main.login.Login
 fun StartApp(
     viewModel: HomeViewModel,
     navigateToGameDetails: (Long) -> Unit,
+    navigateToMyAnimeListLogin: () -> Unit,
 ) {
     val userAuthId by viewModel.userAuthId.collectAsState()
     if (userAuthId == null) {
@@ -21,7 +22,8 @@ fun StartApp(
         } else {
             Home(
                 viewModel = viewModel,
-                navigateToGameDetails = navigateToGameDetails
+                navigateToGameDetails = navigateToGameDetails,
+                navigateToMyAnimeListLogin = navigateToMyAnimeListLogin,
             )
         }
     }

@@ -7,6 +7,7 @@ import com.dirzaaulia.gamewish.base.executeWithResponse
 import com.dirzaaulia.gamewish.data.model.myanimelist.ParentNode
 import com.dirzaaulia.gamewish.network.myanimelist.MyAnimeListApiUrlService
 import com.dirzaaulia.gamewish.network.myanimelist.MyAnimeListBaseUrlService
+import com.dirzaaulia.gamewish.utils.MyAnimeListConstant
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
@@ -16,6 +17,7 @@ class MyAnimeListRepository @Inject constructor(
     private val baseUrlService: MyAnimeListBaseUrlService,
     private val apiUrlService: MyAnimeListApiUrlService
 ) {
+
     @WorkerThread
     fun getMyAnimeListToken(
         clientId: String,
@@ -37,9 +39,26 @@ class MyAnimeListRepository @Inject constructor(
     }
 
     @WorkerThread
+    fun getMyAnimeListRefreshToken(refreshToken: String) = flow {
+        try {
+            baseUrlService.getMyAnimeListRefreshToken(
+                MyAnimeListConstant.MYANIMELIST_CLIENT_ID,
+                "refresh_token",
+                refreshToken
+            ).body()?.let {
+                emit(ResponseResult.Success(it))
+            } ?: run {
+                throw NotFoundException()
+            }
+        } catch (e: Exception) {
+            emit(ResponseResult.Error(e))
+        }
+    }
+
+    @WorkerThread
     fun getMyAnimeListUser(accessToken: String) = flow {
         try {
-            val bearerAccessToken = String.format("Bearer $accessToken")
+            val bearerAccessToken = String.format("Bearer $accessToken a")
             apiUrlService.getMyAnimeListUser(bearerAccessToken).body()?.let {
                 emit(ResponseResult.Success(it))
             } ?: run {

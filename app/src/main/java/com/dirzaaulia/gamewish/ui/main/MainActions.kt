@@ -9,6 +9,12 @@ class MainActions(navController: NavHostController) {
         }
     }
 
+    val navigateToMyAnimeListLogin: () -> Unit = {
+        NavScreen.MyAnimeListLogin.apply {
+            navController.navigate(this.route)
+        }
+    }
+
     val navigateToGameDetails: (Long) -> Unit = { id: Long ->
         NavScreen.GameDetails.apply {
             navController.navigate(routeWithArgument.replace("{$argument0}", id.toString()))

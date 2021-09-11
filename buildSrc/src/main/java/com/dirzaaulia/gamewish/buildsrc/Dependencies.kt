@@ -95,12 +95,13 @@ object Libs {
     }
 
     object Firebase {
-        private const val version = "28.3.1"
+        private const val version = "28.4.0"
 
         const val bom = "com.google.firebase:firebase-bom:$version"
         const val database = "com.google.firebase:firebase-database-ktx"
         const val storage = "com.google.firebase:firebase-storage-ktx"
         const val auth = "com.google.firebase:firebase-auth-ktx"
+        const val firestore = "com.google.firebase:firebase-firestore-ktx"
 
         object UI {
             private const val version = "8.0.0"
@@ -160,9 +161,15 @@ object Libs {
     }
 
     object Paging {
-        private const val version = "1.0.0-alpha12"
+        private const val version = "3.0.1"
 
-        const val compose = "androidx.paging:paging-compose:$version"
+        const val runtime = "androidx.paging:paging-runtime:$version"
+
+        object Compose {
+            private const val version = "1.0.0-alpha12"
+
+            const val compose = "androidx.paging:paging-compose:$version"
+        }
     }
 
     object Proto {

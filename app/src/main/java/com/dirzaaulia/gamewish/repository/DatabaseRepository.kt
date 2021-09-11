@@ -21,9 +21,9 @@ class DatabaseRepository @Inject constructor(
 //            .conflate()
 //    }
 
-    fun getFilteredWishlist(query: String): Flow<PagingData<Wishlist>> {
+    fun getFilteredWishlist(query: String, status: String): Flow<PagingData<Wishlist>> {
         return Pager(config = PagingConfig(pageSize = DatabaseConstant.DATABASE_PAGING_SIZE)) {
-            dao.getFilteredWishlist(query)
+            dao.getFilteredWishlist(query, status)
         }.flow
     }
 

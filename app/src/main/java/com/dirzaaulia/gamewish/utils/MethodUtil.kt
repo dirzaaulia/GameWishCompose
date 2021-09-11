@@ -80,6 +80,14 @@ fun openDeals(context: Context, dealsId: String?) {
     startActivity(context, intent, null)
 }
 
+fun sendEmail(context: Context) {
+    val intent = Intent(Intent.ACTION_SENDTO).apply {
+        data = Uri.parse("mailto:dirzaaulia11@gmail.com" )
+    }
+
+    startActivity(context, intent, null)
+}
+
 //fun setImageWithGlide(imgView: ImageView, imgUrl: String?) {
 //    imgUrl?.let {
 //        val imgUri = it.toUri().buildUpon().scheme("https").build()

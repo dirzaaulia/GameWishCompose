@@ -27,6 +27,7 @@ import com.dirzaaulia.gamewish.data.model.Wishlist
 import com.dirzaaulia.gamewish.data.model.cheapshark.Deals
 import com.dirzaaulia.gamewish.data.model.myanimelist.ParentNode
 import com.dirzaaulia.gamewish.extension.visible
+import com.dirzaaulia.gamewish.ui.home.HomeViewModel
 import com.dirzaaulia.gamewish.utils.NetworkImage
 import com.dirzaaulia.gamewish.utils.capitalizeWords
 import com.dirzaaulia.gamewish.utils.currencyFormatter
@@ -115,6 +116,75 @@ fun <T : Any> CommonVerticalList(
     data: LazyPagingItems<T>,
     lazyListState: LazyListState,
     emptyString: String,
+    errorString: String,
+    content: @Composable (T) -> Unit
+) {
+    if (data.itemCount != 0) {
+        LazyColumn(
+            state = lazyListState,
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colors.background)
+                .visible(data.loadState.refresh !is LoadState.Loading),
+        ) {
+
+            items(data) { data ->
+                data?.let {
+                    content.invoke(data)
+                }
+            }
+
+            data.apply {
+                when {
+                    loadState.append is LoadState.Loading -> {
+                        item { CommonLoadingGridItem() }
+                    }
+                    loadState.refresh is LoadState.Error -> {
+                        val error = data.loadState.refresh as LoadState.Error
+                        item {
+                            Timber.e("Refresh Error: ${error.error.localizedMessage}")
+                        }
+                    }
+//                    loadState.append is LoadState.Error -> {
+//                        val error = data.loadState.refresh as LoadState.Error
+//                        item {
+//                            Timber.e("Append Error: ${error.error.localizedMessage}")
+//                        }
+//                    }
+                }
+            }
+        }
+    }
+
+    when {
+        data.loadState.refresh is LoadState.Loading -> {
+            CommonLoading(visibility = data.loadState.refresh is LoadState.Loading)
+        }
+        data.loadState.refresh is LoadState.Error -> {
+            val error = data.loadState.refresh as LoadState.Error
+            Timber.e("Refresh Error : ${error.error.localizedMessage}")
+            ErrorConnect(text = errorString) {
+                data.retry()
+            }
+        }
+        data.itemCount == 0 && data.loadState.refresh is LoadState.NotLoading -> {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(text = emptyString, style = MaterialTheme.typography.subtitle1)
+            }
+        }
+    }
+}
+
+@Composable
+fun <T : Any> AnimeVerticalList(
+    data: LazyPagingItems<T>,
+    lazyListState: LazyListState,
+    emptyString: String,
+    errorString: String,
+    viewModel: HomeViewModel,
     content: @Composable (T) -> Unit
 ) {
     if (data.itemCount != 0) {
@@ -159,8 +229,16 @@ fun <T : Any> CommonVerticalList(
             CommonLoading(visibility = data.loadState.refresh is LoadState.Loading)
         }
         data.loadState.refresh is LoadState.Error -> {
-            ErrorConnect(text = stringResource(id = R.string.deals_error)) {
-                data.retry()
+            val error = data.loadState.refresh as LoadState.Error
+            val errorMessage = error.error.message
+            if (errorMessage != null) {
+                if (errorMessage.contains("HTTP 401", true)) {
+                    viewModel.getMyAnimeListRefreshToken()
+                } else {
+                    ErrorConnect(text = errorString) {
+                        data.retry()
+                    }
+                }
             }
         }
         data.itemCount == 0 && data.loadState.refresh is LoadState.NotLoading -> {
@@ -178,13 +256,13 @@ fun <T : Any> CommonVerticalList(
 fun GameListItem(
     wishlist: Wishlist,
     modifier: Modifier = Modifier,
-    selectGame: (Long) -> Unit = { }
+    navigateToGameDetails: (Long) -> Unit = { }
 ) {
     Surface(
         modifier = modifier
             .fillMaxWidth()
             .clickable(
-                onClick = { wishlist.id?.let { selectGame(it) } }
+                onClick = { wishlist.id?.let { navigateToGameDetails(it) } }
             ),
         elevation = 0.dp,
     ) {

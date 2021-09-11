@@ -75,6 +75,7 @@ fun Login(viewModel: HomeViewModel) {
                 val auth = viewModel.getFirebaseAuth()
                 auth.currentUser?.uid?.let { uid -> viewModel.setUserAuthId(uid) }
                 viewModel.getUserAuthStatus()
+                auth.currentUser?.uid?.let { uid -> viewModel.syncWishlist(uid) }
             }
             FirebaseState.Status.FAILED -> {
                 scope.launch {

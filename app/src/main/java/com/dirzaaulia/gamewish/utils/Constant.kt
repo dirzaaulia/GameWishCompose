@@ -36,7 +36,7 @@ object FirebaseConstant {
         "203885987594-4u6tk8rbssjram2c5jf5jsls5ejeig0s.apps.googleusercontent.com"
     const val FIREBASE_DATABASE_URL =
         "https://gamewish-f7e0c-default-rtdb.asia-southeast1.firebasedatabase.app/"
-    const val FIREBASE_TABLE_NAME = "wishlist"
+    const val FIREBASE_COLLECTION_NAME = "wishlist"
 }
 
 object OtherConstant {

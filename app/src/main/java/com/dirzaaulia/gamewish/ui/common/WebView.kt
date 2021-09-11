@@ -2,9 +2,11 @@ package com.dirzaaulia.gamewish.ui.common
 
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
+import android.webkit.WebResourceError
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.Scaffold
@@ -14,7 +16,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.viewinterop.AndroidView
+import com.dirzaaulia.gamewish.R
 import com.dirzaaulia.gamewish.extension.visible
 import com.dirzaaulia.gamewish.ui.home.HomeViewModel
 import com.dirzaaulia.gamewish.utils.MyAnimeListConstant.MYANIMELIST_BASE_URL_CALLBACK
@@ -22,19 +26,21 @@ import com.dirzaaulia.gamewish.utils.MyAnimeListConstant.MYANIMELIST_CLIENT_ID
 import com.dirzaaulia.gamewish.utils.MyAnimeListConstant.MYANIMELIST_CODE_CHALLENGE
 import com.dirzaaulia.gamewish.utils.MyAnimeListConstant.MYANIMELIST_STATE
 import com.dirzaaulia.gamewish.utils.MyAnimeListConstant.MYANIMELIST_URL
+import com.google.accompanist.insets.statusBarsPadding
 import kotlinx.coroutines.launch
 import okhttp3.HttpUrl
 import timber.log.Timber
 
 @SuppressLint("SetJavaScriptEnabled")
 @Composable
-fun WebViewMyAnimeList(
-    viewModel: HomeViewModel
-) {
+fun WebViewMyAnimeList(viewModel: HomeViewModel, upPress: () -> Unit) {
+
+    val errorState = remember { mutableStateOf("") }
+    var reload: () -> Unit = {}
     val scope = rememberCoroutineScope()
     val scaffoldState = rememberScaffoldState()
     val progressShow = remember { mutableStateOf(false) }
-    val url = HttpUrl.Builder()
+    val initialUrl = HttpUrl.Builder()
         .scheme("https")
         .host(MYANIMELIST_URL)
         .addPathSegment("v1")
@@ -46,8 +52,6 @@ fun WebViewMyAnimeList(
         .addQueryParameter("state", MYANIMELIST_STATE)
         .build()
 
-    Timber.i(url.toString())
-
     Scaffold(
         scaffoldState = scaffoldState,
         topBar = {
@@ -56,60 +60,79 @@ fun WebViewMyAnimeList(
                     .fillMaxWidth()
                     .visible(progressShow.value)
             )
-        }
+        },
+        modifier = Modifier.statusBarsPadding().fillMaxSize()
     ) {
-        AndroidView(
-            update = {
-                it.loadUrl(url.toString())
-            },
-            factory = {
-                WebView(it).apply {
-                    settings.javaScriptEnabled = true
-                    webViewClient = object : WebViewClient() {
-                        override fun shouldOverrideUrlLoading(
-                            view: WebView?,
-                            request: WebResourceRequest?
-                        ): Boolean {
-                            val urlValue = request?.url.toString()
-                            val code = request?.url?.getQueryParameter("code")
-                            val error = request?.url?.getQueryParameter("error")
+        if (errorState.value.isBlank()) {
+            AndroidView(
+                update = {
+                    it.loadUrl(initialUrl.toString())
+                },
+                factory = {
+                    WebView(it).apply {
+                        settings.javaScriptEnabled = true
+                        webViewClient = object : WebViewClient() {
+                            override fun shouldOverrideUrlLoading(
+                                view: WebView?,
+                                request: WebResourceRequest?
+                            ): Boolean {
+                                val urlValue = request?.url.toString()
+                                val code = request?.url?.getQueryParameter("code")
+                                val error = request?.url?.getQueryParameter("error")
 
-                            urlValue.let { url ->
-                                if (url.contains(MYANIMELIST_BASE_URL_CALLBACK)) {
-                                    if (code != null) {
-                                        viewModel.getMyAnimeListToken(
-                                            MYANIMELIST_CLIENT_ID,
-                                            code,
-                                            MYANIMELIST_CODE_CHALLENGE,
-                                            "authorization_code"
-                                        )
-                                        viewModel.getAccessToken()
-                                        viewModel.getMyAnimeListUser()
-                                        viewModel.setAnimeStatus("")
-                                    } else if (error != null) {
-                                        scope.launch {
-                                            scaffoldState.snackbarHostState.showSnackbar(error)
+                                urlValue.let { url ->
+                                    if (url.contains(MYANIMELIST_BASE_URL_CALLBACK)) {
+                                        if (code != null) {
+                                            viewModel.getMyAnimeListToken(
+                                                MYANIMELIST_CLIENT_ID,
+                                                code,
+                                                MYANIMELIST_CODE_CHALLENGE,
+                                                "authorization_code"
+                                            )
+//                                        viewModel.getAccessToken()
+//                                        viewModel.setAnimeStatus("")
+                                            upPress()
+                                        } else if (error != null) {
+                                            scope.launch {
+                                                scaffoldState.snackbarHostState.showSnackbar(error)
+                                            }
+                                            view?.loadUrl(initialUrl.toString())
                                         }
+                                        return true
                                     }
-                                    return true
                                 }
+                                return false
                             }
-                            return false
-                        }
 
-                        override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
-                            super.onPageStarted(view, url, favicon)
-                            progressShow.value = true
-                            Timber.i(url)
-                        }
+                            override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
+                                super.onPageStarted(view, url, favicon)
+                                progressShow.value = true
+                                Timber.i(url)
+                            }
 
-                        override fun onPageFinished(view: WebView?, url: String?) {
-                            super.onPageFinished(view, url)
-                            progressShow.value = false
-                            Timber.i(url)
+                            override fun onPageFinished(view: WebView?, url: String?) {
+                                super.onPageFinished(view, url)
+                                progressShow.value = false
+                                Timber.i(url)
+                            }
+
+                            override fun onReceivedError(
+                                view: WebView?,
+                                request: WebResourceRequest?,
+                                error: WebResourceError?
+                            ) {
+                                errorState.value = error?.description.toString()
+                                reload = { view?.reload() }
+                            }
                         }
                     }
-                }
-            })
+                })
+        } else {
+            ErrorConnect(text = stringResource(id = R.string.no_connection)) {
+                reload()
+                errorState.value = ""
+            }
+        }
+
     }
 }

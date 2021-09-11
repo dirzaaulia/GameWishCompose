@@ -15,6 +15,7 @@ import com.dirzaaulia.gamewish.data.model.rawg.Stores
 import com.dirzaaulia.gamewish.data.model.myanimelist.ParentNode
 import com.dirzaaulia.gamewish.data.model.myanimelist.User
 import com.dirzaaulia.gamewish.data.request.cheapshark.DealsRequest
+import com.dirzaaulia.gamewish.extension.error
 import com.dirzaaulia.gamewish.extension.success
 import com.dirzaaulia.gamewish.network.cheapshark.paging.CheapSharkPagingSource
 import com.dirzaaulia.gamewish.network.myanimelist.paging.MyAnimeListPagingSource
@@ -22,9 +23,14 @@ import com.dirzaaulia.gamewish.repository.*
 import com.dirzaaulia.gamewish.utils.FirebaseState
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.ktx.getValue
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -62,6 +68,9 @@ class HomeViewModel @Inject constructor(
     private var _token: MutableStateFlow<String> = MutableStateFlow("")
     val token = _token.asStateFlow()
 
+    private val _refreshToken: MutableStateFlow<String> = MutableStateFlow("")
+    val refreshToken = _refreshToken.asStateFlow()
+
     private val _myAnimeListUser: MutableStateFlow<User> = MutableStateFlow(
         User(null, null, null, null, null, null, null)
     )
@@ -73,10 +82,18 @@ class HomeViewModel @Inject constructor(
     private val _googleUsername: MutableStateFlow<String> = MutableStateFlow("")
     val googleUsername = _googleUsername.asStateFlow()
 
+    private val _errorMessage: MutableStateFlow<String> = MutableStateFlow("")
+    val errorMessage = _errorMessage.asStateFlow()
+
     val query = MutableStateFlow("")
+    val gameStatus = MutableStateFlow("")
     val listWishlist = query
-        .flatMapLatest {
-            databaseRepository.getFilteredWishlist(it)
+        .flatMapLatest { query ->
+            gameStatus.flatMapLatest {
+//                Pager(PagingConfig(pageSize = 10)) {
+//                    FirebasePagingSource(firebaseRepository, _userAuthId.value.toString(), it)
+                databaseRepository.getFilteredWishlist(query, it)
+            }
         }.cachedIn(viewModelScope)
 
     val dealsRequest = MutableStateFlow(
@@ -107,6 +124,16 @@ class HomeViewModel @Inject constructor(
             }
         }
 
+    val myAnimeListUserResult: Flow<ResponseResult<User>> = _token
+        .flatMapLatest { token ->
+            myAnimeListRepository.getMyAnimeListUser(token)
+                .onEach {
+                    it.success { data ->
+                        _myAnimeListUser.value = data
+                    }
+                }
+        }
+
 
     init {
         getUserAuthStatus()
@@ -124,8 +151,13 @@ class HomeViewModel @Inject constructor(
 //    }
 
     @MainThread
-    fun setSearchQuery(searchQuery: String) {
-        query.value = searchQuery
+    fun setSearchQuery(value: String) {
+        query.value = value
+    }
+
+    @MainThread
+    fun setGameStatus(status: String) {
+        gameStatus.value = status
     }
 
     @MainThread
@@ -168,9 +200,27 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    fun logoutGoogle() {
+        val auth = getFirebaseAuth()
+        auth.signOut()
+        setUserAuthId("")
+    }
+
     fun setUserAuthId(uid: String) {
         viewModelScope.launch {
             protoRepository.updateUserAuthId(uid)
+        }
+    }
+
+    fun setAccessToken(accessToken: String) {
+        viewModelScope.launch {
+            protoRepository.updateMyAnimeListAccessToken(accessToken)
+        }
+    }
+
+    fun removeMyAnimeListUser(user: User) {
+        viewModelScope.launch {
+            _myAnimeListUser
         }
     }
 
@@ -185,21 +235,27 @@ class HomeViewModel @Inject constructor(
             .launchIn(viewModelScope)
     }
 
+//    fun addToWishlist(wishlist: Wishlist) {
+//        viewModelScope.launch {
+//            _userAuthId.value?.let { firebaseRepository.addToWishlist(it, wishlist) }
+//        }
+//    }
+
     fun addToWishlist(wishlist: Wishlist) {
         viewModelScope.launch {
             databaseRepository.addToWishlist(wishlist)
         }
     }
 
-    fun getMyAnimeListUser() {
-        myAnimeListRepository.getMyAnimeListUser(_token.value)
-            .onEach {
-                it.success {
-                    _myAnimeListUser.value = it
-                }
-            }
-            .launchIn(viewModelScope)
-    }
+//    fun getMyAnimeListUser() {
+//        myAnimeListRepository.getMyAnimeListUser(_token.value)
+//            .onEach {
+//                it.success {
+//                    _myAnimeListUser.value = it
+//                }
+//            }
+//            .launchIn(viewModelScope)
+//    }
 
     fun getMyAnimeListToken(
         clientId: String,
@@ -219,9 +275,40 @@ class HomeViewModel @Inject constructor(
                     data.expiresIn?.let { expiresIn ->
                         protoRepository.updateMyAnimeListExpresIn(expiresIn)
                     }
+                    getAccessToken()
+                    setAnimeStatus("")
+                }
+                it.error { e ->
+                    val message = e.message.toString()
+                    if (message.contains("HTTP 401", true)) {
+                        getMyAnimeListRefreshToken()
+                    }
                 }
             }
             .launchIn(viewModelScope)
+    }
+
+    fun getMyAnimeListRefreshToken() {
+        myAnimeListRepository.getMyAnimeListRefreshToken(_refreshToken.value)
+            .onEach {
+                it.success { data ->
+                    data.accessToken?.let { accessToken ->
+                        protoRepository.updateMyAnimeListAccessToken(accessToken)
+                    }
+                    data.refreshToken?.let { refreshToken ->
+                        protoRepository.updateMyAnimeListRefreshToken(refreshToken)
+                    }
+                    data.expiresIn?.let { expiresIn ->
+                        protoRepository.updateMyAnimeListExpresIn(expiresIn)
+                    }
+                    getAccessToken()
+                    setAnimeStatus("")
+                }
+                it.error {
+                    _errorMessage.value = "Something went wrong when getting data from MyAnimeList. Please try it again later!"
+
+                }
+            }
     }
 
     fun getUserAuthStatus() {
@@ -241,27 +328,25 @@ class HomeViewModel @Inject constructor(
             userPreferencesFlow.collect {
                 if (it.accessToken.isNullOrBlank()) {
                     _tokenResult.value = ResponseResult.Error(Exception())
+                    _token.value = ""
+                    _refreshToken.value = ""
                 } else {
                     _tokenResult.value = ResponseResult.Success(it.accessToken)
                     _token.value = it.accessToken
+                    _refreshToken.value = it.refreshToken
                 }
             }
         }
     }
 
-    fun getUserMyAnimeList(listStatus: String): Flow<PagingData<ParentNode>> {
-        return if (!_token.value.isNullOrBlank()) {
-            Pager(PagingConfig(pageSize = 10)) {
-                MyAnimeListPagingSource(
-                    myAnimeListRepository,
-                    1,
-                    _token.value!!,
-                    listStatus
-                )
-            }.flow.cachedIn(viewModelScope)
-        } else {
-            emptyFlow()
+    fun syncWishlist(uid: String) {
+        viewModelScope.launch {
+            Timber.i(uid)
+            val data = firebaseRepository.getAllWishlist(uid)?.toObjects(Wishlist::class.java)
+
+            data?.forEach {
+                addToWishlist(it)
+            }
         }
     }
-
 }

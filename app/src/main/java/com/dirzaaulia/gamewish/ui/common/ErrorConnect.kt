@@ -28,7 +28,7 @@ fun ErrorConnect(
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colors.primarySurface)
+            .background(MaterialTheme.colors.background)
     ) {
         val (constraintLayout) = createRefs()
         ConstraintLayout(

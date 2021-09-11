@@ -8,7 +8,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Sort
 import androidx.compose.runtime.Composable
@@ -26,6 +25,8 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import com.dirzaaulia.gamewish.R
 import com.dirzaaulia.gamewish.data.model.Wishlist
 import com.dirzaaulia.gamewish.data.model.myanimelist.ParentNode
+import com.dirzaaulia.gamewish.ui.common.AnimeFilterDialog
+import com.dirzaaulia.gamewish.ui.common.GameFilterDialog
 import com.dirzaaulia.gamewish.ui.home.HomeViewModel
 import com.dirzaaulia.gamewish.ui.home.wishlist.anime.WishlistAnime
 import com.dirzaaulia.gamewish.ui.home.wishlist.game.WishlistGame
@@ -38,10 +39,12 @@ fun Wishlist(
     navigateToGameDetails: (Long) -> Unit,
     modifier: Modifier,
     viewModel: HomeViewModel,
+    navigateToMyAnimeListLogin: () -> Unit
 ) {
     val menu = WishlistTab.values()
     val menuId: Int by viewModel.selectedWishlistTab.collectAsState(initial = 0)
-    val searchQuery: String by viewModel.query.collectAsState()
+    val searchQuery by viewModel.query.collectAsState()
+    val gameStatus by viewModel.gameStatus.collectAsState()
     val animeStatus by viewModel.animeStatus.collectAsState()
     val scope = rememberCoroutineScope()
     val scaffoldState = rememberBottomSheetScaffoldState()
@@ -50,7 +53,6 @@ fun Wishlist(
     val lazyListWishlist: LazyPagingItems<Wishlist> =
         viewModel.listWishlist.collectAsLazyPagingItems()
     val accessTokenResult by viewModel.tokenResult.collectAsState()
-    val accessToken by viewModel.token.collectAsState()
     val lazyListAnime: LazyPagingItems<ParentNode> =
         viewModel.animeList.collectAsLazyPagingItems()
 
@@ -64,15 +66,16 @@ fun Wishlist(
                 when (destination) {
                     WishlistTab.GAME -> GameFilterDialog(
                         viewModel = viewModel,
+                        gameStatus = gameStatus,
                         searchQuery = searchQuery
                     )
                     WishlistTab.ANIME -> AnimeFilterDialog(
                         viewModel = viewModel,
                         animeStatus = animeStatus
                     )
-                    WishlistTab.MANGA -> GameFilterDialog(
+                    WishlistTab.MANGA -> AnimeFilterDialog(
                         viewModel = viewModel,
-                        searchQuery = searchQuery
+                        animeStatus = animeStatus
                     )
                 }
             }
@@ -96,13 +99,12 @@ fun Wishlist(
                 when (destination) {
                     //TODO Need to update with Anime & Manga layout
                     WishlistTab.GAME -> {
-                        scope.launch {
-                            scaffoldState.bottomSheetState.collapse()
-                        }
                         WishlistGame(
                             data = lazyListWishlist,
-                            selectGame = navigateToGameDetails,
+                            navigateToGameDetails = navigateToGameDetails,
                             lazyListState = lazyListStateGame,
+                            viewModel = viewModel,
+                            gameStatus = gameStatus
                         )
                     }
                     WishlistTab.ANIME -> {
@@ -111,7 +113,8 @@ fun Wishlist(
                             viewModel = viewModel,
                             lazyListState = lazyListStateAnime,
                             data = lazyListAnime,
-                            animeStatus = animeStatus
+                            animeStatus = animeStatus,
+                            navigateToMyAnimeListLogin = navigateToMyAnimeListLogin
                         )
                     }
                     WishlistTab.MANGA -> {

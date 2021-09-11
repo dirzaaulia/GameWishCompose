@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">GameWish</string>
+
+    <!-- Home -->
     <string name="wishlist">Wishlist</string>
     <string name="deals">Deals</string>
     <string name="about">About</string>
@@ -14,10 +16,35 @@
     <string name="link">Link</string>
     <string name="description">Description</string>
 
-    <!-- Anime Tab -->
-    <string name="anime_list_error">Something went wrong went getting Anime list data.
+    <!-- Game Tab -->
+    <string name="game_list_error">Something wrong went getting Game list data.
         Check your internet connection and try again.
     </string>
+
+    <!-- Anime Tab -->
+    <string name="anime_list_error">Something wrong went getting Anime list data.
+        Check your internet connection and try again.
+    </string>
+
+    <!-- About Tab -->
+    <string name="about_app"><b>GameWish</b> is created and developed by <b>Dirza Aulia</b>
+        \nCheckout my social media and other profiles <u>here!</u>
+    </string>
+    <string name="about_app2">Checkout my other apps on <u>Google Play Store</u>
+    </string>
+    <string name="about_contact">
+        If you have suggestion, critic for this GameWish app or issue and problem that you encounter. Feel free to send
+        me e-mail
+    </string>
+
+    <!-- Data Source -->
+    <string name="deals_data_source">Deals data is provided by <u>Cheapshark</u>
+    </string>
+
+    <string name="anime_manga_data_source">Anime and Manga data is provided by <u>MyAnimeList</u>
+    </string>
+
+    <string name="games_data_source">Games data is provided by <u>RAWG</u></string>
 
     <!-- Game Details -->
     <string name="data_by_rawg">Game Data by <u>RAWG</u></string>
@@ -27,15 +54,15 @@
     <string name="esrb_rating">ESRB Rating</string>
     <string name="platforms">Platforms</string>
     <string name="stores">Stores</string>
-    <string name="game_details_error">Something went wrong went getting Game Details data.
+    <string name="game_details_error">Something wrong went getting Game Details data.
         Check your internet connection and try again.
     </string>
 
     <!-- Deals -->
-    <string name="deals_error">Something went wrong went getting Deals.
+    <string name="deals_error">Something wrong went getting Deals.
         Check your internet connection and try again.
     </string>
-    <string name="stores_error">Something went wrong went getting Stores List.
+    <string name="stores_error">Something wrong went getting Stores List.
         Check your internet connection and try again.
     </string>
 </resources>

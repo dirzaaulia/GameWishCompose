@@ -11,6 +11,20 @@ plugins {
 }
 
 android {
+    signingConfigs {
+        debug {
+            storeFile file('D:\\Android Studio\\keystore.jks')
+            storePassword 'stravinsky9'
+            keyAlias 'keydirza'
+            keyPassword 'stravinsky9'
+        }
+        release {
+            storeFile file('D:\\Android Studio\\keystore.jks')
+            storePassword 'stravinsky9'
+            keyAlias 'keydirza'
+            keyPassword 'stravinsky9'
+        }
+    }
     compileSdk 31
 
     defaultConfig {
@@ -27,10 +41,12 @@ android {
         debug {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.debug
         }
         release {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
 
@@ -114,6 +130,7 @@ dependencies {
     implementation Libs.Firebase.database
     implementation Libs.Firebase.storage
     implementation Libs.Firebase.auth
+    implementation Libs.Firebase.firestore
     implementation Libs.Firebase.UI.database
     implementation Libs.Firebase.UI.auth
 
@@ -132,7 +149,8 @@ dependencies {
     implementation Libs.Other.photoView
     implementation Libs.Other.timber
 
-    implementation Libs.Paging.compose
+    implementation Libs.Paging.runtime
+    implementation Libs.Paging.Compose.compose
 
     implementation Libs.Proto.main
     implementation Libs.Proto.core

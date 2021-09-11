@@ -8,13 +8,12 @@ import kotlinx.parcelize.Parcelize
 
 @Entity(tableName = "wishlist_table")
 @Parcelize
-@Immutable
 data class Wishlist(
     @PrimaryKey
-    var id: Long?,
-    var name: String?,
-    val image: String?,
-    val status: String?
+    var id: Long? = null,
+    var name: String? = null,
+    val image: String? = null,
+    val status: String? = null
 ) : Parcelable {
     companion object {
         fun mock() = Wishlist(
