@@ -21,46 +21,47 @@ interface RawgService {
 
     @GET("games")
     suspend fun searchGames(
-        @Query("key") key: String,
+        @Query("key") key: String = RawgConstant.RAWG_KEY,
         @Query("page") page: Int,
-        @Query("page_size") pageSize: Int,
-        @Query("search_precise") searchPrecise: Boolean,
+        @Query("page_size") pageSize: Int = 10,
+        @Query("search_precise") searchPrecise: Boolean = true,
         @Query("search") search: String?,
         @Query("genres") genres: Int?,
         @Query("publishers") publishers: Int?,
         @Query("platforms") platforms: Int?
-    ): SearchGamesResponse
+    ): Response<SearchGamesResponse>
 
     @GET("games/{id}")
     suspend fun getGameDetails(
         @Path("id") id: Long,
-        @Query("key") key: String
+        @Query("key") key: String = RawgConstant.RAWG_KEY
     ): Response<GameDetails>
 
     @GET("games/{id}/screenshots")
     suspend fun getGameDetailsScreenshots(
         @Path("id") id: Long,
-        @Query("key") key: String
+        @Query("key") key: String = RawgConstant.RAWG_KEY
     ): Response<ScreenshotsResponse>
 
     @GET("genres")
     suspend fun getGenres(
-        @Query("key") key: String
-    ): GenresResponse
+        @Query("key") key: String = RawgConstant.RAWG_KEY,
+        @Query("page") page: Int
+    ): Response<GenresResponse>
 
     @GET("publishers")
     suspend fun getPublishers(
-        @Query("key") key: String,
+        @Query("key") key: String = RawgConstant.RAWG_KEY,
         @Query("page") page: Int,
-        @Query("page_size") pageSize: Int
-    ): PublishersResponse
+        @Query("page_size") pageSize: Int = 10
+    ): Response<PublishersResponse>
 
     @GET("platforms")
     suspend fun getPlatforms(
-        @Query("key") key: String,
+        @Query("key") key: String = RawgConstant.RAWG_KEY,
         @Query("page") page: Int,
-        @Query("page_size") pageSize: Int
-    ): PlatformsResponse
+        @Query("page_size") pageSize: Int = 10
+    ): Response<PlatformsResponse>
 
     companion object {
         fun create(context: Context): RawgService {

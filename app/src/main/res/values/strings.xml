@@ -10,11 +10,16 @@
     <string name="game">Game</string>
     <string name="anime">Anime</string>
     <string name="manga">Manga</string>
+    <string name="anime_manga">Anime &amp; Manga</string>
     <string name="no_connection">No connection established. Turn on the internet and repeat.</string>
     <string name="no_connection_button">Try Again</string>
     <string name="label_back">Back</string>
     <string name="link">Link</string>
     <string name="description">Description</string>
+    <string name="genres">Genre</string>
+    <string name="publishers">Publishers</string>
+    <string name="developers">Developers</string>
+    <string name="platforms">Platforms</string>
 
     <!-- Game Tab -->
     <string name="game_list_error">Something wrong went getting Game list data.
@@ -50,9 +55,7 @@
     <string name="data_by_rawg">Game Data by <u>RAWG</u></string>
     <string name="release_date">Release Date</string>
     <string name="developer">Developer</string>
-    <string name="publishers">Publishers</string>
     <string name="esrb_rating">ESRB Rating</string>
-    <string name="platforms">Platforms</string>
     <string name="stores">Stores</string>
     <string name="game_details_error">Something wrong went getting Game Details data.
         Check your internet connection and try again.
@@ -63,6 +66,36 @@
         Check your internet connection and try again.
     </string>
     <string name="stores_error">Something wrong went getting Stores List.
+        Check your internet connection and try again.
+    </string>
+    <string name="deals_empty">There is no Deals found!
+        Try again with different search parameters using filter button on top right
+    </string>
+
+    <!-- Search -->
+    <string name="search_game">Search Game Name</string>
+    <string name="search_games_empty">There is no Games found!
+        Try again with different Games name.
+    </string>
+    <string name="search_games_error">Something wrong went getting Games.
+        Check your internet connection and try again.
+    </string>
+    <string name="search_genre_empty">There is no Genre found!
+        Please check your internet connection and try again
+    </string>
+    <string name="search_genre_error">Something wrong went getting Genre.
+        Check your internet connection and try again.
+    </string>
+    <string name="search_publisher_empty">There is no Publishers found!
+        Please check your internet connection and try again
+    </string>
+    <string name="search_publisher_error">Something wrong went getting Publishers.
+        Check your internet connection and try again.
+    </string>
+    <string name="search_platform_empty">There is no Platforms found!
+        Please check your internet connection and try again
+    </string>
+    <string name="search_platform_error">Something wrong went getting Platforms.
         Check your internet connection and try again.
     </string>
 </resources>

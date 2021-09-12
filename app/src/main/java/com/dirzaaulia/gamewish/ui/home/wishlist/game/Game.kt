@@ -1,11 +1,9 @@
 package com.dirzaaulia.gamewish.ui.home.wishlist.game
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.material.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -16,7 +14,7 @@ import com.dirzaaulia.gamewish.R
 import com.dirzaaulia.gamewish.data.model.Wishlist
 import com.dirzaaulia.gamewish.extension.visible
 import com.dirzaaulia.gamewish.ui.common.CommonVerticalList
-import com.dirzaaulia.gamewish.ui.common.GameListItem
+import com.dirzaaulia.gamewish.ui.common.WishlistGameItem
 import com.dirzaaulia.gamewish.ui.home.HomeViewModel
 
 @Composable
@@ -27,7 +25,6 @@ fun WishlistGame(
     viewModel: HomeViewModel,
     gameStatus: String,
 ) {
-
     var gameStatusFormatted = gameStatus
 
     if (gameStatusFormatted.isBlank()) {
@@ -49,9 +46,9 @@ fun WishlistGame(
             emptyString = "Your Game Wishlist is still empty!",
             errorString = stringResource(id = R.string.game_list_error)
         ) { wishlist ->
-            GameListItem(
+            WishlistGameItem(
                 wishlist = wishlist,
-                navigateToGameDetails = navigateToGameDetails
+                navigateToGameDetails = navigateToGameDetails,
             )
         }
     }

@@ -131,9 +131,14 @@ class HomeViewModel @Inject constructor(
                     it.success { data ->
                         _myAnimeListUser.value = data
                     }
+                    it.error { exception ->
+                        if ((exception.message?.contains("Data Not Found", true)
+                                    == true) && _refreshToken.value.isNotBlank()) {
+                            getMyAnimeListRefreshToken()
+                        }
+                    }
                 }
         }
-
 
     init {
         getUserAuthStatus()
@@ -292,6 +297,7 @@ class HomeViewModel @Inject constructor(
         myAnimeListRepository.getMyAnimeListRefreshToken(_refreshToken.value)
             .onEach {
                 it.success { data ->
+                    Timber.i("Access Token : ${data.accessToken}")
                     data.accessToken?.let { accessToken ->
                         protoRepository.updateMyAnimeListAccessToken(accessToken)
                     }
@@ -304,11 +310,12 @@ class HomeViewModel @Inject constructor(
                     getAccessToken()
                     setAnimeStatus("")
                 }
-                it.error {
+                it.error { exception ->
+                    Timber.e(exception)
                     _errorMessage.value = "Something went wrong when getting data from MyAnimeList. Please try it again later!"
-
                 }
             }
+            .launchIn(viewModelScope)
     }
 
     fun getUserAuthStatus() {

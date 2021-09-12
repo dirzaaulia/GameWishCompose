@@ -32,7 +32,8 @@ import java.util.*
 fun Home(
     viewModel: HomeViewModel = hiltViewModel(),
     navigateToGameDetails: (Long) -> Unit,
-    navigateToMyAnimeListLogin: () -> Unit
+    navigateToMyAnimeListLogin: () -> Unit,
+    navigateToSearch: (Int) -> Unit
 ) {
     val menu = HomeBottomNavMenu.values()
     val menuId: Int by viewModel.selectedBottomNav.collectAsState(initial = 0)
@@ -42,6 +43,8 @@ fun Home(
     val googleUsername by viewModel.googleUsername.collectAsState()
     val myAnimeListUserResult by viewModel.myAnimeListUserResult.collectAsState(null)
     val myAnimeListUser by viewModel.myAnimeListUser.collectAsState()
+    val refreshToken by viewModel.refreshToken.collectAsState()
+
 
     Scaffold(
         backgroundColor = MaterialTheme.colors.primarySurface,
@@ -58,7 +61,8 @@ fun Home(
                     modifier = innerModifier,
                     viewModel = viewModel,
                     navigateToGameDetails = navigateToGameDetails,
-                    navigateToMyAnimeListLogin = navigateToMyAnimeListLogin
+                    navigateToMyAnimeListLogin = navigateToMyAnimeListLogin,
+                    navigateToSearch = navigateToSearch
                 )
                 HomeBottomNavMenu.DEALS -> Deals(
                     viewModel = viewModel,

@@ -18,7 +18,7 @@ import com.dirzaaulia.gamewish.data.model.myanimelist.ParentNode
 import com.dirzaaulia.gamewish.extension.isError
 import com.dirzaaulia.gamewish.extension.isSucceeded
 import com.dirzaaulia.gamewish.extension.visible
-import com.dirzaaulia.gamewish.ui.common.AnimeItem
+import com.dirzaaulia.gamewish.ui.common.WishlistAnimeItem
 import com.dirzaaulia.gamewish.ui.common.AnimeVerticalList
 import com.dirzaaulia.gamewish.ui.common.WebViewMyAnimeList
 import com.dirzaaulia.gamewish.ui.home.HomeViewModel
@@ -48,7 +48,7 @@ fun WishlistAnime(
                     text = "Sort by : $animeStatusFormatted",
                     style = MaterialTheme.typography.subtitle1,
                     modifier = Modifier
-                        .padding(bottom = 4.dp)
+                        .padding(vertical = 4.dp, horizontal = 8.dp)
                         .align(Alignment.End)
                         .visible(data.loadState.refresh is LoadState.NotLoading)
                 )
@@ -59,7 +59,7 @@ fun WishlistAnime(
                     errorString = stringResource(id = R.string.anime_list_error),
                     viewModel = viewModel
                 ) { parentNode ->
-                    AnimeItem(parentNode = parentNode)
+                    WishlistAnimeItem(parentNode = parentNode)
                 }
             }
         }

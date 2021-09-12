@@ -1,18 +1,27 @@
 package com.dirzaaulia.gamewish.ui.common
 
+import android.util.Half.toFloat
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.Card
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Details
+import androidx.compose.material.icons.filled.Done
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -25,16 +34,23 @@ import androidx.paging.compose.items
 import com.dirzaaulia.gamewish.R
 import com.dirzaaulia.gamewish.data.model.Wishlist
 import com.dirzaaulia.gamewish.data.model.cheapshark.Deals
+import com.dirzaaulia.gamewish.data.model.rawg.Genre
 import com.dirzaaulia.gamewish.data.model.myanimelist.ParentNode
+import com.dirzaaulia.gamewish.data.model.rawg.Games
+import com.dirzaaulia.gamewish.data.model.rawg.Platform
+import com.dirzaaulia.gamewish.data.model.rawg.Publisher
+import com.dirzaaulia.gamewish.data.request.myanimelist.SearchGameRequest
 import com.dirzaaulia.gamewish.extension.visible
 import com.dirzaaulia.gamewish.ui.home.HomeViewModel
-import com.dirzaaulia.gamewish.utils.NetworkImage
-import com.dirzaaulia.gamewish.utils.capitalizeWords
-import com.dirzaaulia.gamewish.utils.currencyFormatter
-import com.dirzaaulia.gamewish.utils.openDeals
+import com.dirzaaulia.gamewish.ui.search.SearchViewModel
+import com.dirzaaulia.gamewish.ui.theme.White
+import com.dirzaaulia.gamewish.utils.*
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
 import com.google.accompanist.swiperefresh.SwipeRefreshState
+import com.google.android.material.chip.Chip
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.util.*
 
@@ -61,6 +77,7 @@ fun <T : Any> CommonVerticalSwipeList(
             LazyColumn(
                 state = lazyListState,
                 modifier = Modifier
+                    .fillMaxSize()
                     .visible(data.loadState.refresh !is LoadState.Loading)
             ) {
                 items(data) { data ->
@@ -124,7 +141,6 @@ fun <T : Any> CommonVerticalList(
             state = lazyListState,
             modifier = Modifier
                 .fillMaxSize()
-                .background(MaterialTheme.colors.background)
                 .visible(data.loadState.refresh !is LoadState.Loading),
         ) {
 
@@ -253,7 +269,7 @@ fun <T : Any> AnimeVerticalList(
 }
 
 @Composable
-fun GameListItem(
+fun WishlistGameItem(
     wishlist: Wishlist,
     modifier: Modifier = Modifier,
     navigateToGameDetails: (Long) -> Unit = { }
@@ -373,7 +389,7 @@ fun DealsItem(
 }
 
 @Composable
-fun AnimeItem(
+fun WishlistAnimeItem(
     parentNode: ParentNode,
     modifier: Modifier = Modifier
 ) {
@@ -437,6 +453,215 @@ fun AnimeItem(
                         }
                     }
                 }
+            }
+        }
+    }
+}
+
+@Composable
+fun SearchGamesItem(
+    games: Games,
+    modifier: Modifier = Modifier,
+    viewModel: SearchViewModel
+) {
+    Surface(
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable(
+                onClick = { /* TODO */ }
+            ),
+        elevation = 0.dp,
+    ) {
+        Column {
+            games.released?.let { released ->
+                Text(
+                    text = textDateFormatter2(released),
+                    style = MaterialTheme.typography.caption,
+                    modifier = Modifier
+                        .padding(horizontal = 8.dp)
+                        .fillMaxWidth()
+                )
+            }
+            games.name?.let { name ->
+                Text(
+                    text = name,
+                    style = MaterialTheme.typography.h6,
+                    modifier = Modifier
+                        .padding(horizontal = 8.dp)
+                        .fillMaxWidth()
+                )
+            }
+            games.platforms?.let { platforms ->
+                LazyRow(modifier = Modifier.padding(start = 8.dp)
+                ) {
+                    items(platforms) { data ->
+                        Surface(
+                            shape = CircleShape,
+                            color = setPlatformsBackgroundColor(data, 0),
+                            modifier = modifier.padding(top = 4.dp, end = 4.dp)
+                        ) {
+                            Text(
+                                modifier = modifier.padding(4.dp),
+                                textAlign = TextAlign.Center,
+                                text = String.format("${data.platform?.name}"),
+                                style = MaterialTheme.typography.caption,
+                                color = White
+                            )
+                        }
+                    }
+                }
+            }
+            Divider(
+                modifier = Modifier
+                    .padding(vertical = 8.dp)
+                    .fillMaxWidth()
+            )
+        }
+    }
+}
+
+@Composable
+fun SearchGenreItem(
+    modifier: Modifier = Modifier,
+    genre: Genre,
+    viewModel: SearchViewModel,
+    scope: CoroutineScope,
+    scaffoldState: BackdropScaffoldState
+) {
+    Surface(
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable(
+                onClick = {
+                    genre.id?.let {
+                        viewModel.setSearchGameRequest(
+                            SearchGameRequest("", it, null, null)
+                        )
+                    }
+                    scope.launch {
+                        scaffoldState.conceal()
+                    }
+                }
+            ),
+        elevation = 0.dp,
+    ) {
+        Column {
+            genre.imageBackground?.let { imageUrl ->
+                NetworkImage(
+                    url = imageUrl,
+                    contentDescription = null,
+                    modifier = modifier
+                        .fillMaxWidth()
+                        .height(200.dp),
+                    contentScale = ContentScale.FillBounds
+                )
+            }
+            genre.name?.let { name ->
+                Text(
+                    text = name,
+                    style = MaterialTheme.typography.h5,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 8.dp, bottom = 4.dp)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun SearchPublisherItem(
+    modifier: Modifier = Modifier,
+    publisher: Publisher,
+    viewModel: SearchViewModel,
+    scope: CoroutineScope,
+    scaffoldState: BackdropScaffoldState
+) {
+    Surface(
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable(
+                onClick = {
+                    publisher.id?.let {
+                        viewModel.setSearchGameRequest(
+                            SearchGameRequest("", null, it, null)
+                        )
+                    }
+                    scope.launch {
+                        scaffoldState.conceal()
+                    }
+                }
+            ),
+        elevation = 0.dp,
+    ) {
+        Column {
+            publisher.imageBackground?.let { imageUrl ->
+                NetworkImage(
+                    url = imageUrl,
+                    contentDescription = null,
+                    modifier = modifier
+                        .fillMaxWidth()
+                        .height(200.dp),
+                    contentScale = ContentScale.FillBounds
+                )
+            }
+            publisher.name?.let { name ->
+                Text(
+                    text = name,
+                    style = MaterialTheme.typography.h5,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 8.dp, bottom = 4.dp)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun SearchPlatformItem(
+    modifier: Modifier = Modifier,
+    platform: Platform,
+    viewModel: SearchViewModel,
+    scope: CoroutineScope,
+    scaffoldState: BackdropScaffoldState
+) {
+    Surface(
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable(
+                onClick = {
+                    platform.id?.let {
+                        viewModel.setSearchGameRequest(
+                            SearchGameRequest("", null, null, it)
+                        )
+                    }
+                    scope.launch {
+                        scaffoldState.conceal()
+                    }
+                }
+            ),
+        elevation = 0.dp,
+    ) {
+        Column {
+            platform.imageBackground?.let { imageUrl ->
+                NetworkImage(
+                    url = imageUrl,
+                    contentDescription = null,
+                    modifier = modifier
+                        .fillMaxWidth()
+                        .height(200.dp),
+                    contentScale = ContentScale.FillBounds
+                )
+            }
+            platform.name?.let { name ->
+                Text(
+                    text = name,
+                    style = MaterialTheme.typography.h5,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 8.dp, bottom = 4.dp)
+                )
             }
         }
     }

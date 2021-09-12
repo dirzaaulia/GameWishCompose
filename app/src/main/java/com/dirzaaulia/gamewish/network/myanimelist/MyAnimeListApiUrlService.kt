@@ -122,6 +122,7 @@ interface MyAnimeListApiUrlService {
         fun create(context: Context): MyAnimeListApiUrlService {
             val logger =
                 HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY }
+
             val chuckerLogger = ChuckerInterceptor.Builder(context)
                 .collector(ChuckerCollector(context))
                 .maxContentLength(250000L)

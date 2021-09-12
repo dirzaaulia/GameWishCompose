@@ -76,6 +76,7 @@ fun Login(viewModel: HomeViewModel) {
                 auth.currentUser?.uid?.let { uid -> viewModel.setUserAuthId(uid) }
                 viewModel.getUserAuthStatus()
                 auth.currentUser?.uid?.let { uid -> viewModel.syncWishlist(uid) }
+                viewModel.getGoogleUserData()
             }
             FirebaseState.Status.FAILED -> {
                 scope.launch {

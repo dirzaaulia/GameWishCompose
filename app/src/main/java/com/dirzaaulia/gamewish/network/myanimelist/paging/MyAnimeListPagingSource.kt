@@ -2,9 +2,13 @@ package com.dirzaaulia.gamewish.network.myanimelist.paging
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
+import com.dirzaaulia.gamewish.base.ResponseResult
 import com.dirzaaulia.gamewish.data.model.myanimelist.ParentNode
+import com.dirzaaulia.gamewish.extension.error
+import com.dirzaaulia.gamewish.extension.isError
 import com.dirzaaulia.gamewish.extension.pagingSucceeded
 import com.dirzaaulia.gamewish.repository.MyAnimeListRepository
+import timber.log.Timber
 
 class MyAnimeListPagingSource(
     private val repository: MyAnimeListRepository,

@@ -30,8 +30,8 @@ class NetworkModule {
 
     @Singleton
     @Provides
-    fun provideMyAnimeListBaseUrlService(): MyAnimeListBaseUrlService {
-        return MyAnimeListBaseUrlService.create()
+    fun provideMyAnimeListBaseUrlService(@ApplicationContext context: Context): MyAnimeListBaseUrlService {
+        return MyAnimeListBaseUrlService.create(context)
     }
 
     @Singleton

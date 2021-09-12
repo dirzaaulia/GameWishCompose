@@ -15,6 +15,13 @@ class MainActions(navController: NavHostController) {
         }
     }
 
+    val navigateToSearch: (Int) -> Unit = { menuId: Int ->
+        NavScreen.Search.apply {
+            navController.navigate(routeWithArgument.replace("{$argument0}", menuId.toString()))
+        }
+
+    }
+
     val navigateToGameDetails: (Long) -> Unit = { id: Long ->
         NavScreen.GameDetails.apply {
             navController.navigate(routeWithArgument.replace("{$argument0}", id.toString()))

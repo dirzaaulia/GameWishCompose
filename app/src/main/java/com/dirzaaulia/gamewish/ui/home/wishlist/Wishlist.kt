@@ -39,7 +39,8 @@ fun Wishlist(
     navigateToGameDetails: (Long) -> Unit,
     modifier: Modifier,
     viewModel: HomeViewModel,
-    navigateToMyAnimeListLogin: () -> Unit
+    navigateToMyAnimeListLogin: () -> Unit,
+    navigateToSearch: (Int) -> Unit
 ) {
     val menu = WishlistTab.values()
     val menuId: Int by viewModel.selectedWishlistTab.collectAsState(initial = 0)
@@ -85,7 +86,11 @@ fun Wishlist(
         topBar = {
             Crossfade(targetState = WishlistTab.getTabFromResource(menuId)) { destination ->
                 when (destination) {
-                    WishlistTab.GAME -> GameAppBar(scope, scaffoldState)
+                    WishlistTab.GAME -> GameAppBar(
+                        scope = scope,
+                        scaffoldState = scaffoldState,
+                        navigateToSearch = navigateToSearch
+                    )
                     WishlistTab.ANIME -> AnimeAppBar(scope, scaffoldState)
                     WishlistTab.MANGA -> AnimeAppBar(scope, scaffoldState)
                 }
@@ -97,7 +102,6 @@ fun Wishlist(
         ) {
             Crossfade(targetState = WishlistTab.getTabFromResource(menuId)) { destination ->
                 when (destination) {
-                    //TODO Need to update with Anime & Manga layout
                     WishlistTab.GAME -> {
                         WishlistGame(
                             data = lazyListWishlist,
@@ -133,6 +137,7 @@ fun Wishlist(
 fun GameAppBar(
     scope: CoroutineScope,
     scaffoldState: BottomSheetScaffoldState,
+    navigateToSearch: (Int) -> Unit = { },
 ) {
     TopAppBar(
         elevation = 0.dp,
@@ -175,7 +180,7 @@ fun GameAppBar(
             }
             IconButton(
                 modifier = Modifier.align(Alignment.CenterVertically),
-                onClick = { /* todo */ }
+                onClick = { navigateToSearch(R.string.game) }
             ) {
                 Icon(
                     imageVector = Icons.Filled.Search,
@@ -227,6 +232,15 @@ fun AnimeAppBar(
             ) {
                 Icon(
                     imageVector = Icons.Filled.Sort,
+                    contentDescription = null,
+                )
+            }
+            IconButton(
+                modifier = Modifier.align(Alignment.CenterVertically),
+                onClick = { /* TODO */ }
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Search,
                     contentDescription = null,
                 )
             }

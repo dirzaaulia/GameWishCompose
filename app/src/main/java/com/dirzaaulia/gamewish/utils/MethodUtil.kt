@@ -125,7 +125,7 @@ fun String.capitalizeWords(): String =
 fun String.lowerCaseWords(): String =
     split(" ").joinToString(" ") { it.lowercase(Locale.getDefault()) }
 
-fun setGameDetailsListItemBackground(data: Any, code: Int): Color {
+fun setPlatformsBackgroundColor(data: Any, code: Int): Color {
     if (code == 0) {
         val platforms = data as Platforms
         val name = platforms.platform?.name

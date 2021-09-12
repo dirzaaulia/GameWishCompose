@@ -1,5 +1,7 @@
 package com.dirzaaulia.gamewish.base
 
+import timber.log.Timber
+
 /**
  * A generic class that holds a value or an exception
  */
@@ -12,6 +14,7 @@ inline fun <T> executeWithResponse(body: () -> T): ResponseResult<T> {
     return try {
         ResponseResult.Success(body.invoke())
     } catch (e: Exception) {
+        e.printStackTrace()
         ResponseResult.Error(e)
     }
 }

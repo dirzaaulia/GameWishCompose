@@ -1,5 +1,8 @@
 package com.dirzaaulia.gamewish.network.myanimelist
 
+import android.content.Context
+import com.chuckerteam.chucker.api.ChuckerCollector
+import com.chuckerteam.chucker.api.ChuckerInterceptor
 import com.dirzaaulia.gamewish.data.response.myanimelist.MyAnimeListTokenResponse
 import com.dirzaaulia.gamewish.utils.MyAnimeListConstant
 import com.squareup.moshi.Moshi
@@ -33,12 +36,21 @@ interface MyAnimeListBaseUrlService {
     ): Response<MyAnimeListTokenResponse>
 
     companion object {
-        fun create(): MyAnimeListBaseUrlService {
+        fun create(context: Context): MyAnimeListBaseUrlService {
             val logger =
                 HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY }
 
+
+            val chuckerLogger = ChuckerInterceptor.Builder(context)
+                .collector(ChuckerCollector(context))
+                .maxContentLength(250000L)
+                .redactHeaders(emptySet())
+                .alwaysReadResponseBody(false)
+                .build()
+
             val client = OkHttpClient.Builder()
                 .addInterceptor(logger)
+                .addInterceptor(chuckerLogger)
                 .connectTimeout(10, TimeUnit.SECONDS)
                 .readTimeout(10, TimeUnit.SECONDS)
                 .writeTimeout(10, TimeUnit.SECONDS)

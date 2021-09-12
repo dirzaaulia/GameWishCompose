@@ -12,6 +12,7 @@ fun StartApp(
     viewModel: HomeViewModel,
     navigateToGameDetails: (Long) -> Unit,
     navigateToMyAnimeListLogin: () -> Unit,
+    navigateToSearch: (Int) -> Unit,
 ) {
     val userAuthId by viewModel.userAuthId.collectAsState()
     if (userAuthId == null) {
@@ -24,6 +25,7 @@ fun StartApp(
                 viewModel = viewModel,
                 navigateToGameDetails = navigateToGameDetails,
                 navigateToMyAnimeListLogin = navigateToMyAnimeListLogin,
+                navigateToSearch = navigateToSearch
             )
         }
     }

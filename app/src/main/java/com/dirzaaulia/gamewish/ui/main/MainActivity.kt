@@ -7,6 +7,7 @@ import androidx.core.view.WindowCompat
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.dirzaaulia.gamewish.ui.theme.GameWishTheme
+import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -22,7 +23,7 @@ class MainActivity : ComponentActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
         setContent {
-            navController = rememberNavController()
+            navController = rememberAnimatedNavController()
             GameWishTheme {
                 NavGraph(navController = navController)
             }

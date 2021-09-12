@@ -5,12 +5,15 @@ import com.dirzaaulia.gamewish.base.NotFoundException
 import com.dirzaaulia.gamewish.base.ResponseResult
 import com.dirzaaulia.gamewish.base.executeWithResponse
 import com.dirzaaulia.gamewish.data.model.myanimelist.ParentNode
+import com.dirzaaulia.gamewish.extension.error
+import com.dirzaaulia.gamewish.extension.isError
 import com.dirzaaulia.gamewish.network.myanimelist.MyAnimeListApiUrlService
 import com.dirzaaulia.gamewish.network.myanimelist.MyAnimeListBaseUrlService
 import com.dirzaaulia.gamewish.utils.MyAnimeListConstant
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 import javax.inject.Inject
 
 class MyAnimeListRepository @Inject constructor(
@@ -58,7 +61,7 @@ class MyAnimeListRepository @Inject constructor(
     @WorkerThread
     fun getMyAnimeListUser(accessToken: String) = flow {
         try {
-            val bearerAccessToken = String.format("Bearer $accessToken a")
+            val bearerAccessToken = String.format("Bearer $accessToken")
             apiUrlService.getMyAnimeListUser(bearerAccessToken).body()?.let {
                 emit(ResponseResult.Success(it))
             } ?: run {

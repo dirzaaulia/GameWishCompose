@@ -13,7 +13,7 @@ import androidx.compose.ui.unit.dp
 import com.dirzaaulia.gamewish.data.model.rawg.Platforms
 import com.dirzaaulia.gamewish.data.model.rawg.Stores
 import com.dirzaaulia.gamewish.ui.theme.White
-import com.dirzaaulia.gamewish.utils.setGameDetailsListItemBackground
+import com.dirzaaulia.gamewish.utils.setPlatformsBackgroundColor
 
 @Composable
 fun GameDetailsPlatformList(
@@ -33,7 +33,7 @@ fun GameDetailsItemPlatforms(
     code: Int
 ) {
     Card(
-        backgroundColor = setGameDetailsListItemBackground(data, code),
+        backgroundColor = setPlatformsBackgroundColor(data, code),
         shape = MaterialTheme.shapes.small,
         modifier = Modifier
             .padding(4.dp)
@@ -69,7 +69,7 @@ fun GameDetailsItemStores(
     code: Int
 ) {
     Card(
-        backgroundColor = setGameDetailsListItemBackground(data, code),
+        backgroundColor = setPlatformsBackgroundColor(data, code),
         shape = MaterialTheme.shapes.small,
         modifier = Modifier
             .padding(4.dp)
