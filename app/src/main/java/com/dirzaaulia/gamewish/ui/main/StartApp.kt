@@ -11,6 +11,7 @@ import com.dirzaaulia.gamewish.ui.main.login.Login
 fun StartApp(
     viewModel: HomeViewModel,
     navigateToGameDetails: (Long) -> Unit,
+    navigateToAnimeDetails: (Long, String) -> Unit,
     navigateToMyAnimeListLogin: () -> Unit,
     navigateToSearch: (Int) -> Unit,
 ) {
@@ -24,6 +25,7 @@ fun StartApp(
             Home(
                 viewModel = viewModel,
                 navigateToGameDetails = navigateToGameDetails,
+                navigateToAnimeDetails = navigateToAnimeDetails,
                 navigateToMyAnimeListLogin = navigateToMyAnimeListLogin,
                 navigateToSearch = navigateToSearch
             )

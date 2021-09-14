@@ -32,6 +32,7 @@ import java.util.*
 fun Home(
     viewModel: HomeViewModel = hiltViewModel(),
     navigateToGameDetails: (Long) -> Unit,
+    navigateToAnimeDetails: (Long, String) -> Unit,
     navigateToMyAnimeListLogin: () -> Unit,
     navigateToSearch: (Int) -> Unit
 ) {
@@ -57,13 +58,15 @@ fun Home(
         ) { destination ->
             val innerModifier = Modifier.padding(innerPadding)
             when (destination) {
-                HomeBottomNavMenu.WISHLIST -> Wishlist(
-                    modifier = innerModifier,
-                    viewModel = viewModel,
-                    navigateToGameDetails = navigateToGameDetails,
-                    navigateToMyAnimeListLogin = navigateToMyAnimeListLogin,
-                    navigateToSearch = navigateToSearch
-                )
+                HomeBottomNavMenu.WISHLIST -> {
+                    Wishlist(
+                        modifier = innerModifier,
+                        viewModel = viewModel,
+                        navigateToGameDetails = navigateToGameDetails,
+                        navigateToAnimeDetails = navigateToAnimeDetails,
+                        navigateToSearch = navigateToSearch
+                    )
+                }
                 HomeBottomNavMenu.DEALS -> Deals(
                     viewModel = viewModel,
                     modifier = innerModifier,

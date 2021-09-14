@@ -48,15 +48,19 @@ interface MyAnimeListApiUrlService {
         @Path("year") year: String,
         @Path("season") season: String,
         @Query("offset") offset: Int
-    ): MyAnimeListSearchResponse
+    ): Response<MyAnimeListSearchResponse>
 
     @GET("v2/anime/{anime_id}")
     suspend fun getMyAnimeListAnimeDetails(
         @Header("Authorization") authorization: String,
-        @Path("anime_id") animeId: String,
-        @Query("fields") fields: String,
-        @Query("offset") offset: Int
-    ): Details
+        @Path("anime_id") animeId: Long,
+        @Query("fields") fields: String
+         = "id,title,main_picture,alternative_titles,start_date,end_date,synopsis,mean,rank," +
+                "popularity,num_list_users,num_scoring_users,nsfw,created_at,updated_at," +
+                "media_type,status,genres,my_list_status,num_episodes,start_season,broadcast," +
+                "source,average_episode_duration,rating,pictures,background,related_anime," +
+                "related_manga,recommendations,studios,statistics",
+    ): Response<Details>
 
     @GET("v2/manga/{manga_id}")
     suspend fun getMyAnimeListMangaDetails(

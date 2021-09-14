@@ -12,6 +12,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.navArgument
 import com.dirzaaulia.gamewish.ui.common.WebViewMyAnimeList
+import com.dirzaaulia.gamewish.ui.details.AnimeDetails
 import com.dirzaaulia.gamewish.ui.details.GameDetails
 import com.dirzaaulia.gamewish.ui.home.HomeViewModel
 import com.dirzaaulia.gamewish.ui.search.Search
@@ -33,6 +34,7 @@ fun NavGraph(navController: NavHostController) {
                 StartApp(
                     viewModel = homeViewModel,
                     navigateToGameDetails = actions.navigateToGameDetails,
+                    navigateToAnimeDetails = actions.navigateToAnimeDetails,
                     navigateToMyAnimeListLogin = actions.navigateToMyAnimeListLogin,
                     navigateToSearch = actions.navigateToSearch
                 )
@@ -52,8 +54,10 @@ fun NavGraph(navController: NavHostController) {
                 backStackEntry.arguments.let { bundle ->
                     bundle?.let { argument ->
                         Search(
+                            homeViewModel = homeViewModel,
                             menuId = argument.getInt(NavScreen.Search.argument0),
                             navigateToGameDetails = actions.navigateToGameDetails,
+                            navigateToAnimeDetails = actions.navigateToAnimeDetails,
                             upPress = actions.upPress
                         )
                     }
@@ -81,8 +85,39 @@ fun NavGraph(navController: NavHostController) {
                     }
                 }
             }
+            composable(
+                route = NavScreen.AnimeDetails.routeWithArgument,
+                arguments = listOf(
+                    navArgument(NavScreen.AnimeDetails.argument0) {
+                        type = NavType.LongType
+                    },
+                    navArgument(NavScreen.AnimeDetails.argument1) {
+                        type = NavType.StringType
+                    }
+                ),
+                enterTransition = {  _, _ ->
+                    expandIn(animationSpec = tween(700))
+                },
+                exitTransition = { _, _ ->
+                    shrinkOut(animationSpec = tween(700))
+                }
+            ) { backStackEntry ->
+                backStackEntry.arguments.let { bundle ->
+                    bundle?.let { argument ->
+                        argument.getString(NavScreen.AnimeDetails.argument1)?.let {
+                            AnimeDetails(
+                                animeId = argument.getLong(NavScreen.AnimeDetails.argument0),
+                                type = it,
+                                viewModel = hiltViewModel(),
+                                upPress = actions.upPress
+                            )
+                        }
+                    }
+                }
+            }
             composable(NavScreen.MyAnimeListLogin.route) {
                 WebViewMyAnimeList(
+                    from = 1,
                     viewModel = homeViewModel,
                     upPress = actions.upPress
                 )

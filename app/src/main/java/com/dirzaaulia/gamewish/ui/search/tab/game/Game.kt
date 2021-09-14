@@ -20,6 +20,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import com.dirzaaulia.gamewish.R
 import com.dirzaaulia.gamewish.data.model.rawg.Games
@@ -27,14 +28,17 @@ import com.dirzaaulia.gamewish.data.model.rawg.Genre
 import com.dirzaaulia.gamewish.data.model.rawg.Platform
 import com.dirzaaulia.gamewish.data.model.rawg.Publisher
 import com.dirzaaulia.gamewish.data.request.myanimelist.SearchGameRequest
+import com.dirzaaulia.gamewish.extension.visible
 import com.dirzaaulia.gamewish.ui.common.*
 import com.dirzaaulia.gamewish.ui.search.SearchViewModel
+import com.dirzaaulia.gamewish.ui.theme.White
 import com.google.accompanist.insets.statusBarsPadding
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
 fun SearchGame(
+    navigateToGameDetails: (Long) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: SearchViewModel,
     upPress: () -> Unit,
@@ -61,9 +65,9 @@ fun SearchGame(
         frontLayerShape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp),
         frontLayerContent = {
             SearchGameSheetContent(
+                navigateToGameDetails = navigateToGameDetails,
                 data = searchGameList,
                 lazyListStateSearchGames = lazyListStateSearchGames,
-                viewModel = viewModel,
             )
         },
         headerHeight = 0.dp,
@@ -120,9 +124,9 @@ fun SearchGame(
 
 @Composable
 fun SearchGameSheetContent(
+    navigateToGameDetails: (Long) -> Unit,
     data: LazyPagingItems<Games>,
-    lazyListStateSearchGames: LazyListState,
-    viewModel: SearchViewModel
+    lazyListStateSearchGames: LazyListState
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -144,7 +148,10 @@ fun SearchGameSheetContent(
             emptyString = stringResource(id = R.string.search_games_empty),
             errorString = stringResource(id = R.string.search_games_error),
         ) { games ->
-            SearchGamesItem(games = games, viewModel = viewModel)
+            SearchGamesItem(
+                navigateToGameDetails = navigateToGameDetails,
+                games = games,
+            )
         }
     }
 }
@@ -157,18 +164,27 @@ fun GenreList(
     scope: CoroutineScope,
     scaffoldState: BackdropScaffoldState
 ) {
-    CommonVerticalList(
-        data = data,
-        lazyListState = lazyListState,
-        emptyString = stringResource(id = R.string.search_genre_empty),
-        errorString = stringResource(id = R.string.search_genre_error),
-    ) { genre ->
-        SearchGenreItem(
-            genre = genre,
-            viewModel = viewModel,
-            scope = scope,
-            scaffoldState = scaffoldState
+    Column {
+        Text(
+            modifier = Modifier
+                .padding(4.dp)
+                .visible(data.loadState.refresh is LoadState.NotLoading),
+            text = stringResource(id = R.string.genre_data_source),
+            style = MaterialTheme.typography.caption,
         )
+        CommonVerticalList(
+            data = data,
+            lazyListState = lazyListState,
+            emptyString = stringResource(id = R.string.search_genre_empty),
+            errorString = stringResource(id = R.string.search_genre_error),
+        ) { genre ->
+            SearchGenreItem(
+                genre = genre,
+                viewModel = viewModel,
+                scope = scope,
+                scaffoldState = scaffoldState
+            )
+        }
     }
 }
 
@@ -180,18 +196,27 @@ fun PublisherList(
     scope: CoroutineScope,
     scaffoldState: BackdropScaffoldState
 ) {
-    CommonVerticalList(
-        data = data,
-        lazyListState = lazyListState,
-        emptyString = stringResource(id = R.string.search_publisher_empty),
-        errorString = stringResource(id = R.string.search_publisher_error),
-    ) { publisher ->
-        SearchPublisherItem(
-            publisher = publisher,
-            viewModel = viewModel,
-            scope = scope,
-            scaffoldState = scaffoldState
+    Column {
+        Text(
+            modifier = Modifier
+                .padding(4.dp)
+                .visible(data.loadState.refresh is LoadState.NotLoading),
+            text = stringResource(id = R.string.publisher_data_source),
+            style = MaterialTheme.typography.caption,
         )
+        CommonVerticalList(
+            data = data,
+            lazyListState = lazyListState,
+            emptyString = stringResource(id = R.string.search_publisher_empty),
+            errorString = stringResource(id = R.string.search_publisher_error),
+        ) { publisher ->
+            SearchPublisherItem(
+                publisher = publisher,
+                viewModel = viewModel,
+                scope = scope,
+                scaffoldState = scaffoldState
+            )
+        }
     }
 }
 
@@ -203,18 +228,27 @@ fun PlatformList(
     scope: CoroutineScope,
     scaffoldState: BackdropScaffoldState
 ) {
-    CommonVerticalList(
-        data = data,
-        lazyListState = lazyListState,
-        emptyString = stringResource(id = R.string.search_platform_empty),
-        errorString = stringResource(id = R.string.search_platform_error),
-    ) { platform ->
-        SearchPlatformItem(
-            platform = platform,
-            viewModel = viewModel,
-            scope = scope,
-            scaffoldState = scaffoldState
+    Column {
+        Text(
+            modifier = Modifier
+                .padding(4.dp)
+                .visible(data.loadState.refresh is LoadState.NotLoading),
+            text = stringResource(id = R.string.platform_data_source),
+            style = MaterialTheme.typography.caption,
         )
+        CommonVerticalList(
+            data = data,
+            lazyListState = lazyListState,
+            emptyString = stringResource(id = R.string.search_platform_empty),
+            errorString = stringResource(id = R.string.search_platform_error),
+        ) { platform ->
+            SearchPlatformItem(
+                platform = platform,
+                viewModel = viewModel,
+                scope = scope,
+                scaffoldState = scaffoldState
+            )
+        }
     }
 }
 
@@ -260,7 +294,10 @@ fun SearchGameAppBar(
                 },
                 shape = RectangleShape,
                 placeholder = {
-                    Text(text = stringResource(id = R.string.search_game))
+                    Text(
+                        text = stringResource(id = R.string.search_game),
+                        color = White
+                    )
                 },
                 singleLine = true,
                 colors = TextFieldDefaults.textFieldColors(

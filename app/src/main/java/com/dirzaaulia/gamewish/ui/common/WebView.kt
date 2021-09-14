@@ -33,7 +33,11 @@ import timber.log.Timber
 
 @SuppressLint("SetJavaScriptEnabled")
 @Composable
-fun WebViewMyAnimeList(viewModel: HomeViewModel, upPress: () -> Unit) {
+fun WebViewMyAnimeList(
+    from: Int,
+    viewModel: HomeViewModel,
+    upPress: () -> Unit
+) {
 
     val errorState = remember { mutableStateOf("") }
     var reload: () -> Unit = {}
@@ -52,6 +56,13 @@ fun WebViewMyAnimeList(viewModel: HomeViewModel, upPress: () -> Unit) {
         .addQueryParameter("state", MYANIMELIST_STATE)
         .build()
 
+    val modifier : Modifier = if (from == 1) {
+        Modifier.statusBarsPadding().fillMaxSize()
+    } else {
+        Modifier.fillMaxSize()
+    }
+
+
     Scaffold(
         scaffoldState = scaffoldState,
         topBar = {
@@ -61,7 +72,7 @@ fun WebViewMyAnimeList(viewModel: HomeViewModel, upPress: () -> Unit) {
                     .visible(progressShow.value)
             )
         },
-        modifier = Modifier.statusBarsPadding().fillMaxSize()
+        modifier = modifier
     ) {
         if (errorState.value.isBlank()) {
             AndroidView(
@@ -89,8 +100,6 @@ fun WebViewMyAnimeList(viewModel: HomeViewModel, upPress: () -> Unit) {
                                                 MYANIMELIST_CODE_CHALLENGE,
                                                 "authorization_code"
                                             )
-//                                        viewModel.getAccessToken()
-//                                        viewModel.setAnimeStatus("")
                                             upPress()
                                         } else if (error != null) {
                                             scope.launch {

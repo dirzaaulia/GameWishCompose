@@ -36,10 +36,10 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun Wishlist(
-    navigateToGameDetails: (Long) -> Unit,
     modifier: Modifier,
     viewModel: HomeViewModel,
-    navigateToMyAnimeListLogin: () -> Unit,
+    navigateToGameDetails: (Long) -> Unit,
+    navigateToAnimeDetails: (Long, String) -> Unit,
     navigateToSearch: (Int) -> Unit
 ) {
     val menu = WishlistTab.values()
@@ -91,8 +91,16 @@ fun Wishlist(
                         scaffoldState = scaffoldState,
                         navigateToSearch = navigateToSearch
                     )
-                    WishlistTab.ANIME -> AnimeAppBar(scope, scaffoldState)
-                    WishlistTab.MANGA -> AnimeAppBar(scope, scaffoldState)
+                    WishlistTab.ANIME -> AnimeAppBar(
+                        scope = scope,
+                        scaffoldState = scaffoldState,
+                        navigateToSearch = navigateToSearch
+                    )
+                    WishlistTab.MANGA -> AnimeAppBar(
+                        scope = scope,
+                        scaffoldState = scaffoldState,
+                        navigateToSearch = navigateToSearch
+                    )
                 }
             }
         },
@@ -118,8 +126,8 @@ fun Wishlist(
                             lazyListState = lazyListStateAnime,
                             data = lazyListAnime,
                             animeStatus = animeStatus,
-                            navigateToMyAnimeListLogin = navigateToMyAnimeListLogin
-                        )
+                            navigateToAnimeDetails = navigateToAnimeDetails
+                           )
                     }
                     WishlistTab.MANGA -> {
 
@@ -195,6 +203,7 @@ fun GameAppBar(
 fun AnimeAppBar(
     scope: CoroutineScope,
     scaffoldState: BottomSheetScaffoldState,
+    navigateToSearch: (Int) -> Unit = { }
 ) {
     TopAppBar(
         elevation = 0.dp,
@@ -237,7 +246,7 @@ fun AnimeAppBar(
             }
             IconButton(
                 modifier = Modifier.align(Alignment.CenterVertically),
-                onClick = { /* TODO */ }
+                onClick = { navigateToSearch(R.string.anime_manga) }
             ) {
                 Icon(
                     imageVector = Icons.Filled.Search,

@@ -1,9 +1,5 @@
 package com.dirzaaulia.gamewish.ui.common
 
-import android.util.Half.toFloat
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -14,14 +10,10 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Details
-import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -48,7 +40,6 @@ import com.dirzaaulia.gamewish.utils.*
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
 import com.google.accompanist.swiperefresh.SwipeRefreshState
-import com.google.android.material.chip.Chip
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -153,7 +144,7 @@ fun <T : Any> CommonVerticalList(
             data.apply {
                 when {
                     loadState.append is LoadState.Loading -> {
-                        item { CommonLoadingGridItem() }
+                        item { CommonLoadingItem() }
                     }
                     loadState.refresh is LoadState.Error -> {
                         val error = data.loadState.refresh as LoadState.Error
@@ -221,7 +212,7 @@ fun <T : Any> AnimeVerticalList(
             data.apply {
                 when {
                     loadState.append is LoadState.Loading -> {
-                        item { CommonLoadingGridItem() }
+                        item { CommonLoadingItem() }
                     }
                     loadState.refresh is LoadState.Error -> {
                         val error = data.loadState.refresh as LoadState.Error
@@ -389,9 +380,10 @@ fun DealsItem(
 }
 
 @Composable
-fun WishlistAnimeItem(
+fun CommonAnimeItem(
+    modifier: Modifier = Modifier,
     parentNode: ParentNode,
-    modifier: Modifier = Modifier
+    navigateToAnimeDetails: (Long, String) -> Unit,
 ) {
     Card(
         modifier = modifier
@@ -399,11 +391,16 @@ fun WishlistAnimeItem(
             .height(150.dp)
             .padding(vertical = 4.dp)
             .clickable(
-                onClick = { /* TODO */ }
+                onClick = {
+                    parentNode.node?.id?.let {
+                        navigateToAnimeDetails(it, "Anime")
+                    }
+                }
             ),
         shape = MaterialTheme.shapes.large,
     ) {
         Row(
+            modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
             parentNode.node?.mainPicture?.large?.let {
@@ -421,6 +418,22 @@ fun WishlistAnimeItem(
                     .padding(vertical = 4.dp, horizontal = 8.dp)
                     .weight(1f)
             ) {
+                parentNode.listStatus?.score?.let {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.End,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Star,
+                            contentDescription = null
+                        )
+                        Text(
+                            text = it.toString(),
+                            style = MaterialTheme.typography.caption
+                        )
+                    }
+                }
                 parentNode.listStatus?.status?.let {
                     var statusFormatted = it.replace("_"," ")
                     statusFormatted = statusFormatted.capitalizeWords()
@@ -460,19 +473,19 @@ fun WishlistAnimeItem(
 
 @Composable
 fun SearchGamesItem(
-    games: Games,
     modifier: Modifier = Modifier,
-    viewModel: SearchViewModel
+    navigateToGameDetails: (Long) -> Unit = { },
+    games: Games,
 ) {
     Surface(
         modifier = modifier
             .fillMaxWidth()
             .clickable(
-                onClick = { /* TODO */ }
+                onClick = { games.id?.let { navigateToGameDetails(it) } }
             ),
         elevation = 0.dp,
     ) {
-        Column {
+        Column(modifier = modifier.padding(top = 4.dp)) {
             games.released?.let { released ->
                 Text(
                     text = textDateFormatter2(released),
@@ -513,7 +526,7 @@ fun SearchGamesItem(
             }
             Divider(
                 modifier = Modifier
-                    .padding(vertical = 8.dp)
+                    .padding(top = 8.dp)
                     .fillMaxWidth()
             )
         }

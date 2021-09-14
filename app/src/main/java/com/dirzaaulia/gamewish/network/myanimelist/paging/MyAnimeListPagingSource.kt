@@ -15,6 +15,7 @@ class MyAnimeListPagingSource(
     private val serviceCode: Int,
     private val accessToken: String,
     private val listStatus: String,
+    private val seasonalQuery: String,
 ) : PagingSource<Int, ParentNode>() {
 
     override fun getRefreshKey(state: PagingState<Int, ParentNode>): Int? {
@@ -28,6 +29,14 @@ class MyAnimeListPagingSource(
         val offset = params.key ?: 0
         return when (serviceCode) {
             1 -> repository.getUserAnimeList(accessToken, listStatus, offset)
+                .pagingSucceeded { data ->
+                    LoadResult.Page(
+                        data = data,
+                        prevKey = if (offset == 0) null else offset - 1,
+                        nextKey = if (data.isEmpty()) null else offset.plus(1)
+                    )
+                }
+            2 -> repository.getSeasonalAnime(accessToken, offset, seasonalQuery)
                 .pagingSucceeded { data ->
                     LoadResult.Page(
                         data = data,

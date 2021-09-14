@@ -6,23 +6,29 @@ import android.os.Build
 import android.text.Html
 import android.text.Spanned
 import com.dirzaaulia.gamewish.R
+import com.dirzaaulia.gamewish.data.model.myanimelist.Genre
 import com.dirzaaulia.gamewish.data.model.rawg.Developer
 import com.dirzaaulia.gamewish.data.model.rawg.EsrbRating
 import com.dirzaaulia.gamewish.data.model.rawg.Publisher
 import timber.log.Timber
 import vas.com.currencyconverter.CurrencyConverter
+import java.text.DecimalFormat
 import java.text.NumberFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.*
 
 fun htmlToTextFormatter(value: String?): Spanned? {
-    return Html.fromHtml(value, Html.FROM_HTML_MODE_COMPACT)
+    value.let {
+        return Html.fromHtml(value, Html.FROM_HTML_MODE_COMPACT)
+    }
 }
 
-fun numberFormatter(value: Double): String {
-    val format = NumberFormat.getNumberInstance(Locale.US)
-    return format.format(value)
+fun numberFormatter(value: Double?): String {
+    value.let {
+        val format = NumberFormat.getNumberInstance(Locale.US)
+        return format.format(value)
+    }
 }
 
 fun currencyFormatter(value: Double?, currency: Locale): String {
@@ -35,34 +41,35 @@ fun currencyFormatter(value: Double?, currency: Locale): String {
 fun textDateFormatter(value: String): String {
 
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        val inputFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        val inputFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.US)
         val date: LocalDate = LocalDate.parse(value, inputFormat)
-        val outputFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy")
+        val outputFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy", Locale.US)
 
         date.format(outputFormat)
     } else {
-        val dateParser = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val dateParser = SimpleDateFormat("yyyy-MM-dd", Locale.US)
         val date: Date = dateParser.parse(value)
-        val dateFormatter = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
+        val dateFormatter = SimpleDateFormat("dd-MM-yyyy", Locale.US)
 
         dateFormatter.format(date)
     }
 }
 
-fun textDateFormatter2(value: String): String {
+fun textDateFormatter2(value: String?): String {
+    value.let {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val inputFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.US)
+            val date: LocalDate = LocalDate.parse(value, inputFormat)
+            val outputFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("dd MMMM yyyy", Locale.US)
 
-    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        val inputFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-        val date: LocalDate = LocalDate.parse(value, inputFormat)
-        val outputFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("dd MMMM yyyy")
+            date.format(outputFormat)
+        } else {
+            val dateParser = SimpleDateFormat("yyyy-MM-dd", Locale.US)
+            val date: Date = dateParser.parse(value)
+            val dateFormatter = SimpleDateFormat("dd MMMM yyyy", Locale.US)
 
-        date.format(outputFormat)
-    } else {
-        val dateParser = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        val date: Date = dateParser.parse(value)
-        val dateFormatter = SimpleDateFormat("dd MMMM yyyy", Locale.getDefault())
-
-        dateFormatter.format(date)
+            dateFormatter.format(date)
+        }
     }
 }
 
@@ -143,4 +150,69 @@ fun currencyConvertAndFormat(
         }
     }
     return formattedPrice
+}
+
+fun animeSourceFormat(value: String?) : String {
+    value.let {
+        return when (it) {
+            "tv" -> "TV"
+            "ova" -> "OVA"
+            "movie" -> "Movie"
+            "special" -> "Special"
+            "ona" -> "ONA"
+            "music" -> "Music"
+            "manga" -> "Manga"
+            "one_shot" -> "One-Shot"
+            "doujinshi" -> "Doujinshi"
+            "light_novel" -> "Light Novel"
+            "novel" -> "Novel"
+            "manhwa" -> "Manhwa"
+            "manhua" -> "Manhua"
+            else -> ""
+        }
+    }
+}
+
+fun animeDateFormat(startDate: String?, endDate: String?): String {
+    var startDateFormatted = ""
+    var endDateFormatted = ""
+    if (startDate != null) {
+        startDateFormatted = textDateFormatter2(startDate)
+    }
+
+    if (endDate != null) {
+        endDateFormatted = textDateFormatter2(endDate)
+    }
+
+
+    return if (endDateFormatted.isBlank()) {
+        "$startDateFormatted - now"
+    } else {
+        "$startDateFormatted - $endDateFormatted"
+    }
+}
+
+fun animeRatingFormat(value: String?) : String {
+    value.let {
+        return when (it) {
+            "g" -> "All Ages"
+            "pg" -> "Children"
+            "pg_13" -> "Teens 13 or older"
+            "r" -> "17+ (violence & profanity)"
+            "r+" -> "Mild Nudity"
+            "rx" -> "Hentai"
+            else -> ""
+        }
+    }
+}
+
+fun animeGenreFormat(list: List<Genre>?): String {
+    if (list?.isNotEmpty() == true) {
+        var genre: String = ""
+        list.forEach {
+            genre += "${it.name} "
+        }
+        return genre
+    }
+    return ""
 }

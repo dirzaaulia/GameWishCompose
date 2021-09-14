@@ -20,6 +20,9 @@
     <string name="publishers">Publishers</string>
     <string name="developers">Developers</string>
     <string name="platforms">Platforms</string>
+    <string name="seasonal_anime">Seasonal Anime</string>
+    <string name="related">Related</string>
+    <string name="recommendation">Recommendation</string>
 
     <!-- Game Tab -->
     <string name="game_list_error">Something wrong went getting Game list data.
@@ -45,11 +48,16 @@
     <!-- Data Source -->
     <string name="deals_data_source">Deals data is provided by <u>Cheapshark</u>
     </string>
-
     <string name="anime_manga_data_source">Anime and Manga data is provided by <u>MyAnimeList</u>
     </string>
-
+    <string name="anime_data_source">
+        Anime data is provided by <u>MyAnimeList</u>
+    </string>
+    <string name="seasonal_data_source">Seasonal Anime data is provided by <u>MyAnimeList</u></string>
     <string name="games_data_source">Games data is provided by <u>RAWG</u></string>
+    <string name="genre_data_source">Genre data is provided by <u>RAWG</u></string>
+    <string name="publisher_data_source">Publisher data is provided by <u>RAWG</u></string>
+    <string name="platform_data_source">Platform data is provided by <u>RAWG</u></string>
 
     <!-- Game Details -->
     <string name="data_by_rawg">Game Data by <u>RAWG</u></string>
@@ -57,7 +65,15 @@
     <string name="developer">Developer</string>
     <string name="esrb_rating">ESRB Rating</string>
     <string name="stores">Stores</string>
-    <string name="game_details_error">Something wrong went getting Game Details data.
+    <string name="game_details_error">Something wrong went getting Game Details.
+        Check your internet connection and try again.
+    </string>
+
+    <!-- Anime Details -->
+    <string name="anime_details_error">Something wrong went getting Anime Details.
+        Check your internet connection and try again.
+    </string>
+    <string name="manga_details_error">Something wrong went getting Manga Details.
         Check your internet connection and try again.
     </string>
 
@@ -74,6 +90,7 @@
 
     <!-- Search -->
     <string name="search_game">Search Game Name</string>
+    <string name="search_anime">Search Anime or Manga title</string>
     <string name="search_games_empty">There is no Games found!
         Try again with different Games name.
     </string>
@@ -96,6 +113,12 @@
         Please check your internet connection and try again
     </string>
     <string name="search_platform_error">Something wrong went getting Platforms.
+        Check your internet connection and try again.
+    </string>
+    <string name="search_seasonal_empty">There is no Seasonal Anime found!
+        Please check your internet connection and try again
+    </string>
+    <string name="search_seasonal_error">Something wrong went getting Seasonal Anime.
         Check your internet connection and try again.
     </string>
 </resources>

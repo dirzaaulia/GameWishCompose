@@ -31,6 +31,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
@@ -90,8 +91,6 @@ class HomeViewModel @Inject constructor(
     val listWishlist = query
         .flatMapLatest { query ->
             gameStatus.flatMapLatest {
-//                Pager(PagingConfig(pageSize = 10)) {
-//                    FirebasePagingSource(firebaseRepository, _userAuthId.value.toString(), it)
                 databaseRepository.getFilteredWishlist(query, it)
             }
         }.cachedIn(viewModelScope)
@@ -118,7 +117,8 @@ class HomeViewModel @Inject constructor(
                         myAnimeListRepository,
                         1,
                         accessToken,
-                        it
+                        it,
+                        ""
                     )
                 }.flow.cachedIn(viewModelScope)
             }
@@ -146,14 +146,6 @@ class HomeViewModel @Inject constructor(
         getAccessToken()
         getStores()
     }
-
-//    fun getUserAuthStatus() {
-//        firebaseRepository.getUserAuthId()
-//            .onEach {
-//                _userAuthId.value = it
-//            }
-//            .launchIn(viewModelScope)
-//    }
 
     @MainThread
     fun setSearchQuery(value: String) {
@@ -240,27 +232,11 @@ class HomeViewModel @Inject constructor(
             .launchIn(viewModelScope)
     }
 
-//    fun addToWishlist(wishlist: Wishlist) {
-//        viewModelScope.launch {
-//            _userAuthId.value?.let { firebaseRepository.addToWishlist(it, wishlist) }
-//        }
-//    }
-
     fun addToWishlist(wishlist: Wishlist) {
         viewModelScope.launch {
             databaseRepository.addToWishlist(wishlist)
         }
     }
-
-//    fun getMyAnimeListUser() {
-//        myAnimeListRepository.getMyAnimeListUser(_token.value)
-//            .onEach {
-//                it.success {
-//                    _myAnimeListUser.value = it
-//                }
-//            }
-//            .launchIn(viewModelScope)
-//    }
 
     fun getMyAnimeListToken(
         clientId: String,

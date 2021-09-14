@@ -18,7 +18,7 @@ import com.dirzaaulia.gamewish.data.model.myanimelist.ParentNode
 import com.dirzaaulia.gamewish.extension.isError
 import com.dirzaaulia.gamewish.extension.isSucceeded
 import com.dirzaaulia.gamewish.extension.visible
-import com.dirzaaulia.gamewish.ui.common.WishlistAnimeItem
+import com.dirzaaulia.gamewish.ui.common.CommonAnimeItem
 import com.dirzaaulia.gamewish.ui.common.AnimeVerticalList
 import com.dirzaaulia.gamewish.ui.common.WebViewMyAnimeList
 import com.dirzaaulia.gamewish.ui.home.HomeViewModel
@@ -31,7 +31,7 @@ fun WishlistAnime(
     lazyListState: LazyListState,
     data: LazyPagingItems<ParentNode>,
     animeStatus: String,
-    navigateToMyAnimeListLogin: () -> Unit
+    navigateToAnimeDetails: (Long, String) -> Unit,
 ) {
     var animeStatusFormatted = animeStatus
     animeStatusFormatted = animeStatusFormatted.replace("_", " ")
@@ -59,12 +59,19 @@ fun WishlistAnime(
                     errorString = stringResource(id = R.string.anime_list_error),
                     viewModel = viewModel
                 ) { parentNode ->
-                    WishlistAnimeItem(parentNode = parentNode)
+                    CommonAnimeItem(
+                        parentNode = parentNode,
+                        navigateToAnimeDetails = navigateToAnimeDetails
+                    )
                 }
             }
         }
         accessTokenResult.isError -> {
-            WebViewMyAnimeList(viewModel = viewModel, upPress = {})
+            WebViewMyAnimeList(
+                from = 0,
+                viewModel = viewModel,
+                upPress = {}
+            )
         }
     }
 }

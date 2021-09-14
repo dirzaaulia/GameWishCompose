@@ -23,7 +23,7 @@ data class Details(
     @Json(name = "media_type")
     val mediaType: String?,
     val status: String?,
-    val genres: List<Genre>,
+    val genres: List<Genre>?,
     @Json(name = "my_list_status")
     var listStatus: ListStatus?,
     @Json(name = "num_episodes")

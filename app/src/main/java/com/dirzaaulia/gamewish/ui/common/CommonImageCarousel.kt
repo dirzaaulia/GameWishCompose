@@ -1,13 +1,15 @@
 package com.dirzaaulia.gamewish.ui.common
 
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.Card
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
+import com.dirzaaulia.gamewish.data.model.myanimelist.MainPicture
 import com.dirzaaulia.gamewish.data.model.rawg.Screenshots
 import com.dirzaaulia.gamewish.utils.NetworkImage
 import com.google.accompanist.pager.HorizontalPager
@@ -49,6 +51,39 @@ fun CommonGameCarousel(
                         contentDescription = null
                     )
                 }
+            }
+        }
+    }
+}
+
+@Composable
+fun CommonAnimeCarousel(
+    pagerState: PagerState,
+    screenshots: List<MainPicture>
+) {
+    LaunchedEffect(Unit) {
+        while (true) {
+            yield()
+            delay(2000)
+            pagerState.animateScrollToPage(
+                page = (pagerState.currentPage + 1) % (pagerState.pageCount),
+                animationSpec = tween(600)
+            )
+        }
+    }
+
+    HorizontalPager(
+        state = pagerState,
+        modifier =  Modifier
+            .width(100.dp)
+    ) { pageIndex ->
+        val screenshot = screenshots[pageIndex]
+        Card {
+            screenshot.large?.let {
+                NetworkImage(
+                    url = it,
+                    contentDescription = null
+                )
             }
         }
     }

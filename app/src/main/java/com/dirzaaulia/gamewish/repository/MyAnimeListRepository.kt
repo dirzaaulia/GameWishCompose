@@ -72,6 +72,26 @@ class MyAnimeListRepository @Inject constructor(
         }
     }
 
+    @WorkerThread
+    fun getMyAnimeListAnimeDetails(
+        accessToken: String,
+        animeId: Long
+    ) = flow {
+        try {
+            val bearerAccessToken = String.format("Bearer $accessToken")
+            apiUrlService.getMyAnimeListAnimeDetails(
+                bearerAccessToken,
+                animeId = animeId
+            ).body()?.let {
+                emit(ResponseResult.Success(it))
+            } ?: run {
+                throw NotFoundException()
+            }
+        } catch (e: Exception) {
+            emit(ResponseResult.Error(e))
+        }
+    }
+
     suspend fun getUserAnimeList(
         accessToken: String,
         listStatus: String,
@@ -83,6 +103,27 @@ class MyAnimeListRepository @Inject constructor(
                 apiUrlService.getMyAnimeListAnimeList(
                     bearerAccessToken,
                     status = listStatus,
+                    offset = offset
+                ).body()?.data ?: emptyList()
+            }
+        }
+    }
+
+    suspend fun getSeasonalAnime(
+        accessToken: String,
+        offset: Int,
+        seasonalQuery: String
+    ) : ResponseResult<List<ParentNode>> {
+        val bearerAccessToken = String.format("Bearer $accessToken")
+        val seasonal = seasonalQuery.split(" ")
+        val season = seasonal[0]
+        val year = seasonal[1]
+        return withContext(Dispatchers.IO) {
+            executeWithResponse {
+                apiUrlService.getMyAnimeListSeasonalAnime(
+                    bearerAccessToken,
+                    season = season,
+                    year = year,
                     offset = offset
                 ).body()?.data ?: emptyList()
             }

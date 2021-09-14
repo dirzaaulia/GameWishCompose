@@ -17,10 +17,14 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.dirzaaulia.gamewish.R
+import com.dirzaaulia.gamewish.data.model.myanimelist.ParentNode
 import com.dirzaaulia.gamewish.data.model.rawg.Games
 import com.dirzaaulia.gamewish.data.model.rawg.Genre
 import com.dirzaaulia.gamewish.data.model.rawg.Platform
 import com.dirzaaulia.gamewish.data.model.rawg.Publisher
+import com.dirzaaulia.gamewish.extension.isSucceeded
+import com.dirzaaulia.gamewish.ui.home.HomeViewModel
+import com.dirzaaulia.gamewish.ui.search.tab.anime.SearchAnime
 import com.dirzaaulia.gamewish.ui.search.tab.game.SearchGame
 import com.google.accompanist.insets.navigationBarsHeight
 import com.google.accompanist.insets.navigationBarsPadding
@@ -28,25 +32,41 @@ import java.util.*
 
 @Composable
 fun Search(
+    homeViewModel: HomeViewModel,
     viewModel: SearchViewModel = hiltViewModel(),
     menuId: Int,
     navigateToGameDetails: (Long) -> Unit,
+    navigateToAnimeDetails: (Long, String) -> Unit,
     upPress: () -> Unit
 ) {
+    val accessTokenResult by homeViewModel.tokenResult.collectAsState()
 
     val menu = SearchNavMenu.values()
     val searchMenuId: Int by viewModel.selectedBottomNav.collectAsState()
     val scope = rememberCoroutineScope()
-    val scaffoldState = rememberBackdropScaffoldState(BackdropValue.Revealed)
+    val scaffoldStateGame = rememberBackdropScaffoldState(BackdropValue.Revealed)
     val lazyListStateSearchGames = rememberLazyListState()
     val lazyListStateGenre = rememberLazyListState()
     val lazyListStatePublisher = rememberLazyListState()
     val lazyListStatePlatform = rememberLazyListState()
+
     val genre: LazyPagingItems<Genre> = viewModel.genres.collectAsLazyPagingItems()
     val publisher: LazyPagingItems<Publisher> = viewModel.publishers.collectAsLazyPagingItems()
     val platform: LazyPagingItems<Platform> = viewModel.platforms.collectAsLazyPagingItems()
     val searchGameList: LazyPagingItems<Games> = viewModel.searchGameList.collectAsLazyPagingItems()
     val searchGameRequest by viewModel.searchGameRequest.collectAsState()
+
+    val lazyListStateSeasonalAnime = rememberLazyListState()
+    val searchAnimeQuery by viewModel.searchAnimeQuery.collectAsState()
+    val seasonalAnimeQuery by viewModel.seasonalAnimeQuery.collectAsState()
+    val seasonalAnimeList: LazyPagingItems<ParentNode> =
+        viewModel.seasonalAnimeList.collectAsLazyPagingItems()
+
+    when {
+        accessTokenResult.isSucceeded -> {
+            viewModel.getAccessToken()
+        }
+    }
 
     LaunchedEffect(menuId) {
         viewModel.selectBottomNavMenu(menuId)
@@ -65,11 +85,12 @@ fun Search(
             when (destination) {
                 SearchNavMenu.GAME -> {
                     SearchGame(
+                        navigateToGameDetails = navigateToGameDetails,
                         modifier = innerModifier,
                         viewModel = viewModel,
                         upPress = upPress,
                         scope = scope,
-                        scaffoldState = scaffoldState,
+                        scaffoldState = scaffoldStateGame,
                         searchGameList = searchGameList,
                         lazyListStateSearchGames = lazyListStateSearchGames,
                         lazyListStateGenre = lazyListStateGenre,
@@ -78,10 +99,24 @@ fun Search(
                         genre = genre,
                         publisher = publisher,
                         platform = platform,
-                        searchGameRequest = searchGameRequest
+                        searchGameRequest = searchGameRequest,
                     )
                 }
-                SearchNavMenu.ANIME -> {}
+                SearchNavMenu.ANIME -> {
+                    SearchAnime(
+                        modifier = innerModifier,
+                        viewModel = viewModel,
+                        homeViewModel = homeViewModel,
+                        scope = scope,
+                        accessTokenResult = accessTokenResult,
+                        lazyListStateSeasonalAnime = lazyListStateSeasonalAnime,
+                        searchAnimeQuery = searchAnimeQuery,
+                        seasonalAnimeQuery = seasonalAnimeQuery,
+                        seasonalAnimeList = seasonalAnimeList,
+                        navigateToAnimeDetails = navigateToAnimeDetails,
+                        upPress = upPress
+                    )
+                }
             }
         }
     }

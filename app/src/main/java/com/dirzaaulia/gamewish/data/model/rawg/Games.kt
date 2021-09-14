@@ -6,7 +6,7 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class Games(
-    val id: Int?,
+    val id: Long?,
     val name: String?,
     val released: String?,
     val metacritic: Int?,

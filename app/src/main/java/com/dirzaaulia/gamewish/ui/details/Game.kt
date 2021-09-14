@@ -27,6 +27,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
@@ -191,14 +192,22 @@ fun GameDetailsMiddleContent(
         modifier = Modifier
             .padding(start = 16.dp, end = 16.dp, top = 8.dp)
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically
-        ) {
+        data.name?.let {
             Text(
                 text = stringResource(id = R.string.data_by_rawg),
                 style = MaterialTheme.typography.caption,
-                modifier = Modifier.weight(1f)
             )
+        }
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            data.name?.let {
+                Text(
+                    modifier = Modifier.weight(1f),
+                    text = it,
+                    style = MaterialTheme.typography.h4
+                )
+            }
             OutlinedButton(
                 modifier = Modifier.size(50.dp),
                 onClick = {
@@ -220,12 +229,6 @@ fun GameDetailsMiddleContent(
                     tint = MaterialTheme.colors.onSurface
                 )
             }
-        }
-        data.name?.let {
-            Text(
-                text = it,
-                style = MaterialTheme.typography.h4
-            )
         }
         Row {
             Column(
@@ -342,6 +345,7 @@ fun GameDetailsMiddleContent(
                 modifier = Modifier.padding(top = 8.dp)
             )
             Text(
+                textAlign = TextAlign.Justify,
                 text = AnnotatedString(htmlToTextFormatter(it).toString()),
                 style = MaterialTheme.typography.body1
             )
@@ -373,27 +377,27 @@ fun GameWishlistSheetContent(
             .padding(16.dp)
             .fillMaxWidth()
     ) {
-        IconButton(
-            onClick = {
-                wishlist?.let {
-                    viewModel.deleteWishlist(it)
-                }
+        if (wishlist != null) {
+            IconButton(
+                onClick = {
+                    wishlist.let {
+                        viewModel.deleteWishlist(it)
+                    }
 
-                scope.launch {
-                    scaffoldState.bottomSheetState.collapse()
-                    scaffoldState.snackbarHostState
-                        .showSnackbar("This game has been deleted from your Wishlist.")
-                }
-            },
-            modifier = Modifier
-                .visible(wishlist != null)
-                .align(Alignment.End)
-        ) {
-            Icon(
-                imageVector = Icons.Filled.Delete,
-                contentDescription = null,
-                tint = Red700
-            )
+                    scope.launch {
+                        scaffoldState.bottomSheetState.collapse()
+                        scaffoldState.snackbarHostState
+                            .showSnackbar("This game has been deleted from your Wishlist.")
+                    }
+                },
+                modifier = Modifier.align(Alignment.End)
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Delete,
+                    contentDescription = null,
+                    tint = Red700
+                )
+            }
         }
         gameDetails.name?.let {
             Text(
