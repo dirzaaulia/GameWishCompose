@@ -44,8 +44,6 @@ fun Home(
     val googleUsername by viewModel.googleUsername.collectAsState()
     val myAnimeListUserResult by viewModel.myAnimeListUserResult.collectAsState(null)
     val myAnimeListUser by viewModel.myAnimeListUser.collectAsState()
-    val refreshToken by viewModel.refreshToken.collectAsState()
-
 
     Scaffold(
         backgroundColor = MaterialTheme.colors.primarySurface,

@@ -27,9 +27,11 @@ import com.dirzaaulia.gamewish.data.model.Wishlist
 import com.dirzaaulia.gamewish.data.model.myanimelist.ParentNode
 import com.dirzaaulia.gamewish.ui.common.AnimeFilterDialog
 import com.dirzaaulia.gamewish.ui.common.GameFilterDialog
+import com.dirzaaulia.gamewish.ui.common.MangaFilterDialog
 import com.dirzaaulia.gamewish.ui.home.HomeViewModel
 import com.dirzaaulia.gamewish.ui.home.wishlist.anime.WishlistAnime
 import com.dirzaaulia.gamewish.ui.home.wishlist.game.WishlistGame
+import com.dirzaaulia.gamewish.ui.home.wishlist.manga.WishlistManga
 import com.google.accompanist.insets.statusBarsPadding
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -47,15 +49,19 @@ fun Wishlist(
     val searchQuery by viewModel.query.collectAsState()
     val gameStatus by viewModel.gameStatus.collectAsState()
     val animeStatus by viewModel.animeStatus.collectAsState()
+    val mangaStatus by viewModel.mangaStatus.collectAsState()
     val scope = rememberCoroutineScope()
     val scaffoldState = rememberBottomSheetScaffoldState()
     val lazyListStateGame = rememberLazyListState()
     val lazyListStateAnime = rememberLazyListState()
+    val lazyListStateManga = rememberLazyListState()
     val lazyListWishlist: LazyPagingItems<Wishlist> =
         viewModel.listWishlist.collectAsLazyPagingItems()
     val accessTokenResult by viewModel.tokenResult.collectAsState()
     val lazyListAnime: LazyPagingItems<ParentNode> =
         viewModel.animeList.collectAsLazyPagingItems()
+    val lazyListManga: LazyPagingItems<ParentNode> =
+        viewModel.mangaList.collectAsLazyPagingItems()
 
     BottomSheetScaffold(
         modifier = modifier,
@@ -74,9 +80,9 @@ fun Wishlist(
                         viewModel = viewModel,
                         animeStatus = animeStatus
                     )
-                    WishlistTab.MANGA -> AnimeFilterDialog(
+                    WishlistTab.MANGA -> MangaFilterDialog(
                         viewModel = viewModel,
-                        animeStatus = animeStatus
+                        mangaStatus = mangaStatus
                     )
                 }
             }
@@ -130,7 +136,14 @@ fun Wishlist(
                            )
                     }
                     WishlistTab.MANGA -> {
-
+                        WishlistManga(
+                            accessTokenResult = accessTokenResult,
+                            viewModel = viewModel,
+                            lazyListState = lazyListStateManga,
+                            data = lazyListManga,
+                            animeStatus = mangaStatus,
+                            navigateToAnimeDetails = navigateToAnimeDetails
+                        )
                     }
                 }
                 scope.launch {

@@ -211,3 +211,88 @@ fun AnimeFilterDialog(
         }
     }
 }
+
+@Composable
+fun MangaFilterDialog(
+    viewModel: HomeViewModel,
+    mangaStatus: String
+) {
+
+    val statusList = listOf("All", "Reading", "Completed", "On Hold", "Dropped", "Plan To Read")
+    var query by rememberSaveable { mutableStateOf(mangaStatus) }
+    var textfieldSize by remember { mutableStateOf(Size.Zero) }
+    var expanded by remember { mutableStateOf(false) }
+    val icon = if (expanded)
+        Icons.Filled.ArrowDropUp //it requires androidx.compose.material:material-icons-extended
+    else
+        Icons.Filled.ArrowDropDown
+
+    if (query.isBlank()) {
+        query = "All"
+    }
+
+    Column(
+        modifier = Modifier
+            .navigationBarsWithImePadding()
+            .padding(8.dp)
+            .fillMaxWidth()
+    ) {
+        Text(
+            text = "Sort Manga",
+            style = MaterialTheme.typography.h6
+        )
+        OutlinedTextField(
+            readOnly = true,
+            value = query,
+            onValueChange = { query = it },
+            modifier = Modifier
+                .fillMaxWidth()
+                .onGloballyPositioned { coordinates ->
+                    //This value is used to assign to the DropDown the same width
+                    textfieldSize = coordinates.size.toSize()
+                },
+            label = { Text("Status") },
+            trailingIcon = {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    modifier = Modifier.clickable { expanded = !expanded }
+                )
+            },
+            placeholder = {
+                if (query.isBlank()) {
+                    Text(text = "All")
+                } else {
+                    Text(text = query)
+                }
+            }
+        )
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            modifier = Modifier
+                .width(with(LocalDensity.current) { textfieldSize.width.toDp() })
+        ) {
+            statusList.forEach { item ->
+                DropdownMenuItem(
+                    onClick = {
+                        query = item
+                        expanded = false
+
+                        var listStatus = query
+                        listStatus = listStatus.lowerCaseWords()
+                        listStatus = listStatus.replace(" ", "_")
+
+                        if (listStatus.equals("All", true)) {
+                            listStatus = ""
+                        }
+
+                        viewModel.setMangaStatus(listStatus)
+                    }
+                ) {
+                    Text(text = item)
+                }
+            }
+        }
+    }
+}

@@ -6,7 +6,10 @@ import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -18,27 +21,23 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.dirzaaulia.gamewish.R
-import com.dirzaaulia.gamewish.data.model.Wishlist
 import com.dirzaaulia.gamewish.data.model.myanimelist.Details
-import com.dirzaaulia.gamewish.data.model.rawg.GameDetails
+import com.dirzaaulia.gamewish.data.request.cheapshark.DealsRequest
 import com.dirzaaulia.gamewish.extension.isError
 import com.dirzaaulia.gamewish.extension.isSucceeded
 import com.dirzaaulia.gamewish.extension.visible
-import com.dirzaaulia.gamewish.ui.common.CommonAnimeCarousel
-import com.dirzaaulia.gamewish.ui.common.CommonLoading
-import com.dirzaaulia.gamewish.ui.common.ErrorConnect
-import com.dirzaaulia.gamewish.ui.search.SearchViewModel
-import com.dirzaaulia.gamewish.ui.search.tab.game.SearchGameTab
+import com.dirzaaulia.gamewish.ui.common.*
 import com.dirzaaulia.gamewish.ui.theme.Grey700
 import com.dirzaaulia.gamewish.ui.theme.Red700
 import com.dirzaaulia.gamewish.ui.theme.White
 import com.dirzaaulia.gamewish.utils.*
+import com.google.accompanist.insets.navigationBarsWithImePadding
 import com.google.accompanist.insets.statusBarsPadding
 import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.CoroutineScope
@@ -50,6 +49,7 @@ fun AnimeDetails(
     upPress: () -> Unit,
     type: String,
     animeId: Long,
+    navigateToAnimeDetails: (Long, String) -> Unit,
 ) {
 
     val menu  = AnimeDetailsTab.values()
@@ -59,6 +59,8 @@ fun AnimeDetails(
     val data by viewModel.animeDetails.collectAsState(null)
     val dataResult by viewModel.animeDetailsResult.collectAsState(null)
     val loading = viewModel.loading.value
+    val updateMyAnimeListResult by viewModel.updateMyAnimeListResult.collectAsState()
+    val deleteMyAnimeListResult by viewModel.deleteMyAnimeListResult.collectAsState()
     val errorMessage = if (type.equals("Anime", true)) {
         stringResource(id = R.string.anime_details_error)
     } else {
@@ -66,7 +68,11 @@ fun AnimeDetails(
     }
 
     LaunchedEffect(viewModel) {
-        viewModel.getAnimeDetails(animeId)
+        if (type.equals("Anime", true)) {
+            viewModel.getAnimeDetails(animeId)
+        } else {
+            viewModel.getMangaDetails(animeId)
+        }
     }
 
     CommonLoading(visibility = loading)
@@ -116,6 +122,63 @@ fun AnimeDetails(
                         },
                         sheetPeekHeight = 0.dp,
                     ) { innerPadding ->
+                        when {
+                            updateMyAnimeListResult.isSucceeded -> {
+                                scope.launch {
+                                    val message = if (type.equals("Anime", true)) {
+                                        if (data?.listStatus != null) {
+                                            "This anime has been updated on your Anime list"
+                                        } else {
+                                            "This anime has been added on your Anime list"
+                                        }
+                                    } else {
+                                        if (data?.listStatus != null) {
+                                            "This manga has been updated on your Anime list"
+                                        } else {
+                                            "This manga has been added on your Anime list"
+                                        }
+                                    }
+                                    scaffoldState.snackbarHostState.showSnackbar(message)
+                                    viewModel.setUpdateMyAnimeListResult()
+                                    data?.id?.let { id -> viewModel.getAnimeDetails(id) }
+                                }
+                            }
+                            updateMyAnimeListResult.isError -> {
+                                scope.launch {
+                                    val message = if (type.equals("Anime", true)) {
+                                        "Something went wrong when updating your Anime list. Please try again"
+                                    } else {
+                                        "Something went wrong when updating your Manga list. Please try again"
+                                    }
+                                    scaffoldState.snackbarHostState.showSnackbar(message)
+                                    viewModel.setUpdateMyAnimeListResult()
+                                }
+                            }
+                            deleteMyAnimeListResult.isSucceeded -> {
+                                scope.launch {
+                                    val message = if (type.equals("Anime", true)) {
+                                        "This anime has been deleted from your Anime list"
+                                    } else {
+                                        "This manga has been deleted from your Manga list"
+                                    }
+                                    scaffoldState.snackbarHostState.showSnackbar(message)
+                                    viewModel.setDeleteMyAnimeListResult()
+                                    data?.id?.let { id -> viewModel.getAnimeDetails(id) }
+                                }
+                            }
+                            deleteMyAnimeListResult.isError -> {
+                                scope.launch {
+                                    val message = if (type.equals("Anime", true)) {
+                                        "Something went wrong when updating your Anime list. Please try again"
+                                    } else {
+                                        "Something went wrong when updating your Manga list. Please try again"
+                                    }
+                                    scaffoldState.snackbarHostState.showSnackbar(message)
+                                    viewModel.setDeleteMyAnimeListResult()
+                                }
+                            }
+                        }
+
                         val innerModifier = Modifier.padding(innerPadding)
                         Crossfade(
                             targetState = AnimeDetailsTab.getTabFromResource(menuId)
@@ -134,13 +197,180 @@ fun AnimeDetails(
                                     }
                                 }
                                 AnimeDetailsTab.RELATED -> {
-
+                                    data?.let { value ->
+                                        RelatedTab(
+                                            data = value,
+                                            type = type,
+                                            navigateToAnimeDetails = navigateToAnimeDetails
+                                        )
+                                    }
                                 }
                                 AnimeDetailsTab.RECOMMENDATION -> {
-
+                                    data?.let { value ->
+                                        RecommendationTab(
+                                            data = value,
+                                            type = type,
+                                            navigateToAnimeDetails = navigateToAnimeDetails
+                                        )
+                                    }
                                 }
                             }
                         }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun RecommendationTab(
+    modifier: Modifier = Modifier,
+    data: Details,
+    type: String,
+    navigateToAnimeDetails: (Long, String) -> Unit,
+) {
+    Column(modifier = modifier.padding(8.dp)) {
+        data.title?.let {
+            val text = if (type.equals("Anime", true)) {
+                stringResource(R.string.anime_data_source)
+            } else {
+                stringResource(R.string.manga_data_source)
+            }
+
+            Text(
+                text = text,
+                style = MaterialTheme.typography.caption,
+            )
+        }
+        if (type.equals("Anime", true)) {
+            val recommendationList = data.recommendations
+
+            if (recommendationList?.isEmpty() == true) {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.recommendation_anime_empty),
+                        style = MaterialTheme.typography.h6
+                    )
+                }
+            } else {
+                LazyColumn {
+                    items(recommendationList!!) { value ->
+                        CommonAnimeItem(
+                            parentNode = value,
+                            navigateToAnimeDetails = navigateToAnimeDetails,
+                            type = "Anime"
+                        )
+                    }
+                }
+            }
+        } else {
+            val recommendationList = data.recommendations
+
+            if (recommendationList?.isEmpty() == true) {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.recommendation_manga_empty),
+                        style = MaterialTheme.typography.h6
+                    )
+                }
+            } else {
+                LazyColumn {
+                    items(recommendationList!!) { value ->
+                        CommonAnimeItem(
+                            parentNode = value,
+                            navigateToAnimeDetails = navigateToAnimeDetails,
+                            type = "Manga"
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun RelatedTab(
+    modifier: Modifier = Modifier,
+    data: Details,
+    type: String,
+    navigateToAnimeDetails: (Long, String) -> Unit,
+) {
+    Column(modifier = modifier.padding(8.dp)) {
+        data.title?.let {
+            val text = if (type.equals("Anime", true)) {
+                stringResource(R.string.anime_data_source)
+            } else {
+                stringResource(R.string.manga_data_source)
+            }
+
+            if (type.equals("Anime", true)) {
+                if (data.relatedAnime?.isNotEmpty() == true) {
+                    Text(
+                        text = text,
+                        style = MaterialTheme.typography.caption,
+                    )
+                }
+            } else {
+                if (data.relatedManga?.isNotEmpty() == true) {
+                    Text(
+                        text = text,
+                        style = MaterialTheme.typography.caption,
+                    )
+                }
+            }
+        }
+        if (type.equals("Anime", true)) {
+            val relatedList = data.relatedAnime
+
+            if (relatedList?.isEmpty() == true) {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.related_anime_empty),
+                        style = MaterialTheme.typography.h6
+                    )
+                }
+            } else {
+                LazyColumn {
+                    items(relatedList!!) { value ->
+                        CommonAnimeItem(
+                            parentNode = value,
+                            navigateToAnimeDetails = navigateToAnimeDetails,
+                            type = "Anime"
+                        )
+                    }
+                }
+            }
+        } else {
+            val relatedList = data.relatedManga
+
+            if (relatedList?.isEmpty() == true) {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.related_manga_empty),
+                        style = MaterialTheme.typography.h6
+                    )
+                }
+            } else {
+                LazyColumn {
+                    items(relatedList!!) { value ->
+                        CommonAnimeItem(
+                            parentNode = value,
+                            navigateToAnimeDetails = navigateToAnimeDetails,
+                            type = "Manga"
+                        )
                     }
                 }
             }
@@ -322,7 +552,7 @@ fun DescriptionFooter(
             )
         }
         Row(
-          verticalAlignment = Alignment.CenterVertically,
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             data.title?.let {
                 Text(
@@ -464,7 +694,9 @@ fun AnimeDetailsSheetContent(
     scaffoldState: BottomSheetScaffoldState
 ) {
 
-    var expanded by remember { mutableStateOf(false) }
+    var statusExpanded by remember { mutableStateOf(false) }
+    var scoreExpanded by remember { mutableStateOf(false) }
+    var scoreIndex by remember { mutableStateOf(0) }
     val status = if (type.equals("Anime", true)) {
         data.listStatus?.status?.replace("_", " ")?.capitalizeWords()
             ?: "Plan To Watch"
@@ -479,29 +711,72 @@ fun AnimeDetailsSheetContent(
         listOf("Reading", "Completed", "On-Hold", "Dropped", "Plan To Read")
     }
 
+    val score = if (data.listStatus?.score != null) {
+        animeScoreFormat(data.listStatus?.score)
+    } else {
+        "(0) - Appaling"
+    }
+
+    val scoreList = listOf("(1) - Appaling",
+        "(2) - Horrible",
+        "(3) - Very Bad",
+        "(4) - Bad",
+        "(5) - Average",
+        "(6) - Fine",
+        "(7) - Good",
+        "(8) - Very Good",
+        "(9) - Great",
+        "(10) - Masterpiece"
+    )
+
+    val numberWatched = if (type.equals("Anime", true)) {
+        data.listStatus?.episodes ?: 0
+    } else {
+        data.listStatus?.chapters ?: 0
+    }
+
     var statusText by remember { mutableStateOf(status) }
+    var scoreText by remember { mutableStateOf(score) }
+    var numberWatchedText by remember { mutableStateOf(numberWatched.toString()) }
     var textfieldSize by remember { mutableStateOf(Size.Zero) }
-    val icon = if (expanded)
-        Icons.Filled.ArrowDropUp //it requires androidx.compose.material:material-icons-extended
-    else
-        Icons.Filled.ArrowDropDown
+    val isRewatching = if (type.equals("Anime", true)) {
+        data.listStatus?.isRewatching ?: false
+    } else {
+        data.listStatus?.isReReading ?: false
+    }
+    val isRewatchingState = remember { mutableStateOf(isRewatching) }
+    val icon = when {
+        statusExpanded -> {
+            Icons.Filled.ArrowDropUp //it requires androidx.compose.material:material-icons-extended
+        }
+        scoreExpanded -> {
+            Icons.Filled.ArrowDropUp //it requires androidx.compose.material:material-icons-extended
+        }
+        else -> {
+            Icons.Filled.ArrowDropDown
+        }
+    }
+
 
     Column(
         modifier = Modifier
             .padding(16.dp)
             .fillMaxWidth()
+            .navigationBarsWithImePadding()
     ) {
         if (data.listStatus != null) {
             IconButton(
                 onClick = {
-                    data.listStatus.let {
+                    data.id?.let {
+                        if (type.equals("Anime", true)) {
+                            viewModel.deleteMyAnimeListAnimeList(it)
+                        } else {
+                            viewModel.deleteMyAnimeListMangaList(it)
+                        }
 
                     }
-
                     scope.launch {
                         scaffoldState.bottomSheetState.collapse()
-                        scaffoldState.snackbarHostState
-                            .showSnackbar("This game has been deleted from your Wishlist.")
                     }
                 },
                 modifier = Modifier.align(Alignment.End)
@@ -534,13 +809,13 @@ fun AnimeDetailsSheetContent(
                 Icon(
                     imageVector = icon,
                     contentDescription = null,
-                    modifier = Modifier.clickable { expanded = !expanded }
+                    modifier = Modifier.clickable { statusExpanded = !statusExpanded }
                 )
             }
         )
         DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false },
+            expanded = statusExpanded,
+            onDismissRequest = { statusExpanded = false },
             modifier = Modifier
                 .width(with(LocalDensity.current) { textfieldSize.width.toDp() })
         ) {
@@ -548,11 +823,98 @@ fun AnimeDetailsSheetContent(
                 DropdownMenuItem(
                     onClick = {
                         statusText = item
-                        expanded = false
+                        statusExpanded = false
                     }
                 ) {
                     Text(text = item)
                 }
+            }
+        }
+        val fieldEnabled = !(statusText.equals("Plan To Watch", true)
+                || statusText.equals("Plan To Read", true))
+
+        OutlinedTextField(
+            enabled = fieldEnabled,
+            readOnly = true,
+            value = scoreText,
+            onValueChange = { scoreText = it },
+            modifier = Modifier
+                .fillMaxWidth()
+                .onGloballyPositioned { coordinates ->
+                    //This value is used to assign to the DropDown the same width
+                    textfieldSize = coordinates.size.toSize()
+                },
+            label = { Text("Score") },
+            trailingIcon = {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    modifier = Modifier.clickable { scoreExpanded = !scoreExpanded }
+                )
+            }
+        )
+        DropdownMenu(
+            expanded = scoreExpanded,
+            onDismissRequest = { scoreExpanded = false },
+            modifier = Modifier
+                .width(with(LocalDensity.current) { textfieldSize.width.toDp() })
+        ) {
+            scoreList.forEachIndexed { index, item ->
+                DropdownMenuItem(
+                    onClick = {
+                        scoreText = item
+                        scoreExpanded = false
+                        scoreIndex = index
+                    }
+                ) {
+                    Text(text = item)
+                }
+            }
+        }
+        OutlinedTextField(
+            enabled = fieldEnabled,
+            value = numberWatchedText,
+            onValueChange = { numberWatchedText = it },
+            modifier = Modifier.fillMaxWidth(),
+            label = {
+                if (type.equals("Anime", true)) {
+                    Text("Episodes Watched")
+                } else {
+                    Text("Chapters Read")
+                }
+            },
+            placeholder = {
+                Text(numberWatchedText)
+            },
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Number
+            ),
+        )
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 8.dp, bottom = 4.dp),
+        ) {
+            Text(
+                text = if (type.equals("Anime", true)) {
+                    "Is Rewatching"
+                } else {
+                    "Is Rereading"
+                },
+                style = MaterialTheme.typography.subtitle1
+            )
+            Row(
+                modifier = Modifier.weight(1f),
+                horizontalArrangement = Arrangement.End
+            ) {
+                Switch(
+                    checked = isRewatchingState.value,
+                    onCheckedChange = {
+                        isRewatchingState.value = it
+
+                    },
+                )
             }
         }
         OutlinedButton(
@@ -560,29 +922,41 @@ fun AnimeDetailsSheetContent(
                 .padding(top = 4.dp, bottom = 16.dp)
                 .fillMaxWidth(),
             onClick = {
-//                val newData = data.let {
-//
-//                }
-//                viewModel.addToWishlist(data)
-//                gameDetails.id?.let { viewModel.checkIfGameWishlisted(it) }
-
-                scope.launch {
-                    scaffoldState.bottomSheetState.collapse()
-
-                    val text = if (data.listStatus != null) {
-                        "This game has been updated on your Wishlist."
+                data.id?.let {
+                    if (type.equals("Anime", true)) {
+                        viewModel.updateMyAnimeListAnimeList(
+                            it,
+                            statusText.lowerCaseWords().replace(" ","_"),
+                            isRewatchingState.value,
+                            scoreIndex + 1,
+                            numberWatchedText.toInt()
+                        )
                     } else {
-                        "This game has been added to your Wishlist."
+                        viewModel.updateMyAnimeListMangaList(
+                            it,
+                            statusText.lowerCaseWords().replace(" ","_"),
+                            isRewatchingState.value,
+                            scoreIndex + 1,
+                            numberWatchedText.toInt()
+                        )
                     }
-
-                    scaffoldState.snackbarHostState.showSnackbar(text)
                 }
+
+                scope.launch { scaffoldState.bottomSheetState.collapse() }
             }
         ) {
             val text = if (data.listStatus != null) {
-                "Update Wishlist"
+                if (type.equals("Anime", true)) {
+                    "Update Anime In List"
+                } else {
+                    "Update Manga In List"
+                }
             } else {
-                "Add To Wishlist"
+                if (type.equals("Anime", true)) {
+                    "Add Anime To List"
+                } else {
+                    "Add Manga To List"
+                }
             }
 
             Text(text = text)
@@ -596,7 +970,7 @@ fun AnimeDetailsTabMenu(
     menuId: Int,
     viewModel: DetailsViewModel
 ) {
-    TabRow(selectedTabIndex = menuId) {
+    ScrollableTabRow(selectedTabIndex = menuId) {
         menu.forEachIndexed { index, searchGameTab ->
             Tab(
                 selected = menuId == index,

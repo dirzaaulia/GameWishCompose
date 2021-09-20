@@ -56,9 +56,15 @@ fun Search(
     val searchGameList: LazyPagingItems<Games> = viewModel.searchGameList.collectAsLazyPagingItems()
     val searchGameRequest by viewModel.searchGameRequest.collectAsState()
 
+    val lazyListStateAnime = rememberLazyListState()
+    val lazyListStateManga = rememberLazyListState()
     val lazyListStateSeasonalAnime = rememberLazyListState()
     val searchAnimeQuery by viewModel.searchAnimeQuery.collectAsState()
     val seasonalAnimeQuery by viewModel.seasonalAnimeQuery.collectAsState()
+    val searchAnimeList: LazyPagingItems<ParentNode> =
+        viewModel.searchAnimeList.collectAsLazyPagingItems()
+    val searchMangaList: LazyPagingItems<ParentNode> =
+        viewModel.searchMangaList.collectAsLazyPagingItems()
     val seasonalAnimeList: LazyPagingItems<ParentNode> =
         viewModel.seasonalAnimeList.collectAsLazyPagingItems()
 
@@ -69,7 +75,9 @@ fun Search(
     }
 
     LaunchedEffect(menuId) {
-        viewModel.selectBottomNavMenu(menuId)
+        if (searchMenuId == 0) {
+            viewModel.selectBottomNavMenu(menuId)
+        }
     }
 
     Scaffold(
@@ -109,9 +117,13 @@ fun Search(
                         homeViewModel = homeViewModel,
                         scope = scope,
                         accessTokenResult = accessTokenResult,
+                        lazyListStateAnime = lazyListStateAnime,
+                        lazyListStateManga = lazyListStateManga,
                         lazyListStateSeasonalAnime = lazyListStateSeasonalAnime,
                         searchAnimeQuery = searchAnimeQuery,
                         seasonalAnimeQuery = seasonalAnimeQuery,
+                        searchAnimeList = searchAnimeList,
+                        searchMangaList = searchMangaList,
                         seasonalAnimeList = seasonalAnimeList,
                         navigateToAnimeDetails = navigateToAnimeDetails,
                         upPress = upPress

@@ -55,9 +55,13 @@ fun SearchAnime(
     homeViewModel: HomeViewModel,
     scope: CoroutineScope,
     accessTokenResult: ResponseResult<String>?,
+    lazyListStateAnime: LazyListState,
+    lazyListStateManga: LazyListState,
     lazyListStateSeasonalAnime: LazyListState,
     searchAnimeQuery: String,
     seasonalAnimeQuery: String,
+    searchAnimeList: LazyPagingItems<ParentNode>,
+    searchMangaList: LazyPagingItems<ParentNode>,
     seasonalAnimeList: LazyPagingItems<ParentNode>,
     navigateToAnimeDetails: (Long, String) -> Unit,
     upPress: () -> Unit,
@@ -75,6 +79,7 @@ fun SearchAnime(
                 backgroundColor = MaterialTheme.colors.primarySurface,
                 topBar = {
                     SearchAnimeAppBar(
+                        menuId = menuId,
                         searchQuery = searchAnimeQuery,
                         scope = scope,
                         viewModel = viewModel,
@@ -102,17 +107,24 @@ fun SearchAnime(
                                     seasonalAnimeQuery = seasonalAnimeQuery,
                                     data = seasonalAnimeList,
                                     lazyListState = lazyListStateSeasonalAnime,
-                                    viewModel = viewModel,
                                     scope = scope,
                                     scaffoldState = scaffoldState,
                                     navigateToAnimeDetails = navigateToAnimeDetails
                                 )
                             }
                             SearchAnimeTab.ANIME -> {
-
+                                SearchAnimeList(
+                                    data = searchAnimeList,
+                                    lazyListState = lazyListStateAnime,
+                                    navigateToAnimeDetails = navigateToAnimeDetails
+                                )
                             }
                             SearchAnimeTab.MANGA -> {
-
+                                SearchMangaList(
+                                    data = searchMangaList,
+                                    lazyListState = lazyListStateManga,
+                                    navigateToAnimeDetails = navigateToAnimeDetails
+                                )
                             }
                         }
                     }
@@ -132,11 +144,70 @@ fun SearchAnime(
 }
 
 @Composable
+fun SearchMangaList(
+    data: LazyPagingItems<ParentNode>,
+    lazyListState: LazyListState,
+    navigateToAnimeDetails: (Long, String) -> Unit
+) {
+    Column (
+        modifier = Modifier.padding(top = 4.dp, start = 8.dp, end = 8.dp)
+    ){
+        if (data.itemCount != 0 && data.loadState.refresh is LoadState.NotLoading) {
+            Text(
+                text = stringResource(id = R.string.manga_data_source),
+                style = MaterialTheme.typography.caption,
+            )
+        }
+        CommonVerticalList(
+            data = data,
+            lazyListState = lazyListState,
+            emptyString = stringResource(id = R.string.search_manga_empty),
+            errorString = stringResource(id = R.string.search_manga_error),
+        ) { parentNode ->
+            CommonAnimeItem(
+                parentNode = parentNode,
+                navigateToAnimeDetails = navigateToAnimeDetails,
+                type = "Manga"
+            )
+        }
+    }
+}
+
+@Composable
+fun SearchAnimeList(
+    data: LazyPagingItems<ParentNode>,
+    lazyListState: LazyListState,
+    navigateToAnimeDetails: (Long, String) -> Unit
+) {
+    Column (
+        modifier = Modifier.padding(top = 4.dp, start = 8.dp, end = 8.dp)
+    ){
+        if (data.itemCount != 0 && data.loadState.refresh is LoadState.NotLoading) {
+            Text(
+                text = stringResource(id = R.string.anime_data_source),
+                style = MaterialTheme.typography.caption,
+            )
+        }
+        CommonVerticalList(
+            data = data,
+            lazyListState = lazyListState,
+            emptyString = stringResource(id = R.string.search_anime_empty),
+            errorString = stringResource(id = R.string.search_anime_error),
+        ) { parentNode ->
+            CommonAnimeItem(
+                parentNode = parentNode,
+                navigateToAnimeDetails = navigateToAnimeDetails,
+                type = "Anime"
+            )
+        }
+    }
+}
+
+@Composable
 fun SeasonalAnime(
     seasonalAnimeQuery: String,
     data: LazyPagingItems<ParentNode>,
     lazyListState: LazyListState,
-    viewModel: SearchViewModel,
     scope: CoroutineScope,
     scaffoldState: BottomSheetScaffoldState,
     navigateToAnimeDetails: (Long, String) -> Unit,
@@ -149,35 +220,36 @@ fun SeasonalAnime(
     Column (
         modifier = Modifier.padding(top = 4.dp, start = 8.dp, end = 8.dp)
     ){
-        Row {
-            Text(
-                text = "${season.capitalizeWords()} $year",
-                style = MaterialTheme.typography.body1,
-                modifier = Modifier.align(Alignment.CenterVertically)
-            )
-            IconButton(
-                modifier = Modifier.align(Alignment.CenterVertically),
-                onClick = {
-                    scope.launch {
-                        if (scaffoldState.bottomSheetState.isCollapsed) {
-                            scaffoldState.bottomSheetState.expand()
-                        } else {
-                            scaffoldState.bottomSheetState.collapse()
+        if (data.itemCount != 0 && data.loadState.refresh is LoadState.NotLoading) {
+            Row {
+                Text(
+                    text = "${season.capitalizeWords()} $year",
+                    style = MaterialTheme.typography.body1,
+                    modifier = Modifier.align(Alignment.CenterVertically)
+                )
+                IconButton(
+                    modifier = Modifier.align(Alignment.CenterVertically),
+                    onClick = {
+                        scope.launch {
+                            if (scaffoldState.bottomSheetState.isCollapsed) {
+                                scaffoldState.bottomSheetState.expand()
+                            } else {
+                                scaffoldState.bottomSheetState.collapse()
+                            }
                         }
                     }
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.ArrowDropDown,
+                        contentDescription = null
+                    )
                 }
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.ArrowDropDown,
-                    contentDescription = null
-                )
             }
+            Text(
+                text = stringResource(id = R.string.seasonal_data_source),
+                style = MaterialTheme.typography.caption,
+            )
         }
-        Text(
-            modifier = Modifier.visible(data.loadState.refresh is LoadState.NotLoading),
-            text = stringResource(id = R.string.seasonal_data_source),
-            style = MaterialTheme.typography.caption,
-        )
         CommonVerticalList(
             data = data,
             lazyListState = lazyListState,
@@ -186,7 +258,8 @@ fun SeasonalAnime(
         ) { parentNode ->
             CommonAnimeItem(
                 parentNode = parentNode,
-                navigateToAnimeDetails = navigateToAnimeDetails
+                navigateToAnimeDetails = navigateToAnimeDetails,
+                type = "Anime"
             )
         }
     }
@@ -267,6 +340,7 @@ fun SeasonalAnimeSheet(
 
 @Composable
 fun SearchAnimeAppBar(
+    menuId: Int,
     searchQuery: String,
     scope: CoroutineScope,
     viewModel: SearchViewModel,
@@ -303,6 +377,11 @@ fun SearchAnimeAppBar(
                 value = query,
                 onValueChange = {
                     query = it
+
+                    if (menuId == 0) {
+                        viewModel.selectSearchAnimeTab(1)
+                    }
+                    viewModel.setSearchAnimeQuery(query)
                 },
                 shape = RectangleShape,
                 placeholder = {
@@ -343,7 +422,7 @@ fun SearchAnimeTabMenu(
     menuId: Int,
     viewModel: SearchViewModel
 ) {
-    TabRow(selectedTabIndex = menuId) {
+    ScrollableTabRow(selectedTabIndex = menuId) {
         menu.forEachIndexed { index, searchAnimeTab ->
             Tab(
                 selected = menuId == index,

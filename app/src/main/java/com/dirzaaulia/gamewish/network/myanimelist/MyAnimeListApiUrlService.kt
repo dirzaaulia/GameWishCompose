@@ -12,6 +12,7 @@ import com.dirzaaulia.gamewish.utils.MyAnimeListConstant
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import okhttp3.OkHttpClient
+import okhttp3.ResponseBody
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Response
 import retrofit2.Retrofit
@@ -33,14 +34,14 @@ interface MyAnimeListApiUrlService {
         @Header("Authorization") authorization: String,
         @Query("q") value: String,
         @Query("offset") offset: Int
-    ): ResponseResult<MyAnimeListSearchResponse>
+    ): Response<MyAnimeListSearchResponse>
 
     @GET("v2/manga")
     suspend fun searchMyAnimeListManga(
         @Header("Authorization") authorization: String,
         @Query("q") value: String,
         @Query("offset") offset: Int
-    ): MyAnimeListSearchResponse
+    ): Response<MyAnimeListSearchResponse>
 
     @GET("v2/anime/season/{year}/{season}")
     suspend fun getMyAnimeListSeasonalAnime(
@@ -65,10 +66,14 @@ interface MyAnimeListApiUrlService {
     @GET("v2/manga/{manga_id}")
     suspend fun getMyAnimeListMangaDetails(
         @Header("Authorization") authorization: String,
-        @Path("manga_id") animeId: String,
-        @Query("fields") fields: String,
-        @Query("offset") offset: Int
-    ): Details
+        @Path("manga_id") mangaId: Long,
+        @Query("fields") fields: String
+            = "id,title,main_picture,alternative_titles,start_date,end_date,synopsis,mean,rank," +
+                "popularity,num_list_users,num_scoring_users,nsfw,created_at,updated_at," +
+                "media_type,status,genres,my_list_status,num_volumes,num_chapters," +
+                "authors{first_name,last_name},pictures,background,related_anime,related_manga," +
+                "recommendations,serialization{name}",
+    ): Response<Details>
 
     @GET("v2/users/{user_name}/animelist")
     suspend fun getMyAnimeListAnimeList(
@@ -82,44 +87,44 @@ interface MyAnimeListApiUrlService {
     @GET("v2/users/{user_name}/mangalist")
     suspend fun getMyAnimeListMangaList(
         @Header("Authorization") authorization: String,
-        @Path("user_name") username: String,
-        @Query("fields") fields: String,
+        @Path("user_name") username: String = "@me",
+        @Query("fields") fields: String = "list_status",
         @Query("status") status: String?,
         @Query("offset") offset: Int
-    ): MyAnimeListSearchResponse
+    ): Response<MyAnimeListSearchResponse>
 
     @FormUrlEncoded
     @PUT("v2/anime/{anime_id}/my_list_status")
     suspend fun updateMyAnimeListAnimeList(
         @Header("Authorization") authorization: String,
-        @Path("anime_id") id: Int,
+        @Path("anime_id") id: Long,
         @Field("status") status: String,
         @Field("is_rewatching") isRewatching: Boolean?,
         @Field("score") score: Int?,
         @Field("num_watched_episodes") episode: Int?
-    ): ListStatus
+    ): Response<ListStatus>
 
     @DELETE("v2/anime/{anime_id}/my_list_status")
     suspend fun deleteMyAnimeListAnimeList(
         @Header("Authorization") authorization: String,
-        @Path("anime_id") id: Int
+        @Path("anime_id") id: Long
     )
 
     @FormUrlEncoded
     @PUT("v2/manga/{manga_id}/my_list_status")
     suspend fun updateMyAnimeListMangaList(
         @Header("Authorization") authorization: String,
-        @Path("manga_id") id: Int,
+        @Path("manga_id") id: Long,
         @Field("status") status: String,
         @Field("is_rereading") isRereading: Boolean?,
         @Field("score") score: Int?,
         @Field("num_chapters_read") episode: Int?
-    ): ListStatus
+    ): Response<ListStatus>
 
     @DELETE("v2/manga/{manga_id}/my_list_status")
     suspend fun deleteMyAnimeListMangaList(
         @Header("Authorization") authorization: String,
-        @Path("manga_id") id: Int
+        @Path("manga_id") id: Long
     )
 
     companion object {

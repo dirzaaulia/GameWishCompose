@@ -1,12 +1,14 @@
 package com.dirzaaulia.gamewish.ui.details
 
 import androidx.annotation.MainThread
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dirzaaulia.gamewish.base.ResponseResult
 import com.dirzaaulia.gamewish.data.model.Wishlist
 import com.dirzaaulia.gamewish.data.model.myanimelist.Details
+import com.dirzaaulia.gamewish.data.model.myanimelist.ListStatus
 import com.dirzaaulia.gamewish.data.model.rawg.GameDetails
 import com.dirzaaulia.gamewish.data.response.rawg.ScreenshotsResponse
 import com.dirzaaulia.gamewish.extension.success
@@ -56,6 +58,14 @@ class DetailsViewModel @Inject constructor(
     private val _animeDetails: MutableStateFlow<Details?> = MutableStateFlow(null)
     val animeDetails = _animeDetails.asStateFlow()
 
+    private val _updateMyAnimeListResult: MutableStateFlow<ResponseResult<ListStatus>?>
+            = MutableStateFlow(null)
+    val updateMyAnimeListResult = _updateMyAnimeListResult.asStateFlow()
+
+    private val _deleteMyAnimeListResult: MutableStateFlow<ResponseResult<String>?>
+        = MutableStateFlow(null)
+    val deleteMyAnimeListResult = _deleteMyAnimeListResult.asStateFlow()
+
     private val _selectedAnimeTab: MutableStateFlow<Int> = MutableStateFlow(0)
     val selectedAnimeTab = _selectedAnimeTab.asStateFlow()
 
@@ -66,6 +76,21 @@ class DetailsViewModel @Inject constructor(
     @MainThread
     fun selectAnimeDetailsTab(tab: Int) {
         _selectedAnimeTab.value = tab
+    }
+
+    @MainThread
+    fun setLoading(status: Boolean) {
+        loading.value = status
+    }
+
+    @MainThread
+    fun setUpdateMyAnimeListResult() {
+        _updateMyAnimeListResult.value = null
+    }
+
+    @MainThread
+    fun setDeleteMyAnimeListResult() {
+        _deleteMyAnimeListResult.value = null
     }
 
     fun getAccessToken() {
@@ -115,6 +140,18 @@ class DetailsViewModel @Inject constructor(
             .launchIn(viewModelScope)
     }
 
+    fun getMangaDetails(animeId: Long) {
+        myAnimeListRepository.getMyAnimeListMangaDetails(_token.value, animeId)
+            .onEach {
+                it.success { data ->
+                    _animeDetails.value = data
+                }
+                _animeDetailsResult.value = it
+                loading.value = false
+            }
+            .launchIn(viewModelScope)
+    }
+
     fun checkIfGameWishlisted(gameId: Long) {
         viewModelScope.launch {
             databaseRepository.getWishlist(gameId).collect {
@@ -135,8 +172,57 @@ class DetailsViewModel @Inject constructor(
         }
     }
 
-    @MainThread
-    fun setLoading(status: Boolean) {
-        loading.value = status
+    fun updateMyAnimeListAnimeList(
+        animeId: Long,
+        status: String,
+        isRewatching: Boolean,
+        score: Int,
+        numberWatched: Int
+    ) {
+        myAnimeListRepository.updateMyAnimeListAnimeList(
+            _token.value,
+            animeId,
+            status,
+            isRewatching,
+            score,
+            numberWatched
+        ).onEach {
+            _updateMyAnimeListResult.value = it
+        }.launchIn(viewModelScope)
+    }
+
+    fun deleteMyAnimeListAnimeList(animeId: Long) {
+        myAnimeListRepository.deleteMyAnimeListAnimeList(_token.value, animeId)
+            .onEach {
+                _deleteMyAnimeListResult.value = it
+            }
+            .launchIn(viewModelScope)
+    }
+
+    fun updateMyAnimeListMangaList(
+        mangaId: Long,
+        status: String,
+        isRereading: Boolean,
+        score: Int,
+        numberRead: Int
+    ) {
+        myAnimeListRepository.updateMyAnimeListMangaList(
+            _token.value,
+            mangaId,
+            status,
+            isRereading,
+            score,
+            numberRead
+        ).onEach {
+            _updateMyAnimeListResult.value = it
+        }.launchIn(viewModelScope)
+    }
+
+    fun deleteMyAnimeListMangaList(mangaId: Long) {
+        myAnimeListRepository.deleteMyAnimeListMangaList(_token.value, mangaId)
+            .onEach {
+                _deleteMyAnimeListResult.value = it
+            }
+            .launchIn(viewModelScope)
     }
 }

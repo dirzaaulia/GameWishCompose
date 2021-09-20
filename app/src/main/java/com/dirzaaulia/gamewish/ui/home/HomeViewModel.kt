@@ -118,6 +118,24 @@ class HomeViewModel @Inject constructor(
                         1,
                         accessToken,
                         it,
+                        "",
+                        ""
+                    )
+                }.flow.cachedIn(viewModelScope)
+            }
+        }
+
+    val mangaStatus = MutableStateFlow("")
+    val mangaList: Flow<PagingData<ParentNode>> = _token
+        .flatMapLatest { accessToken ->
+            mangaStatus.flatMapLatest {
+                Pager(PagingConfig(pageSize = 10)) {
+                    MyAnimeListPagingSource(
+                        myAnimeListRepository,
+                        5,
+                        accessToken,
+                        it,
+                        "",
                         ""
                     )
                 }.flow.cachedIn(viewModelScope)
@@ -175,6 +193,11 @@ class HomeViewModel @Inject constructor(
     @MainThread
     fun setAnimeStatus(request: String) {
         animeStatus.value = request
+    }
+
+    @MainThread
+    fun setMangaStatus(request: String) {
+        mangaStatus.value = request
     }
 
     fun getFirebaseAuth(): FirebaseAuth {

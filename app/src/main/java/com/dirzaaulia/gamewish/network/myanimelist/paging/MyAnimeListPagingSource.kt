@@ -16,6 +16,7 @@ class MyAnimeListPagingSource(
     private val accessToken: String,
     private val listStatus: String,
     private val seasonalQuery: String,
+    private val searchQuery: String,
 ) : PagingSource<Int, ParentNode>() {
 
     override fun getRefreshKey(state: PagingState<Int, ParentNode>): Int? {
@@ -32,16 +33,40 @@ class MyAnimeListPagingSource(
                 .pagingSucceeded { data ->
                     LoadResult.Page(
                         data = data,
-                        prevKey = if (offset == 0) null else offset - 1,
-                        nextKey = if (data.isEmpty()) null else offset.plus(1)
+                        prevKey = if (offset == 0) null else offset - 10,
+                        nextKey = if (data.isEmpty()) null else offset.plus(10)
                     )
                 }
             2 -> repository.getSeasonalAnime(accessToken, offset, seasonalQuery)
                 .pagingSucceeded { data ->
                     LoadResult.Page(
                         data = data,
-                        prevKey = if (offset == 0) null else offset - 1,
-                        nextKey = if (data.isEmpty()) null else offset.plus(1)
+                        prevKey = if (offset == 0) null else offset - 10,
+                        nextKey = if (data.isEmpty()) null else offset.plus(10)
+                    )
+                }
+            3 -> repository.searchAnime(accessToken, offset, searchQuery)
+                .pagingSucceeded { data ->
+                    LoadResult.Page(
+                        data = data,
+                        prevKey = if (offset == 0) null else offset - 10,
+                        nextKey = if (data.isEmpty()) null else offset.plus(10)
+                    )
+                }
+            4 -> repository.searchManga(accessToken, offset, searchQuery)
+                .pagingSucceeded { data ->
+                    LoadResult.Page(
+                        data = data,
+                        prevKey = if (offset == 0) null else offset - 10,
+                        nextKey = if (data.isEmpty()) null else offset.plus(10)
+                    )
+                }
+            5 -> repository.getUserMangaList(accessToken, listStatus, offset)
+                .pagingSucceeded { data ->
+                    LoadResult.Page(
+                        data = data,
+                        prevKey = if (offset == 0) null else offset - 10,
+                        nextKey = if (data.isEmpty()) null else offset.plus(10)
                     )
                 }
             else -> {

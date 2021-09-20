@@ -384,6 +384,7 @@ fun CommonAnimeItem(
     modifier: Modifier = Modifier,
     parentNode: ParentNode,
     navigateToAnimeDetails: (Long, String) -> Unit,
+    type: String,
 ) {
     Card(
         modifier = modifier
@@ -393,7 +394,11 @@ fun CommonAnimeItem(
             .clickable(
                 onClick = {
                     parentNode.node?.id?.let {
-                        navigateToAnimeDetails(it, "Anime")
+                        if (type.equals("Anime", true)) {
+                            navigateToAnimeDetails(it, "Anime")
+                        } else {
+                            navigateToAnimeDetails(it, "Manga")
+                        }
                     }
                 }
             ),
@@ -443,6 +448,12 @@ fun CommonAnimeItem(
                         style = MaterialTheme.typography.body2
                     )
                 }
+                parentNode.relationType?.let {
+                    Text(
+                        text = it,
+                        style = MaterialTheme.typography.body2
+                    )
+                }
                 parentNode.node?.title?.let {
                     Text(
                         text = it,
@@ -450,19 +461,23 @@ fun CommonAnimeItem(
                     )
                 }
                 parentNode.listStatus?.status?.let { status ->
-                    if (!status.equals("plan_to_watch", true)) {
-                        parentNode.listStatus?.episodes?.let {
-                            Text(
-                                text = "$it Episodes Watched",
-                                style = MaterialTheme.typography.caption
-                            )
+                    if (type.equals("Anime", true)) {
+                        if (!status.equals("plan_to_watch", true)) {
+                            parentNode.listStatus?.episodes?.let {
+                                Text(
+                                    text = "$it Episodes Watched",
+                                    style = MaterialTheme.typography.caption
+                                )
+                            }
                         }
-                    } else if (!status.equals("plan_to_read", true)) {
-                        parentNode.listStatus?.chapters?.let {
-                            Text(
-                                text = "$it Chapters Watched",
-                                style = MaterialTheme.typography.caption
-                            )
+                    } else {
+                        if (!status.equals("plan_to_read", true)) {
+                            parentNode.listStatus?.chapters?.let {
+                                Text(
+                                    text = "$it Chapters Watched",
+                                    style = MaterialTheme.typography.caption
+                                )
+                            }
                         }
                     }
                 }

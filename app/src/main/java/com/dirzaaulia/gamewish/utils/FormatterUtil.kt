@@ -216,3 +216,21 @@ fun animeGenreFormat(list: List<Genre>?): String {
     }
     return ""
 }
+
+fun animeScoreFormat(value: Int?): String {
+    value.let {
+        return when (it) {
+            1 -> "(1) - Appaling"
+            2 -> "(2) - Horrible"
+            3 -> "(3) - Very Bad"
+            4 -> "(4) - Bad"
+            5 -> "(5) - Average"
+            6 -> "(6) - Fine"
+            7 -> "(7) - Good"
+            8 -> "(8) - Very Good"
+            9 -> "(9) - Great"
+            10 -> "(10) - Masterpiece"
+            else -> ""
+        }
+    }
+}

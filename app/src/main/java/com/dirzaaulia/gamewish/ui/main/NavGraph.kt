@@ -109,6 +109,7 @@ fun NavGraph(navController: NavHostController) {
                                 animeId = argument.getLong(NavScreen.AnimeDetails.argument0),
                                 type = it,
                                 viewModel = hiltViewModel(),
+                                navigateToAnimeDetails = actions.navigateToAnimeDetails,
                                 upPress = actions.upPress
                             )
                         }

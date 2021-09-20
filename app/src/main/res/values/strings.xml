@@ -44,6 +44,10 @@
         If you have suggestion, critic for this GameWish app or issue and problem that you encounter. Feel free to send
         me e-mail
     </string>
+    <string name="myanimelist_user_error">
+        Something went wrong went getting your MyAnimelist User data.
+        Please check your internet connection and try again!.
+    </string>
 
     <!-- Data Source -->
     <string name="deals_data_source">Deals data is provided by <u>Cheapshark</u>
@@ -52,6 +56,9 @@
     </string>
     <string name="anime_data_source">
         Anime data is provided by <u>MyAnimeList</u>
+    </string>
+    <string name="manga_data_source">
+        Manga data is provided by <u>MyAnimeList</u>
     </string>
     <string name="seasonal_data_source">Seasonal Anime data is provided by <u>MyAnimeList</u></string>
     <string name="games_data_source">Games data is provided by <u>RAWG</u></string>
@@ -76,6 +83,18 @@
     <string name="manga_details_error">Something wrong went getting Manga Details.
         Check your internet connection and try again.
     </string>
+    <string name="related_anime_empty">There is no related anime for this Anime.</string>
+    <string name="related_anime_error">Something went wrong went getting related anime.
+        Check your internet connection and try again</string>
+    <string name="related_manga_empty">There is no related manga for this Manga.</string>
+    <string name="related_manga_error">Something went wrong went getting related manga.
+        Check your internet connection and try again</string>
+    <string name="recommendation_anime_empty">There is no recommendation for this Anime.</string>
+    <string name="recommendation_anime_error">Something went wrong went getting recommendation.
+        Check your internet connection and try again</string>
+    <string name="recommendation_manga_empty">There is no recommendation for this Manga.</string>
+    <string name="recommendation_manga_error">Something went wrong went getting recommendation.
+        Check your internet connection and try again</string>
 
     <!-- Deals -->
     <string name="deals_error">Something wrong went getting Deals.
@@ -119,6 +138,18 @@
         Please check your internet connection and try again
     </string>
     <string name="search_seasonal_error">Something wrong went getting Seasonal Anime.
+        Check your internet connection and try again.
+    </string>
+    <string name="search_anime_empty">There is no Anime found! Search with different title or
+        check your internet connection and try again
+    </string>
+    <string name="search_anime_error">Something wrong went getting Anime.
+        Check your internet connection and try again.
+    </string>
+    <string name="search_manga_empty">There is no Manga found! Search with different title or
+        check your internet connection and try again
+    </string>
+    <string name="search_manga_error">Something wrong went getting Manga.
         Check your internet connection and try again.
     </string>
 </resources>

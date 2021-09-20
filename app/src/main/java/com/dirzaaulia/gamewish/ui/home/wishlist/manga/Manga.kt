@@ -1,4 +1,4 @@
-package com.dirzaaulia.gamewish.ui.home.wishlist.anime
+package com.dirzaaulia.gamewish.ui.home.wishlist.manga
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -18,14 +18,14 @@ import com.dirzaaulia.gamewish.data.model.myanimelist.ParentNode
 import com.dirzaaulia.gamewish.extension.isError
 import com.dirzaaulia.gamewish.extension.isSucceeded
 import com.dirzaaulia.gamewish.extension.visible
-import com.dirzaaulia.gamewish.ui.common.CommonAnimeItem
 import com.dirzaaulia.gamewish.ui.common.AnimeVerticalList
+import com.dirzaaulia.gamewish.ui.common.CommonAnimeItem
 import com.dirzaaulia.gamewish.ui.common.WebViewMyAnimeList
 import com.dirzaaulia.gamewish.ui.home.HomeViewModel
 import com.dirzaaulia.gamewish.utils.capitalizeWords
 
 @Composable
-fun WishlistAnime(
+fun WishlistManga(
     accessTokenResult: ResponseResult<String>?,
     viewModel: HomeViewModel,
     lazyListState: LazyListState,
@@ -55,14 +55,14 @@ fun WishlistAnime(
                 AnimeVerticalList(
                     data = data,
                     lazyListState = lazyListState,
-                    emptyString = "Your Anime list is still empty!",
+                    emptyString = "Your Manga list is still empty!",
                     errorString = stringResource(id = R.string.anime_list_error),
                     viewModel = viewModel
                 ) { parentNode ->
                     CommonAnimeItem(
                         parentNode = parentNode,
                         navigateToAnimeDetails = navigateToAnimeDetails,
-                        type = "Anime"
+                        type = "Manga"
                     )
                 }
             }

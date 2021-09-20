@@ -81,6 +81,36 @@ class SearchViewModel @Inject constructor(
     }
 
     val searchAnimeQuery = MutableStateFlow("")
+    val searchAnimeList = _token
+        .flatMapLatest { token ->
+            searchAnimeQuery.flatMapLatest {
+                Pager(PagingConfig(pageSize = 10)) {
+                    MyAnimeListPagingSource(
+                        myAnimeListRepository,
+                        3,
+                        token,
+                        "",
+                        "",
+                        it
+                    )
+                }.flow.cachedIn(viewModelScope)
+            }
+        }
+    val searchMangaList = _token
+        .flatMapLatest { token ->
+            searchAnimeQuery.flatMapLatest {
+                Pager(PagingConfig(pageSize = 10)) {
+                    MyAnimeListPagingSource(
+                        myAnimeListRepository,
+                        4,
+                        token,
+                        "",
+                        "",
+                        it
+                    )
+                }.flow.cachedIn(viewModelScope)
+            }
+        }
 
     val seasonalAnimeQuery = MutableStateFlow("")
     val seasonalAnimeList = _token
@@ -92,7 +122,8 @@ class SearchViewModel @Inject constructor(
                         2,
                         token,
                         "",
-                        it
+                        it,
+                        ""
                     )
                 }.flow.cachedIn(viewModelScope)
             }
@@ -122,6 +153,11 @@ class SearchViewModel @Inject constructor(
     @MainThread
     fun setSearchGameRequest(request: SearchGameRequest) {
         searchGameRequest.value = request
+    }
+
+    @MainThread
+    fun setSearchAnimeQuery(query: String) {
+        searchAnimeQuery.value = query
     }
 
     @MainThread

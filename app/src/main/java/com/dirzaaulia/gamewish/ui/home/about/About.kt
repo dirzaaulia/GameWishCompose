@@ -10,6 +10,8 @@ import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -17,7 +19,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.ParagraphStyle
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
@@ -46,9 +50,9 @@ fun About(
     navigateToMyAnimeListLogin: () -> Unit,
 ) {
 
+    val accessToken by viewModel.token.collectAsState()
+
     Scaffold(
-        modifier = Modifier
-            .padding(horizontal = 8.dp, vertical = 4.dp),
         topBar = {
             AboutAppBar()
         }
@@ -60,6 +64,7 @@ fun About(
                 viewModel = viewModel
             )
             MyAnimeListSection(
+                accessToken = accessToken,
                 myAnimeListUserResult = myAnimeListUserResult,
                 myAnimeListUser = myAnimeListUser,
                 viewModel = viewModel,
@@ -140,6 +145,7 @@ fun GoogleSection(
 
 @Composable
 fun MyAnimeListSection(
+    accessToken: String,
     myAnimeListUserResult: ResponseResult<User>?,
     myAnimeListUser: User,
     viewModel: HomeViewModel,
@@ -198,16 +204,24 @@ fun MyAnimeListSection(
                     }
                 }
                 myAnimeListUserResult.isError -> {
-                    OutlinedButton(
-                        modifier = Modifier
-                            .padding(top = 4.dp)
-                            .fillMaxWidth(),
-                        onClick = { navigateToMyAnimeListLogin() },
-                    ) {
+                    if (accessToken.isBlank()) {
+                        OutlinedButton(
+                            modifier = Modifier
+                                .padding(top = 4.dp)
+                                .fillMaxWidth(),
+                            onClick = { navigateToMyAnimeListLogin() },
+                        ) {
+                            Text(
+                                style = MaterialTheme.typography.button,
+                                color = MaterialTheme.colors.onSurface,
+                                text = "Link Account"
+                            )
+                        }
+                    } else {
                         Text(
-                            style = MaterialTheme.typography.button,
-                            color = MaterialTheme.colors.onSurface,
-                            text = "Link Account"
+                            modifier = Modifier.fillMaxWidth(),
+                            text = stringResource(id = R.string.myanimelist_user_error),
+                            style = MaterialTheme.typography.subtitle1
                         )
                     }
                 }
@@ -230,7 +244,10 @@ fun GameWishAboutSection() {
                 modifier = Modifier.fillMaxWidth(),
                 text = AnnotatedString(
                     stringResource(id = R.string.about_app),
-                    SpanStyle(color = White, textDecoration = TextDecoration.Underline)
+                    SpanStyle(
+                        color = MaterialTheme.colors.onSurface,
+                        textDecoration = TextDecoration.Underline
+                    ),
                 ),
                 onClick = { openLink(context, "https://linktr.ee/DirzaAulia") }
             )
@@ -239,7 +256,10 @@ fun GameWishAboutSection() {
                 modifier = Modifier.fillMaxWidth(),
                 text = AnnotatedString(
                     stringResource(id = R.string.about_app2),
-                    SpanStyle(color = White, textDecoration = TextDecoration.Underline)
+                    SpanStyle(
+                        color = MaterialTheme.colors.onSurface,
+                        textDecoration = TextDecoration.Underline
+                    ),
                 ),
                 onClick = { openLink(context, "https://play.google.com/store/apps/dev?id=4806849608818858118") }
             )
@@ -261,7 +281,10 @@ fun DataSourceSection() {
                 modifier = Modifier.fillMaxWidth(),
                 text = AnnotatedString(
                     stringResource(id = R.string.games_data_source),
-                    SpanStyle(color = White, textDecoration = TextDecoration.Underline)
+                    SpanStyle(
+                        color = MaterialTheme.colors.onSurface,
+                        textDecoration = TextDecoration.Underline
+                    ),
                 ),
                 onClick = { openLink(context, "https://www.rawg.io") }
             )
@@ -270,7 +293,10 @@ fun DataSourceSection() {
                 modifier = Modifier.fillMaxWidth(),
                 text = AnnotatedString(stringResource(
                     id = R.string.deals_data_source),
-                    SpanStyle(color = White, textDecoration = TextDecoration.Underline)
+                    SpanStyle(
+                        color = MaterialTheme.colors.onSurface,
+                        textDecoration = TextDecoration.Underline
+                    ),
                 ),
                 onClick = { openLink(context, "https://www.cheapshark.com/") }
             )
@@ -279,7 +305,10 @@ fun DataSourceSection() {
                 modifier = Modifier.fillMaxWidth(),
                 text = AnnotatedString(
                     stringResource(id = R.string.anime_manga_data_source),
-                    SpanStyle(color = White, textDecoration = TextDecoration.Underline),
+                    SpanStyle(
+                        color = MaterialTheme.colors.onSurface,
+                        textDecoration = TextDecoration.Underline
+                    ),
                 ),
                 onClick = { openLink(context, "https://wwww.myanimelist.net/") }
             )
