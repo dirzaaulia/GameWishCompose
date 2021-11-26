@@ -7,7 +7,6 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
@@ -28,7 +27,6 @@ import androidx.compose.ui.unit.toSize
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.dirzaaulia.gamewish.R
 import com.dirzaaulia.gamewish.data.model.myanimelist.Details
-import com.dirzaaulia.gamewish.data.request.cheapshark.DealsRequest
 import com.dirzaaulia.gamewish.extension.isError
 import com.dirzaaulia.gamewish.extension.isSucceeded
 import com.dirzaaulia.gamewish.extension.visible
@@ -389,14 +387,14 @@ fun DescriptionTab(
 ) {
     LazyColumn(modifier = modifier.padding(8.dp)) {
         item {
-            DescriptionHeader(
+            AnimeDescriptionHeader(
                 type = type,
                 loading = loading,
                 data = data
             )
         }
         item {
-            DescriptionFooter(
+            AnimeDescriptionFooter(
                 data = data,
                 scope = scope,
                 scaffoldState = scaffoldState
@@ -406,7 +404,7 @@ fun DescriptionTab(
 }
 
 @Composable
-fun DescriptionHeader(
+fun AnimeDescriptionHeader(
     type: String,
     loading: Boolean,
     data: Details
@@ -539,7 +537,7 @@ fun DescriptionHeader(
 }
 
 @Composable
-fun DescriptionFooter(
+fun AnimeDescriptionFooter(
     data: Details,
     scope: CoroutineScope,
     scaffoldState: BottomSheetScaffoldState
@@ -971,10 +969,10 @@ fun AnimeDetailsTabMenu(
     viewModel: DetailsViewModel
 ) {
     ScrollableTabRow(selectedTabIndex = menuId) {
-        menu.forEachIndexed { index, searchGameTab ->
+        menu.forEachIndexed { index, animeDetailsTab ->
             Tab(
                 selected = menuId == index,
-                text = { Text(stringResource(id = searchGameTab.title)) },
+                text = { Text(stringResource(id = animeDetailsTab.title)) },
                 onClick = { viewModel.selectAnimeDetailsTab(index) }
             )
         }

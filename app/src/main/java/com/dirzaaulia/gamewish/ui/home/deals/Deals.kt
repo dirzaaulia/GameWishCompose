@@ -77,7 +77,6 @@ fun Deals(
                 DealsList(
                     data = data,
                     lazyListState = lazyListState,
-                    viewModel = viewModel
                 )
             }
         }
@@ -291,7 +290,6 @@ fun DealsFilter(
 fun DealsList(
     data: LazyPagingItems<Deals>,
     lazyListState: LazyListState,
-    viewModel: HomeViewModel
 ) {
     Box(
         modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)

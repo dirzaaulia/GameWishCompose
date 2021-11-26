@@ -24,13 +24,14 @@ import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.items
 import com.dirzaaulia.gamewish.R
-import com.dirzaaulia.gamewish.data.model.Wishlist
+import com.dirzaaulia.gamewish.data.model.wishlist.GameWishlist
 import com.dirzaaulia.gamewish.data.model.cheapshark.Deals
 import com.dirzaaulia.gamewish.data.model.rawg.Genre
 import com.dirzaaulia.gamewish.data.model.myanimelist.ParentNode
 import com.dirzaaulia.gamewish.data.model.rawg.Games
 import com.dirzaaulia.gamewish.data.model.rawg.Platform
 import com.dirzaaulia.gamewish.data.model.rawg.Publisher
+import com.dirzaaulia.gamewish.data.model.tmdb.Movie
 import com.dirzaaulia.gamewish.data.request.myanimelist.SearchGameRequest
 import com.dirzaaulia.gamewish.extension.visible
 import com.dirzaaulia.gamewish.ui.home.HomeViewModel
@@ -261,7 +262,7 @@ fun <T : Any> AnimeVerticalList(
 
 @Composable
 fun WishlistGameItem(
-    wishlist: Wishlist,
+    gameWishlist: GameWishlist,
     modifier: Modifier = Modifier,
     navigateToGameDetails: (Long) -> Unit = { }
 ) {
@@ -269,12 +270,12 @@ fun WishlistGameItem(
         modifier = modifier
             .fillMaxWidth()
             .clickable(
-                onClick = { wishlist.id?.let { navigateToGameDetails(it) } }
+                onClick = { gameWishlist.id?.let { navigateToGameDetails(it) } }
             ),
         elevation = 0.dp,
     ) {
         Column {
-            wishlist.image?.let { imageUrl ->
+            gameWishlist.image?.let { imageUrl ->
                 NetworkImage(
                     url = imageUrl,
                     contentDescription = null,
@@ -284,7 +285,7 @@ fun WishlistGameItem(
                     contentScale = ContentScale.FillBounds
                 )
             }
-            wishlist.status?.let { status ->
+            gameWishlist.status?.let { status ->
                 Text(
                     text = status,
                     style = MaterialTheme.typography.body2,
@@ -293,7 +294,7 @@ fun WishlistGameItem(
                         .padding(top = 4.dp, start = 8.dp)
                 )
             }
-            wishlist.name?.let { name ->
+            gameWishlist.name?.let { name ->
                 Text(
                     text = name,
                     style = MaterialTheme.typography.h5,
@@ -372,6 +373,73 @@ fun DealsItem(
                     Text(
                         text = currencyFormatter(it.toDouble(), Locale.US),
                         style = MaterialTheme.typography.caption
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun CommonMovieItem(
+    modifier: Modifier = Modifier,
+    movie: Movie,
+//    navigateToMovieDetails: (Long, String) -> Unit,
+    type: String,
+) {
+    Card(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(150.dp)
+            .padding(vertical = 4.dp)
+            .clickable(
+                onClick = {
+                    movie.id?.let {
+                        if (type.equals("Movie", true)) {
+//                            navigateToMovieDetails(it, "Movie")
+                        } else {
+//                            navigateToMovieDetails(it, "TV Show")
+                        }
+                    }
+                }
+            ),
+        shape = MaterialTheme.shapes.large,
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            movie.posterPath.let {
+                NetworkImage(
+                    url = "${TmdbConstant.TMDB_BASE_IMAGE_URL}$it",
+                    contentDescription = null,
+                    modifier = modifier
+                        .width(100.dp)
+                        .fillMaxHeight(),
+                    contentScale = ContentScale.FillBounds
+                )
+            }
+            Column(
+                modifier = modifier
+                    .padding(vertical = 4.dp, horizontal = 8.dp)
+                    .weight(1f)
+            ) {
+                movie.releaseDate?.let {
+                    Text(
+                        text = "Release Date : ${textDateFormatter2(it)}",
+                        style = MaterialTheme.typography.caption
+                    )
+                }
+                movie.title?.let {
+                    Text(
+                        text = it,
+                        style = MaterialTheme.typography.subtitle1
+                    )
+                }
+                movie.name?.let {
+                    Text(
+                        text = it,
+                        style = MaterialTheme.typography.subtitle1
                     )
                 }
             }

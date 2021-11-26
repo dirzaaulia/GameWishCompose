@@ -12,6 +12,7 @@ import androidx.compose.material.icons.filled.LocalOffer
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
@@ -21,11 +22,13 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.dirzaaulia.gamewish.R
 import com.dirzaaulia.gamewish.data.model.cheapshark.Deals
+import com.dirzaaulia.gamewish.extension.isError
 import com.dirzaaulia.gamewish.ui.home.about.About
 import com.dirzaaulia.gamewish.ui.home.deals.Deals
 import com.dirzaaulia.gamewish.ui.home.wishlist.Wishlist
 import com.google.accompanist.insets.navigationBarsHeight
 import com.google.accompanist.insets.navigationBarsPadding
+import kotlinx.coroutines.launch
 import java.util.*
 
 @Composable
@@ -44,6 +47,10 @@ fun Home(
     val googleUsername by viewModel.googleUsername.collectAsState()
     val myAnimeListUserResult by viewModel.myAnimeListUserResult.collectAsState(null)
     val myAnimeListUser by viewModel.myAnimeListUser.collectAsState()
+    val myAnimeListTokenResponse by viewModel.myAnimeListTokenResult.collectAsState()
+    val errorMessage by viewModel.errorMessage.collectAsState()
+    val scope = rememberCoroutineScope()
+    val scaffoldState = rememberScaffoldState()
 
     Scaffold(
         backgroundColor = MaterialTheme.colors.primarySurface,
@@ -54,6 +61,14 @@ fun Home(
         Crossfade(
             targetState = HomeBottomNavMenu.getHomeBottomNavMenuFromResource(menuId)
         ) { destination ->
+            when {
+                myAnimeListTokenResponse.isError -> {
+                    scope.launch {
+                        scaffoldState.snackbarHostState.showSnackbar(errorMessage)
+                    }
+                }
+            }
+
             val innerModifier = Modifier.padding(innerPadding)
             when (destination) {
                 HomeBottomNavMenu.WISHLIST -> {

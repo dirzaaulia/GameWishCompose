@@ -33,9 +33,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.dirzaaulia.gamewish.R
-import com.dirzaaulia.gamewish.data.model.Wishlist
+import com.dirzaaulia.gamewish.base.ResponseResult
 import com.dirzaaulia.gamewish.data.model.rawg.GameDetails
 import com.dirzaaulia.gamewish.data.model.rawg.Screenshots
+import com.dirzaaulia.gamewish.data.model.wishlist.GameWishlist
 import com.dirzaaulia.gamewish.extension.isError
 import com.dirzaaulia.gamewish.extension.isSucceeded
 import com.dirzaaulia.gamewish.extension.visible
@@ -64,6 +65,8 @@ fun GameDetails(
     val gameDetails by viewModel.gameDetails.collectAsState(null)
     val screenshotsResult by viewModel.gameDetailsScreenshotsResult.collectAsState(null)
     val screenshots by viewModel.gameDetailsScreenshots.collectAsState(null)
+    val updateGameResult by viewModel.updateGameResult.collectAsState()
+    val deleteGameResult by viewModel.deleteGameResult.collectAsState()
 
     LaunchedEffect(viewModel) {
         viewModel.getGameDetails(gameId)
@@ -74,6 +77,23 @@ fun GameDetails(
     CommonLoading(visibility = loading)
     AnimatedVisibility(visible = !loading) {
         when {
+            updateGameResult.isSucceeded -> {
+                gameDetails?.id?.let { id -> viewModel.checkIfGameWishlisted(id) }
+                scope.launch {
+                    scaffoldState.bottomSheetState.collapse()
+
+                    if (wishlistData != null) {
+                        val text = "This game has been updated on your Wishlist."
+                        scaffoldState.snackbarHostState.showSnackbar(text)
+                    } else {
+                        val text = "This game has been added to your Wishlist."
+                        scaffoldState.snackbarHostState.showSnackbar(text)
+                    }
+                }
+            }
+        }
+
+        when {
             gameDetailsResult.isSucceeded -> {
                 BottomSheetScaffold(
                     sheetContent = {
@@ -82,6 +102,7 @@ fun GameDetails(
                                 it,
                                 wishlistData,
                                 viewModel,
+                                updateGameResult,
                                 scope,
                                 scaffoldState
                             )
@@ -114,6 +135,24 @@ fun GameDetails(
                                     scaffoldState = scaffoldState
                                 )
                             }
+                        }
+                    }
+
+                    if (deleteGameResult.equals("Success", true)) {
+                        scope.launch {
+                            scaffoldState.bottomSheetState.collapse()
+                            scaffoldState
+                                .snackbarHostState
+                                .showSnackbar("This game has been deleted from your Wishlist.")
+                        }
+                    } else if (deleteGameResult.equals("Error", true)) {
+                        scope.launch {
+                            scaffoldState.bottomSheetState.collapse()
+                            scaffoldState
+                                .snackbarHostState
+                                .showSnackbar(
+                                    "Something went wrong when deleting game from your Wishlist."
+                                )
                         }
                     }
                 }
@@ -283,25 +322,27 @@ fun GameDetailsMiddleContent(
                     )
                 }
                 data.redditUrl?.let { url ->
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.ic_reddit_logo),
-                            contentDescription = null
-                        )
-                        ClickableText(
-                            text = AnnotatedString(
-                                getSubReddit(url),
-                                SpanStyle(
-                                    color = MaterialTheme.colors.onSurface,
-                                    textDecoration = TextDecoration.Underline
-                                )
-                            ),
-                            style = MaterialTheme.typography.caption,
-                            modifier = Modifier.weight(1f),
-                            onClick = { openLink(context, url) }
-                        )
+                    if (url.isNotEmpty()) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Image(
+                                painter = painterResource(id = R.drawable.ic_reddit_logo),
+                                contentDescription = null
+                            )
+                            ClickableText(
+                                text = AnnotatedString(
+                                    getSubReddit(url),
+                                    SpanStyle(
+                                        color = MaterialTheme.colors.onSurface,
+                                        textDecoration = TextDecoration.Underline
+                                    )
+                                ),
+                                style = MaterialTheme.typography.caption,
+                                modifier = Modifier.weight(1f),
+                                onClick = { openLink(context, url) }
+                            )
+                        }
                     }
                 }
             }
@@ -356,14 +397,15 @@ fun GameDetailsMiddleContent(
 @Composable
 fun GameWishlistSheetContent(
     gameDetails: GameDetails,
-    wishlist: Wishlist?,
+    gameWishlist: GameWishlist?,
     viewModel: DetailsViewModel,
+    updateGameResult: ResponseResult<Void>?,
     scope: CoroutineScope,
     scaffoldState: BottomSheetScaffoldState
 ) {
 
     var expanded by remember { mutableStateOf(false) }
-    val status = wishlist?.status ?: "Plan To Buy"
+    val status = gameWishlist?.status ?: "Plan To Buy"
     val statusList = listOf("Playing", "Completed", "On-Hold", "Dropped", "Plan To Buy")
     var statusText by remember { mutableStateOf(status) }
     var textfieldSize by remember { mutableStateOf(Size.Zero) }
@@ -377,17 +419,11 @@ fun GameWishlistSheetContent(
             .padding(16.dp)
             .fillMaxWidth()
     ) {
-        if (wishlist != null) {
+        if (gameWishlist != null) {
             IconButton(
                 onClick = {
-                    wishlist.let {
-                        viewModel.deleteWishlist(it)
-                    }
-
-                    scope.launch {
-                        scaffoldState.bottomSheetState.collapse()
-                        scaffoldState.snackbarHostState
-                            .showSnackbar("This game has been deleted from your Wishlist.")
+                    gameWishlist.let {
+                        viewModel.deleteWishlistFromFirestore(it)
                     }
                 },
                 modifier = Modifier.align(Alignment.End)
@@ -447,25 +483,12 @@ fun GameWishlistSheetContent(
                 .fillMaxWidth(),
             onClick = {
                 val data = gameDetails.let {
-                    Wishlist(it.id, it.name, it.backgroundImage, statusText)
+                    GameWishlist(it.id, it.name, it.backgroundImage, statusText)
                 }
-                viewModel.addToWishlist(data)
-                gameDetails.id?.let { viewModel.checkIfGameWishlisted(it) }
-
-                scope.launch {
-                    scaffoldState.bottomSheetState.collapse()
-
-                    val text = if (wishlist != null) {
-                        "This game has been updated on your Wishlist."
-                    } else {
-                        "This game has been added to your Wishlist."
-                    }
-
-                    scaffoldState.snackbarHostState.showSnackbar(text)
-                }
+                viewModel.addWishlistToFirestore(data)
             }
         ) {
-            val text = if (wishlist != null) {
+            val text = if (gameWishlist != null) {
                 "Update Wishlist"
             } else {
                 "Add To Wishlist"

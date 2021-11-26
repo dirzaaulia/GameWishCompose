@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.dirzaaulia.gamewish.R
-import com.dirzaaulia.gamewish.data.model.Wishlist
+import com.dirzaaulia.gamewish.data.model.wishlist.GameWishlist
 import com.dirzaaulia.gamewish.data.model.myanimelist.ParentNode
 import com.dirzaaulia.gamewish.ui.common.AnimeFilterDialog
 import com.dirzaaulia.gamewish.ui.common.GameFilterDialog
@@ -55,7 +55,7 @@ fun Wishlist(
     val lazyListStateGame = rememberLazyListState()
     val lazyListStateAnime = rememberLazyListState()
     val lazyListStateManga = rememberLazyListState()
-    val lazyListWishlist: LazyPagingItems<Wishlist> =
+    val lazyListGameWishlist: LazyPagingItems<GameWishlist> =
         viewModel.listWishlist.collectAsLazyPagingItems()
     val accessTokenResult by viewModel.tokenResult.collectAsState()
     val lazyListAnime: LazyPagingItems<ParentNode> =
@@ -118,10 +118,9 @@ fun Wishlist(
                 when (destination) {
                     WishlistTab.GAME -> {
                         WishlistGame(
-                            data = lazyListWishlist,
+                            data = lazyListGameWishlist,
                             navigateToGameDetails = navigateToGameDetails,
                             lazyListState = lazyListStateGame,
-                            viewModel = viewModel,
                             gameStatus = gameStatus
                         )
                     }

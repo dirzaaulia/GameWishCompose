@@ -2,7 +2,7 @@ package com.dirzaaulia.gamewish.network.firebase
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import com.dirzaaulia.gamewish.data.model.Wishlist
+import com.dirzaaulia.gamewish.data.model.wishlist.GameWishlist
 import com.dirzaaulia.gamewish.repository.FirebaseRepository
 import com.dirzaaulia.gamewish.utils.FirebaseConstant.FIREBASE_COLLECTION_NAME
 import com.google.firebase.firestore.QuerySnapshot
@@ -13,13 +13,13 @@ class FirebasePagingSource(
     private val firebaseRepository: FirebaseRepository,
     private val uid: String,
     private var gameStatus: String
-) : PagingSource<QuerySnapshot, Wishlist>() {
+) : PagingSource<QuerySnapshot, GameWishlist>() {
 
-    override fun getRefreshKey(state: PagingState<QuerySnapshot, Wishlist>): QuerySnapshot? {
+    override fun getRefreshKey(state: PagingState<QuerySnapshot, GameWishlist>): QuerySnapshot? {
         return null
     }
 
-    override suspend fun load(params: LoadParams<QuerySnapshot>): LoadResult<QuerySnapshot, Wishlist> {
+    override suspend fun load(params: LoadParams<QuerySnapshot>): LoadResult<QuerySnapshot, GameWishlist> {
         return try {
             val database = firebaseRepository.getFirestore()
 
@@ -77,7 +77,7 @@ class FirebasePagingSource(
                 )
             } else {
                 LoadResult.Page(
-                    data = currentPage.toObjects(Wishlist::class.java),
+                    data = currentPage.toObjects(GameWishlist::class.java),
                     prevKey = null,
                     nextKey = nextPage
                 )

@@ -16,13 +16,6 @@ import javax.inject.Inject
 class RawgRepository @Inject constructor(
     private val service: RawgService
 ) {
-//    fun refreshSearchGames(search: String?, genres: Int?, publisher: Int?, platforms: Int?)
-//            : Flow<PagingData<Games>> {
-//        return Pager(
-//            config = PagingConfig(enablePlaceholders = false, pageSize = GAMES_PAGE_SIZE),
-//            pagingSourceFactory = { SearchGamesPagingSource(service, search, genres, publisher, platforms) }
-//        ).flow
-//    }
 
     @WorkerThread
     fun getGameDetails(gameId: Long) = flow {

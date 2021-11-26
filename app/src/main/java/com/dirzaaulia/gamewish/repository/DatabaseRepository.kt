@@ -3,7 +3,7 @@ package com.dirzaaulia.gamewish.repository
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
-import com.dirzaaulia.gamewish.data.model.Wishlist
+import com.dirzaaulia.gamewish.data.model.wishlist.GameWishlist
 import com.dirzaaulia.gamewish.database.DatabaseDao
 import com.dirzaaulia.gamewish.utils.DatabaseConstant
 import kotlinx.coroutines.flow.Flow
@@ -21,24 +21,24 @@ class DatabaseRepository @Inject constructor(
 //            .conflate()
 //    }
 
-    fun getFilteredWishlist(query: String, status: String): Flow<PagingData<Wishlist>> {
+    fun getFilteredWishlist(query: String, status: String): Flow<PagingData<GameWishlist>> {
         return Pager(config = PagingConfig(pageSize = DatabaseConstant.DATABASE_PAGING_SIZE)) {
             dao.getFilteredWishlist(query, status)
         }.flow
     }
 
-    fun getAllWishlist(): Flow<PagingData<Wishlist>> {
+    fun getAllWishlist(): Flow<PagingData<GameWishlist>> {
         return Pager(config = PagingConfig(pageSize = DatabaseConstant.DATABASE_PAGING_SIZE)) {
             dao.getAllWishlist()
         }.flow
     }
 
-    suspend fun addToWishlist(wishlist: Wishlist) {
-        dao.insert(wishlist)
+    suspend fun addToWishlist(gameWishlist: GameWishlist) {
+        dao.insert(gameWishlist)
     }
 
-    suspend fun deleteWishlist(wishlist: Wishlist) {
-        dao.delete(wishlist)
+    suspend fun deleteWishlist(gameWishlist: GameWishlist) {
+        dao.delete(gameWishlist)
     }
 
     suspend fun deleteWishlistById(gameId: Long) {

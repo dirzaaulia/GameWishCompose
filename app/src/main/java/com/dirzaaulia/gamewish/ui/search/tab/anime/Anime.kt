@@ -81,7 +81,6 @@ fun SearchAnime(
                     SearchAnimeAppBar(
                         menuId = menuId,
                         searchQuery = searchAnimeQuery,
-                        scope = scope,
                         viewModel = viewModel,
                         upPress = upPress
                     )
@@ -116,14 +115,16 @@ fun SearchAnime(
                                 SearchAnimeList(
                                     data = searchAnimeList,
                                     lazyListState = lazyListStateAnime,
-                                    navigateToAnimeDetails = navigateToAnimeDetails
+                                    navigateToAnimeDetails = navigateToAnimeDetails,
+                                    searchAnimeQuery = searchAnimeQuery
                                 )
                             }
                             SearchAnimeTab.MANGA -> {
                                 SearchMangaList(
                                     data = searchMangaList,
                                     lazyListState = lazyListStateManga,
-                                    navigateToAnimeDetails = navigateToAnimeDetails
+                                    navigateToAnimeDetails = navigateToAnimeDetails,
+                                    searchAnimeQuery = searchAnimeQuery
                                 )
                             }
                         }
@@ -147,11 +148,18 @@ fun SearchAnime(
 fun SearchMangaList(
     data: LazyPagingItems<ParentNode>,
     lazyListState: LazyListState,
-    navigateToAnimeDetails: (Long, String) -> Unit
+    navigateToAnimeDetails: (Long, String) -> Unit,
+    searchAnimeQuery: String
 ) {
     Column (
         modifier = Modifier.padding(top = 4.dp, start = 8.dp, end = 8.dp)
     ){
+        val emptyString = if (searchAnimeQuery.isBlank()) {
+            stringResource(id = R.string.search_manga_empty_query)
+        } else {
+            stringResource(id = R.string.search_manga_empty)
+        }
+
         if (data.itemCount != 0 && data.loadState.refresh is LoadState.NotLoading) {
             Text(
                 text = stringResource(id = R.string.manga_data_source),
@@ -161,7 +169,7 @@ fun SearchMangaList(
         CommonVerticalList(
             data = data,
             lazyListState = lazyListState,
-            emptyString = stringResource(id = R.string.search_manga_empty),
+            emptyString = emptyString,
             errorString = stringResource(id = R.string.search_manga_error),
         ) { parentNode ->
             CommonAnimeItem(
@@ -177,11 +185,18 @@ fun SearchMangaList(
 fun SearchAnimeList(
     data: LazyPagingItems<ParentNode>,
     lazyListState: LazyListState,
-    navigateToAnimeDetails: (Long, String) -> Unit
+    navigateToAnimeDetails: (Long, String) -> Unit,
+    searchAnimeQuery: String
 ) {
     Column (
         modifier = Modifier.padding(top = 4.dp, start = 8.dp, end = 8.dp)
     ){
+        val emptyString = if (searchAnimeQuery.isBlank()) {
+            stringResource(id = R.string.search_anime_empty_query)
+        } else {
+            stringResource(id = R.string.search_anime_empty)
+        }
+
         if (data.itemCount != 0 && data.loadState.refresh is LoadState.NotLoading) {
             Text(
                 text = stringResource(id = R.string.anime_data_source),
@@ -191,7 +206,7 @@ fun SearchAnimeList(
         CommonVerticalList(
             data = data,
             lazyListState = lazyListState,
-            emptyString = stringResource(id = R.string.search_anime_empty),
+            emptyString = emptyString,
             errorString = stringResource(id = R.string.search_anime_error),
         ) { parentNode ->
             CommonAnimeItem(
@@ -342,7 +357,6 @@ fun SeasonalAnimeSheet(
 fun SearchAnimeAppBar(
     menuId: Int,
     searchQuery: String,
-    scope: CoroutineScope,
     viewModel: SearchViewModel,
     upPress: () -> Unit
 ) {
@@ -406,9 +420,6 @@ fun SearchAnimeAppBar(
                         viewModel.setSearchGameRequest(
                             SearchGameRequest(query, null, null, null)
                         )
-                        scope.launch {
-
-                        }
                     }
                 )
             )

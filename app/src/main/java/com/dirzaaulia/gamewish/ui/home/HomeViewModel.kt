@@ -9,12 +9,13 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.dirzaaulia.gamewish.base.ResponseResult
-import com.dirzaaulia.gamewish.data.model.Wishlist
+import com.dirzaaulia.gamewish.data.model.wishlist.GameWishlist
 import com.dirzaaulia.gamewish.data.model.cheapshark.Deals
 import com.dirzaaulia.gamewish.data.model.rawg.Stores
 import com.dirzaaulia.gamewish.data.model.myanimelist.ParentNode
 import com.dirzaaulia.gamewish.data.model.myanimelist.User
 import com.dirzaaulia.gamewish.data.request.cheapshark.DealsRequest
+import com.dirzaaulia.gamewish.data.response.myanimelist.MyAnimeListTokenResponse
 import com.dirzaaulia.gamewish.extension.error
 import com.dirzaaulia.gamewish.extension.success
 import com.dirzaaulia.gamewish.network.cheapshark.paging.CheapSharkPagingSource
@@ -23,15 +24,10 @@ import com.dirzaaulia.gamewish.repository.*
 import com.dirzaaulia.gamewish.utils.FirebaseState
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.ValueEventListener
-import com.google.firebase.database.ktx.getValue
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
@@ -82,6 +78,10 @@ class HomeViewModel @Inject constructor(
 
     private val _googleUsername: MutableStateFlow<String> = MutableStateFlow("")
     val googleUsername = _googleUsername.asStateFlow()
+
+    private val _myAnimeListTokenResult: MutableStateFlow<ResponseResult<MyAnimeListTokenResponse>?>
+        = MutableStateFlow(null)
+    val myAnimeListTokenResult = _myAnimeListTokenResult.asStateFlow()
 
     private val _errorMessage: MutableStateFlow<String> = MutableStateFlow("")
     val errorMessage = _errorMessage.asStateFlow()
@@ -238,12 +238,6 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun removeMyAnimeListUser(user: User) {
-        viewModelScope.launch {
-            _myAnimeListUser
-        }
-    }
-
     fun getStores() {
         cheapSharkRepository.getStoreList()
             .onEach {
@@ -255,9 +249,9 @@ class HomeViewModel @Inject constructor(
             .launchIn(viewModelScope)
     }
 
-    fun addToWishlist(wishlist: Wishlist) {
+    private fun addToWishlist(gameWishlist: GameWishlist) {
         viewModelScope.launch {
-            databaseRepository.addToWishlist(wishlist)
+            databaseRepository.addToWishlist(gameWishlist)
         }
     }
 
@@ -308,10 +302,12 @@ class HomeViewModel @Inject constructor(
                     }
                     getAccessToken()
                     setAnimeStatus("")
+                    _myAnimeListTokenResult.value = it
                 }
                 it.error { exception ->
                     Timber.e(exception)
                     _errorMessage.value = "Something went wrong when getting data from MyAnimeList. Please try it again later!"
+                    _myAnimeListTokenResult.value = it
                 }
             }
             .launchIn(viewModelScope)
@@ -348,7 +344,7 @@ class HomeViewModel @Inject constructor(
     fun syncWishlist(uid: String) {
         viewModelScope.launch {
             Timber.i(uid)
-            val data = firebaseRepository.getAllWishlist(uid)?.toObjects(Wishlist::class.java)
+            val data = firebaseRepository.getAllGameWishlist(uid)?.toObjects(GameWishlist::class.java)
 
             data?.forEach {
                 addToWishlist(it)

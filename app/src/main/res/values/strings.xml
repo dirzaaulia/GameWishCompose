@@ -11,6 +11,9 @@
     <string name="anime">Anime</string>
     <string name="manga">Manga</string>
     <string name="anime_manga">Anime &amp; Manga</string>
+    <string name="movie_tv_show">Movie &amp; TV Show</string>
+    <string name="movie">Movie</string>
+    <string name="tv_show">TV Show</string>
     <string name="no_connection">No connection established. Turn on the internet and repeat.</string>
     <string name="no_connection_button">Try Again</string>
     <string name="label_back">Back</string>
@@ -59,6 +62,9 @@
     </string>
     <string name="manga_data_source">
         Manga data is provided by <u>MyAnimeList</u>
+    </string>
+    <string name="movie_data_source">
+        Movie data is provided by <u>TheMovieDB</u>
     </string>
     <string name="seasonal_data_source">Seasonal Anime data is provided by <u>MyAnimeList</u></string>
     <string name="games_data_source">Games data is provided by <u>RAWG</u></string>
@@ -110,6 +116,7 @@
     <!-- Search -->
     <string name="search_game">Search Game Name</string>
     <string name="search_anime">Search Anime or Manga title</string>
+    <string name="search_movie">Search Movie or TV Show title</string>
     <string name="search_games_empty">There is no Games found!
         Try again with different Games name.
     </string>
@@ -140,16 +147,40 @@
     <string name="search_seasonal_error">Something wrong went getting Seasonal Anime.
         Check your internet connection and try again.
     </string>
+
+    <string name="search_anime_empty_query">Search Anime by Title. Please search with
+    precise title to make sure Anime you are looking for is found</string>
     <string name="search_anime_empty">There is no Anime found! Search with different title or
         check your internet connection and try again
     </string>
     <string name="search_anime_error">Something wrong went getting Anime.
         Check your internet connection and try again.
     </string>
+
+    <string name="search_manga_empty_query">Search Manga by Title. Please search with
+    precise title to make sure Manga you are looking for is found</string>
     <string name="search_manga_empty">There is no Manga found! Search with different title or
         check your internet connection and try again
     </string>
     <string name="search_manga_error">Something wrong went getting Manga.
+        Check your internet connection and try again.
+    </string>
+
+    <string name="search_movie_empty_query">Search Movie by Title. Please search with
+    precise title to make sure Movie you are looking for is found.</string>
+    <string name="search_movie_empty">There is no Movie found! Search with different title or
+        check your internet connection and try again
+    </string>
+    <string name="search_movie_error">Something wrong went getting Movie.
+        Check your internet connection and try again.
+    </string>
+
+    <string name="search_tv_empty_query">Search TV Show by Title. Please search with
+    precise title to make sure TV Show you are looking for is found.</string>
+    <string name="search_tv_empty">There is no TV Show found! Search with different title or
+        check your internet connection and try again
+    </string>
+    <string name="search_tv_error">Something wrong went getting Movie.
         Check your internet connection and try again.
     </string>
 </resources>

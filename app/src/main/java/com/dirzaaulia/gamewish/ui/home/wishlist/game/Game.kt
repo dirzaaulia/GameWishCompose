@@ -11,7 +11,7 @@ import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import com.dirzaaulia.gamewish.R
-import com.dirzaaulia.gamewish.data.model.Wishlist
+import com.dirzaaulia.gamewish.data.model.wishlist.GameWishlist
 import com.dirzaaulia.gamewish.extension.visible
 import com.dirzaaulia.gamewish.ui.common.CommonVerticalList
 import com.dirzaaulia.gamewish.ui.common.WishlistGameItem
@@ -19,10 +19,9 @@ import com.dirzaaulia.gamewish.ui.home.HomeViewModel
 
 @Composable
 fun WishlistGame(
-    data: LazyPagingItems<Wishlist>,
+    data: LazyPagingItems<GameWishlist>,
     navigateToGameDetails: (Long) -> Unit,
     lazyListState: LazyListState,
-    viewModel: HomeViewModel,
     gameStatus: String,
 ) {
     var gameStatusFormatted = gameStatus
@@ -47,7 +46,7 @@ fun WishlistGame(
             errorString = stringResource(id = R.string.game_list_error)
         ) { wishlist ->
             WishlistGameItem(
-                wishlist = wishlist,
+                gameWishlist = wishlist,
                 navigateToGameDetails = navigateToGameDetails,
             )
         }

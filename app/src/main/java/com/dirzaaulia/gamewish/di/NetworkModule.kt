@@ -5,6 +5,7 @@ import com.dirzaaulia.gamewish.network.cheapshark.CheapSharkService
 import com.dirzaaulia.gamewish.network.myanimelist.MyAnimeListApiUrlService
 import com.dirzaaulia.gamewish.network.myanimelist.MyAnimeListBaseUrlService
 import com.dirzaaulia.gamewish.network.rawg.RawgService
+import com.dirzaaulia.gamewish.network.tmdb.TmdbService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -24,7 +25,7 @@ class NetworkModule {
 
     @Singleton
     @Provides
-    fun provideRawgServer(@ApplicationContext context: Context): RawgService {
+    fun provideRawgService(@ApplicationContext context: Context): RawgService {
         return RawgService.create(context)
     }
 
@@ -39,9 +40,10 @@ class NetworkModule {
     fun provideMyAnimeListApiUrlService(@ApplicationContext context: Context): MyAnimeListApiUrlService {
         return MyAnimeListApiUrlService.create(context)
     }
-//
-//    @Provides
-//    fun provideFirebaseRepository() : FirebaseRepository {
-//        return FirebaseRepository()
-//    }
+
+    @Singleton
+    @Provides
+    fun provideTmdbService(@ApplicationContext context: Context): TmdbService {
+        return TmdbService.create(context)
+    }
 }

@@ -285,7 +285,6 @@ fun SearchGameAppBar(
             }
             TextField(
                 modifier = Modifier
-                    .align(Alignment.CenterVertically)
                     .weight(1f)
                     .fillMaxHeight(),
                 value = query,

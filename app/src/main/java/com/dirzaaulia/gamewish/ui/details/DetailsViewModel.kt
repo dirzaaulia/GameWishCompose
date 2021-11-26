@@ -1,21 +1,24 @@
 package com.dirzaaulia.gamewish.ui.details
 
 import androidx.annotation.MainThread
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dirzaaulia.gamewish.base.ResponseResult
-import com.dirzaaulia.gamewish.data.model.Wishlist
 import com.dirzaaulia.gamewish.data.model.myanimelist.Details
 import com.dirzaaulia.gamewish.data.model.myanimelist.ListStatus
 import com.dirzaaulia.gamewish.data.model.rawg.GameDetails
+import com.dirzaaulia.gamewish.data.model.tmdb.MovieDetail
+import com.dirzaaulia.gamewish.data.model.wishlist.GameWishlist
 import com.dirzaaulia.gamewish.data.response.rawg.ScreenshotsResponse
 import com.dirzaaulia.gamewish.extension.success
 import com.dirzaaulia.gamewish.repository.*
+import com.dirzaaulia.gamewish.utils.FirebaseState
+import com.google.android.gms.tasks.Task
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -25,16 +28,19 @@ class DetailsViewModel @Inject constructor(
     private val firebaseRepository: FirebaseRepository,
     private val myAnimeListRepository: MyAnimeListRepository,
     private val protoRepository: ProtoRepository,
+    private val tmdbRepository: TmdbRepository,
 ) : ViewModel() {
 
     private val userPreferencesFlow = protoRepository.userPreferencesFlow
 
     val loading = mutableStateOf(true)
-    val wishlistedData = mutableStateOf<Wishlist?>(null)
+    val wishlistedData = mutableStateOf<GameWishlist?>(null)
 
     private var _token: MutableStateFlow<String> = MutableStateFlow("")
     val token = _token.asStateFlow()
 
+    private var _userAuthId: MutableStateFlow<String> = MutableStateFlow("")
+    val userAuthId = _userAuthId.asStateFlow()
 
     private val _gameDetailsResult: MutableStateFlow<ResponseResult<GameDetails>?> =
         MutableStateFlow(null)
@@ -51,6 +57,12 @@ class DetailsViewModel @Inject constructor(
         MutableStateFlow(null)
     val gameDetailsScreenshots = _gameDetailsScreenshots.asStateFlow()
 
+    private var _updateGameResult: MutableStateFlow<ResponseResult<Void>?> = MutableStateFlow(null)
+    val updateGameResult = _updateGameResult.asStateFlow()
+
+    private var _deleteGameResult: MutableStateFlow<String> = MutableStateFlow("")
+    val deleteGameResult = _deleteGameResult.asStateFlow()
+
     private val _animeDetailsResult: MutableStateFlow<ResponseResult<Details>?> =
         MutableStateFlow(null)
     val animeDetailsResult = _animeDetailsResult.asStateFlow()
@@ -63,19 +75,34 @@ class DetailsViewModel @Inject constructor(
     val updateMyAnimeListResult = _updateMyAnimeListResult.asStateFlow()
 
     private val _deleteMyAnimeListResult: MutableStateFlow<ResponseResult<String>?>
-        = MutableStateFlow(null)
+            = MutableStateFlow(null)
     val deleteMyAnimeListResult = _deleteMyAnimeListResult.asStateFlow()
+
+    private val _movieDetailsResult: MutableStateFlow<ResponseResult<MovieDetail>?> =
+        MutableStateFlow(null)
+    val movieDetailsResult = _movieDetailsResult.asStateFlow()
+
+    private val _movieDetails: MutableStateFlow<MovieDetail?> = MutableStateFlow(null)
+    val movieDetails = _movieDetails.asStateFlow()
 
     private val _selectedAnimeTab: MutableStateFlow<Int> = MutableStateFlow(0)
     val selectedAnimeTab = _selectedAnimeTab.asStateFlow()
 
+    private val _selectedMovieTab: MutableStateFlow<Int> = MutableStateFlow(0)
+    val selectedMovieTab = _selectedMovieTab.asStateFlow()
+
     init {
-        getAccessToken()
+        getUserAuthData()
     }
 
     @MainThread
     fun selectAnimeDetailsTab(tab: Int) {
         _selectedAnimeTab.value = tab
+    }
+
+    @MainThread
+    fun selectMovieDetailsTab(tab: Int) {
+        _selectedMovieTab.value = tab
     }
 
     @MainThread
@@ -93,13 +120,19 @@ class DetailsViewModel @Inject constructor(
         _deleteMyAnimeListResult.value = null
     }
 
-    fun getAccessToken() {
+    private fun getUserAuthData() {
         viewModelScope.launch {
             userPreferencesFlow.collect {
                 if (it.accessToken.isNullOrBlank()) {
                     _token.value = ""
                 } else {
                     _token.value = it.accessToken
+                }
+
+                if (it.userAuthId.isNullOrBlank()) {
+                    _userAuthId.value = ""
+                } else {
+                    _userAuthId.value = it.userAuthId
                 }
             }
         }
@@ -152,6 +185,18 @@ class DetailsViewModel @Inject constructor(
             .launchIn(viewModelScope)
     }
 
+    fun getMovieDetails(movieId: Long) {
+        tmdbRepository.getMovieDetails(movieId)
+            .onEach {
+                it.success { data ->
+                    _movieDetails.value = data
+                }
+                _movieDetailsResult.value = it
+                loading.value = false
+            }
+            .launchIn(viewModelScope)
+    }
+
     fun checkIfGameWishlisted(gameId: Long) {
         viewModelScope.launch {
             databaseRepository.getWishlist(gameId).collect {
@@ -160,15 +205,27 @@ class DetailsViewModel @Inject constructor(
         }
     }
 
-    fun addToWishlist(wishlist: Wishlist) {
+    fun addWishlistToFirestore(gameWishlist: GameWishlist) {
+       firebaseRepository.addGameToWishlist(_userAuthId.value, gameWishlist)
+           .onEach {
+               _updateGameResult.value = it
+           }
+           .launchIn(viewModelScope)
+    }
+
+    fun deleteWishlistFromFirestore(gameWishlist: GameWishlist): Task<Void> {
+        return firebaseRepository.removeGameFromWishlist(_userAuthId.value, gameWishlist)
+    }
+
+    fun addToWishlist(gameWishlist: GameWishlist) {
         viewModelScope.launch {
-            databaseRepository.addToWishlist(wishlist)
+            databaseRepository.addToWishlist(gameWishlist)
         }
     }
 
-    fun deleteWishlist(wishlist: Wishlist) {
+    fun deleteWishlist(gameWishlist: GameWishlist) {
         viewModelScope.launch {
-            databaseRepository.deleteWishlist(wishlist)
+            databaseRepository.deleteWishlist(gameWishlist)
         }
     }
 

@@ -18,6 +18,12 @@ object DatabaseConstant {
     const val DATABASE_PAGING_SIZE = 10
 }
 
+object TmdbConstant {
+    const val TMDB_BASE_URL = "https://api.themoviedb.org/3/"
+    const val TMDB_KEY = "2fce7a56fdfd95647be5e0d638d81da9"
+    const val TMDB_BASE_IMAGE_URL = "https://image.tmdb.org/t/p/original/"
+}
+
 object RawgConstant {
     const val RAWG_BASE_URL = "https://api.rawg.io/api/"
     const val RAWG_KEY = "b1ece946fa424f4f887871a867743d0e"

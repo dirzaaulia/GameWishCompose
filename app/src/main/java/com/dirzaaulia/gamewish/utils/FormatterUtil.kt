@@ -75,12 +75,10 @@ fun textDateFormatter2(value: String?): String {
 
 fun gameDeveloperFormatter(developers: List<Developer>): String {
     var value = ""
-    developers.forEach {
-        value += it.name.toString()
-        value += "\n"
-
-        if (value.isNotEmpty()) {
-            value = value.substring(0, value.length - 1)
+    developers.forEachIndexed { index, developer ->
+        value += developer.name.toString()
+        if (index != developers.size - 1) {
+            value += "\n"
         }
     }
     return value

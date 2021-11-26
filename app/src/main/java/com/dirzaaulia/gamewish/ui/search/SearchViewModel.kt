@@ -16,9 +16,11 @@ import com.dirzaaulia.gamewish.network.rawg.paging.RawgGenrePagingSource
 import com.dirzaaulia.gamewish.network.rawg.paging.RawgPlatformPagingSource
 import com.dirzaaulia.gamewish.network.rawg.paging.RawgPublisherPagingSource
 import com.dirzaaulia.gamewish.network.rawg.paging.RawgSearchPagingSource
+import com.dirzaaulia.gamewish.network.tmdb.paging.TmdbPagingSource
 import com.dirzaaulia.gamewish.repository.MyAnimeListRepository
 import com.dirzaaulia.gamewish.repository.ProtoRepository
 import com.dirzaaulia.gamewish.repository.RawgRepository
+import com.dirzaaulia.gamewish.repository.TmdbRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -30,6 +32,7 @@ class SearchViewModel @Inject constructor(
     private val rawgRepository: RawgRepository,
     private val protoRepository: ProtoRepository,
     private val myAnimeListRepository: MyAnimeListRepository,
+    private val tmdbRepository: TmdbRepository,
 ) : ViewModel() {
 
     private val userPreferencesFlow = protoRepository.userPreferencesFlow
@@ -42,6 +45,9 @@ class SearchViewModel @Inject constructor(
 
     private val _selectedSearchAnimeTab: MutableStateFlow<Int> = MutableStateFlow(0)
     val selectedSearchAnimeTab: StateFlow<Int> get() = _selectedSearchAnimeTab.asStateFlow()
+
+    private val _selectedSearchMovieTab: MutableStateFlow<Int> = MutableStateFlow(0)
+    val selectedSearchMovieTab: StateFlow<Int> get() = _selectedSearchMovieTab.asStateFlow()
 
     private var _tokenResult: MutableStateFlow<ResponseResult<String>?> = MutableStateFlow(null)
     val tokenResult = _tokenResult.asStateFlow()
@@ -129,6 +135,20 @@ class SearchViewModel @Inject constructor(
             }
         }
 
+    val searchMovieQuery = MutableStateFlow("")
+    val searchMovieList = searchMovieQuery
+        .flatMapLatest {
+            Pager(PagingConfig(pageSize = 10)) {
+                TmdbPagingSource(tmdbRepository, it, 1)
+            }.flow.cachedIn(viewModelScope)
+        }
+
+    val searchTvList = searchMovieQuery
+        .flatMapLatest {
+            Pager(PagingConfig(pageSize = 10)) {
+                TmdbPagingSource(tmdbRepository, it, 2)
+            }.flow.cachedIn(viewModelScope)
+        }
 
     init {
         getAccessToken()
@@ -151,6 +171,11 @@ class SearchViewModel @Inject constructor(
     }
 
     @MainThread
+    fun selectSearchMovieTab(tabIndex: Int) {
+        _selectedSearchMovieTab.value = tabIndex
+    }
+
+    @MainThread
     fun setSearchGameRequest(request: SearchGameRequest) {
         searchGameRequest.value = request
     }
@@ -163,6 +188,11 @@ class SearchViewModel @Inject constructor(
     @MainThread
     fun setSearchSeasonalQuery(query: String) {
         seasonalAnimeQuery.value = query
+    }
+
+    @MainThread
+    fun setSearchMovieQuery(query: String) {
+        searchMovieQuery.value = query
     }
 
     @MainThread

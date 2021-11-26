@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Games
+import androidx.compose.material.icons.filled.Theaters
 import androidx.compose.material.icons.filled.Tv
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -26,6 +27,8 @@ import com.dirzaaulia.gamewish.extension.isSucceeded
 import com.dirzaaulia.gamewish.ui.home.HomeViewModel
 import com.dirzaaulia.gamewish.ui.search.tab.anime.SearchAnime
 import com.dirzaaulia.gamewish.ui.search.tab.game.SearchGame
+import com.dirzaaulia.gamewish.ui.search.tab.movie.Movie
+import com.dirzaaulia.gamewish.data.model.tmdb.*
 import com.google.accompanist.insets.navigationBarsHeight
 import com.google.accompanist.insets.navigationBarsPadding
 import java.util.*
@@ -67,6 +70,14 @@ fun Search(
         viewModel.searchMangaList.collectAsLazyPagingItems()
     val seasonalAnimeList: LazyPagingItems<ParentNode> =
         viewModel.seasonalAnimeList.collectAsLazyPagingItems()
+
+    val lazyListStateMovie = rememberLazyListState()
+    val lazyListStateTv = rememberLazyListState()
+    val searchMovieQuery by viewModel.searchMovieQuery.collectAsState()
+    val searchMovieList: LazyPagingItems<Movie> =
+        viewModel.searchMovieList.collectAsLazyPagingItems()
+    val searchTvList: LazyPagingItems<Movie> =
+        viewModel.searchTvList.collectAsLazyPagingItems()
 
     when {
         accessTokenResult.isSucceeded -> {
@@ -129,6 +140,19 @@ fun Search(
                         upPress = upPress
                     )
                 }
+                SearchNavMenu.MOVIE -> {
+                    Movie(
+                        modifier = innerModifier,
+                        viewModel = viewModel,
+                        scope = scope,
+                        lazyListStateMovie = lazyListStateMovie,
+                        lazyListStateTv = lazyListStateTv,
+                        searchMovieQuery = searchMovieQuery,
+                        searchMovieList = searchMovieList,
+                        searchTvList = searchTvList,
+                        upPress = upPress
+                    )
+                }
             }
         }
     }
@@ -164,13 +188,15 @@ enum class SearchNavMenu (
     val icon: ImageVector
 ) {
     GAME(R.string.game, Icons.Filled.Games),
-    ANIME(R.string.anime_manga, Icons.Filled.Tv);
+    ANIME(R.string.anime_manga, Icons.Filled.Tv),
+    MOVIE(R.string.movie_tv_show, Icons.Filled.Theaters);
 
     companion object {
         fun getSearchNavMenuFromResource(@StringRes resources: Int) : SearchNavMenu {
             return when (resources) {
                 R.string.game -> GAME
                 R.string.anime_manga -> ANIME
+                R.string.movie_tv_show -> MOVIE
                 else -> GAME
             }
         }
