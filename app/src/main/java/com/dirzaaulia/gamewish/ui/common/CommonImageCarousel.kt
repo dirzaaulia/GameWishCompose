@@ -1,18 +1,20 @@
 package com.dirzaaulia.gamewish.ui.common
 
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.Card
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.dirzaaulia.gamewish.data.model.myanimelist.MainPicture
 import com.dirzaaulia.gamewish.data.model.rawg.Screenshots
-import com.dirzaaulia.gamewish.data.model.tmdb.Backdrop
+import com.dirzaaulia.gamewish.data.model.tmdb.Image
 import com.dirzaaulia.gamewish.utils.NetworkImage
+import com.dirzaaulia.gamewish.utils.TmdbConstant
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.PagerState
 import kotlinx.coroutines.delay
@@ -42,7 +44,8 @@ fun CommonGameCarousel(
     }?.let {
         HorizontalPager(
             state = pagerState,
-            modifier = it
+            modifier = it,
+            count = screenshots.size
         ) { pageIndex ->
             val screenshot = screenshots[pageIndex]
             Card {
@@ -76,7 +79,8 @@ fun CommonAnimeCarousel(
     HorizontalPager(
         state = pagerState,
         modifier =  Modifier
-            .width(100.dp)
+            .width(100.dp),
+        count = screenshots.size
     ) { pageIndex ->
         val screenshot = screenshots[pageIndex]
         Card {
@@ -93,29 +97,28 @@ fun CommonAnimeCarousel(
 @Composable
 fun CommonMovieCarousel(
     pagerState: PagerState,
-    backdrops: List<Backdrop>
+    imageList: List<Image>
 ) {
     LaunchedEffect(Unit) {
         while (true) {
             yield()
             delay(2000)
+            tween<Float>(600)
             pagerState.animateScrollToPage(
-                page = (pagerState.currentPage + 1) % (pagerState.pageCount),
-                animationSpec = tween(600)
+                page = (pagerState.currentPage + 1) % (pagerState.pageCount)
             )
         }
     }
 
     HorizontalPager(
         state = pagerState,
-        modifier =  Modifier
-            .width(100.dp)
+        count = imageList.size
     ) { pageIndex ->
-        val backdrop = backdrops[pageIndex]
+        val image = imageList[pageIndex]
         Card {
-            backdrop.path?.let {
+            image.filePath?.let {
                 NetworkImage(
-                    url = it,
+                    url = "${TmdbConstant.TMDB_BASE_IMAGE_URL}$it",
                     contentDescription = null
                 )
             }

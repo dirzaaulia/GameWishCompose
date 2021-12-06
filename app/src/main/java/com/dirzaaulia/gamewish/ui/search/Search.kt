@@ -23,12 +23,12 @@ import com.dirzaaulia.gamewish.data.model.rawg.Games
 import com.dirzaaulia.gamewish.data.model.rawg.Genre
 import com.dirzaaulia.gamewish.data.model.rawg.Platform
 import com.dirzaaulia.gamewish.data.model.rawg.Publisher
+import com.dirzaaulia.gamewish.data.model.tmdb.Movie
 import com.dirzaaulia.gamewish.extension.isSucceeded
 import com.dirzaaulia.gamewish.ui.home.HomeViewModel
 import com.dirzaaulia.gamewish.ui.search.tab.anime.SearchAnime
 import com.dirzaaulia.gamewish.ui.search.tab.game.SearchGame
 import com.dirzaaulia.gamewish.ui.search.tab.movie.Movie
-import com.dirzaaulia.gamewish.data.model.tmdb.*
 import com.google.accompanist.insets.navigationBarsHeight
 import com.google.accompanist.insets.navigationBarsPadding
 import java.util.*
@@ -40,6 +40,7 @@ fun Search(
     menuId: Int,
     navigateToGameDetails: (Long) -> Unit,
     navigateToAnimeDetails: (Long, String) -> Unit,
+    navigateToMovieDetails: (Long) -> Unit,
     upPress: () -> Unit
 ) {
     val accessTokenResult by homeViewModel.tokenResult.collectAsState()
@@ -150,6 +151,7 @@ fun Search(
                         searchMovieQuery = searchMovieQuery,
                         searchMovieList = searchMovieList,
                         searchTvList = searchTvList,
+                        navigateToMovieDetails = navigateToMovieDetails,
                         upPress = upPress
                     )
                 }

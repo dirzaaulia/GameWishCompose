@@ -11,7 +11,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -24,14 +24,14 @@ import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.items
 import com.dirzaaulia.gamewish.R
-import com.dirzaaulia.gamewish.data.model.wishlist.GameWishlist
 import com.dirzaaulia.gamewish.data.model.cheapshark.Deals
-import com.dirzaaulia.gamewish.data.model.rawg.Genre
 import com.dirzaaulia.gamewish.data.model.myanimelist.ParentNode
 import com.dirzaaulia.gamewish.data.model.rawg.Games
+import com.dirzaaulia.gamewish.data.model.rawg.Genre
 import com.dirzaaulia.gamewish.data.model.rawg.Platform
 import com.dirzaaulia.gamewish.data.model.rawg.Publisher
 import com.dirzaaulia.gamewish.data.model.tmdb.Movie
+import com.dirzaaulia.gamewish.data.model.wishlist.GameWishlist
 import com.dirzaaulia.gamewish.data.request.myanimelist.SearchGameRequest
 import com.dirzaaulia.gamewish.extension.visible
 import com.dirzaaulia.gamewish.ui.home.HomeViewModel
@@ -221,12 +221,12 @@ fun <T : Any> AnimeVerticalList(
                             Timber.e("Refresh Error: ${error.error.localizedMessage}")
                         }
                     }
-                    loadState.append is LoadState.Error -> {
-                        val error = data.loadState.refresh as LoadState.Error
-                        item {
-                            Timber.e("Append Error: ${error.error.localizedMessage}")
-                        }
-                    }
+//                    loadState.append is LoadState.NotLoading -> {
+//                        val error = data.loadState.refresh as LoadState.NotLoading
+//                        item {
+//                            Timber.e("Append Error: Not Loading")
+//                        }
+//                    }
                 }
             }
         }
@@ -328,8 +328,14 @@ fun DealsItem(
             verticalAlignment = Alignment.CenterVertically
         ) {
             deals.thumb?.let {
+                val url = if (it.isBlank()) {
+                    OtherConstant.NO_IMAGE_URL
+                } else {
+                    it
+                }
+
                 NetworkImage(
-                    url = it,
+                    url = url,
                     contentDescription = null,
                     modifier = modifier
                         .width(100.dp)
@@ -384,7 +390,7 @@ fun DealsItem(
 fun CommonMovieItem(
     modifier: Modifier = Modifier,
     movie: Movie,
-//    navigateToMovieDetails: (Long, String) -> Unit,
+    navigateToDetails: (Long) -> Unit,
     type: String,
 ) {
     Card(
@@ -396,9 +402,9 @@ fun CommonMovieItem(
                 onClick = {
                     movie.id?.let {
                         if (type.equals("Movie", true)) {
-//                            navigateToMovieDetails(it, "Movie")
+                            navigateToDetails(it)
                         } else {
-//                            navigateToMovieDetails(it, "TV Show")
+                            //TODO Navigate To TV Show Details
                         }
                     }
                 }
@@ -410,8 +416,14 @@ fun CommonMovieItem(
             verticalAlignment = Alignment.CenterVertically
         ) {
             movie.posterPath.let {
+                val url = if (it.isNullOrBlank()) {
+                    OtherConstant.NO_IMAGE_URL
+                } else {
+                    "${TmdbConstant.TMDB_BASE_IMAGE_URL}$it"
+                }
+
                 NetworkImage(
-                    url = "${TmdbConstant.TMDB_BASE_IMAGE_URL}$it",
+                    url = url,
                     contentDescription = null,
                     modifier = modifier
                         .width(100.dp)
@@ -425,8 +437,14 @@ fun CommonMovieItem(
                     .weight(1f)
             ) {
                 movie.releaseDate?.let {
+                    val releaseDate = if (it.isBlank()) {
+                        stringResource(R.string.no_release_date)
+                    } else {
+                        textDateFormatter2(it)
+                    }
+
                     Text(
-                        text = "Release Date : ${textDateFormatter2(it)}",
+                        text = "Release Date : $releaseDate",
                         style = MaterialTheme.typography.caption
                     )
                 }
@@ -477,8 +495,14 @@ fun CommonAnimeItem(
             verticalAlignment = Alignment.CenterVertically
         ) {
             parentNode.node?.mainPicture?.large?.let {
+                val url = if (it.isBlank()) {
+                    OtherConstant.NO_IMAGE_URL
+                } else {
+                    it
+                }
+
                 NetworkImage(
-                    url = it,
+                    url = url,
                     contentDescription = null,
                     modifier = modifier
                         .width(100.dp)
@@ -643,8 +667,14 @@ fun SearchGenreItem(
     ) {
         Column {
             genre.imageBackground?.let { imageUrl ->
+                val url = if (imageUrl.isBlank()) {
+                    OtherConstant.NO_IMAGE_URL
+                } else {
+                    imageUrl
+                }
+
                 NetworkImage(
-                    url = imageUrl,
+                    url = url,
                     contentDescription = null,
                     modifier = modifier
                         .fillMaxWidth()

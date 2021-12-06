@@ -1,24 +1,30 @@
 package com.dirzaaulia.gamewish.ui.details
 
+import android.media.ImageReader
 import androidx.annotation.MainThread
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.cachedIn
 import com.dirzaaulia.gamewish.base.ResponseResult
 import com.dirzaaulia.gamewish.data.model.myanimelist.Details
 import com.dirzaaulia.gamewish.data.model.myanimelist.ListStatus
 import com.dirzaaulia.gamewish.data.model.rawg.GameDetails
+import com.dirzaaulia.gamewish.data.model.tmdb.Image
 import com.dirzaaulia.gamewish.data.model.tmdb.MovieDetail
 import com.dirzaaulia.gamewish.data.model.wishlist.GameWishlist
 import com.dirzaaulia.gamewish.data.response.rawg.ScreenshotsResponse
+import com.dirzaaulia.gamewish.data.response.tmdb.ImagesResponse
 import com.dirzaaulia.gamewish.extension.success
+import com.dirzaaulia.gamewish.network.rawg.paging.RawgSearchPagingSource
+import com.dirzaaulia.gamewish.network.tmdb.paging.TmdbPagingSource
 import com.dirzaaulia.gamewish.repository.*
-import com.dirzaaulia.gamewish.utils.FirebaseState
 import com.google.android.gms.tasks.Task
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -85,14 +91,38 @@ class DetailsViewModel @Inject constructor(
     private val _movieDetails: MutableStateFlow<MovieDetail?> = MutableStateFlow(null)
     val movieDetails = _movieDetails.asStateFlow()
 
+    private val _movieImagesResult: MutableStateFlow<ResponseResult<ImagesResponse>?> =
+        MutableStateFlow(null)
+    val movieImagesResult = _movieImagesResult.asStateFlow()
+
+    private val _movieImages: MutableStateFlow<List<Image>?> = MutableStateFlow(null)
+    val movieImages = _movieImages.asStateFlow()
+
     private val _selectedAnimeTab: MutableStateFlow<Int> = MutableStateFlow(0)
     val selectedAnimeTab = _selectedAnimeTab.asStateFlow()
 
     private val _selectedMovieTab: MutableStateFlow<Int> = MutableStateFlow(0)
     val selectedMovieTab = _selectedMovieTab.asStateFlow()
 
+    private val movieId = MutableStateFlow(0L)
+    val movieRecommendations = movieId.flatMapLatest {
+        Pager(PagingConfig(pageSize = 10)) {
+            TmdbPagingSource(
+                tmdbRepository,
+                "",
+                it,
+                3
+            )
+        }.flow.cachedIn(viewModelScope)
+    }
+
     init {
         getUserAuthData()
+    }
+
+    @MainThread
+    fun setMovieId(movieId: Long) {
+        this.movieId.value = movieId
     }
 
     @MainThread
@@ -193,6 +223,17 @@ class DetailsViewModel @Inject constructor(
                 }
                 _movieDetailsResult.value = it
                 loading.value = false
+            }
+            .launchIn(viewModelScope)
+    }
+
+    fun getMovieImages(movieId: Long) {
+        tmdbRepository.getMovieImages(movieId)
+            .onEach {
+                it.success { data ->
+                    _movieImages.value = data.imageList
+                }
+                _movieImagesResult.value = it
             }
             .launchIn(viewModelScope)
     }

@@ -1,6 +1,5 @@
 package com.dirzaaulia.gamewish.data.model.myanimelist
 
-import com.dirzaaulia.gamewish.data.model.myanimelist.AnimeStatistic
 import com.squareup.moshi.Json
 
 data class User(

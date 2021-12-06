@@ -12,6 +12,7 @@ data class MovieDetail (
     val homepage: String?,
     @Json(name = "original_title")
     val title: String?,
+    val tagline: String?,
     val overview: String?,
     @Json(name = "production_companies")
     val productionCompanies: List<ProductionCompany>?,
@@ -20,4 +21,9 @@ data class MovieDetail (
     val revenue: Long?,
     val runtime: Long?,
     val status: String?,
+    @Json(name = "vote_average")
+    val voteAverage: Double?,
+    val popularity: Double?,
+    @Json(name = "poster_path")
+    val posterPath: String?
 ) : Parcelable

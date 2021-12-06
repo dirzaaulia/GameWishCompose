@@ -3,7 +3,8 @@ package com.dirzaaulia.gamewish.ui.details
 import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
-import androidx.compose.foundation.*
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -30,7 +31,10 @@ import com.dirzaaulia.gamewish.data.model.myanimelist.Details
 import com.dirzaaulia.gamewish.extension.isError
 import com.dirzaaulia.gamewish.extension.isSucceeded
 import com.dirzaaulia.gamewish.extension.visible
-import com.dirzaaulia.gamewish.ui.common.*
+import com.dirzaaulia.gamewish.ui.common.CommonAnimeCarousel
+import com.dirzaaulia.gamewish.ui.common.CommonAnimeItem
+import com.dirzaaulia.gamewish.ui.common.CommonLoading
+import com.dirzaaulia.gamewish.ui.common.ErrorConnect
 import com.dirzaaulia.gamewish.ui.theme.Grey700
 import com.dirzaaulia.gamewish.ui.theme.Red700
 import com.dirzaaulia.gamewish.ui.theme.White
@@ -77,13 +81,18 @@ fun AnimeDetails(
     AnimatedVisibility(visible = !loading) {
         when {
             dataResult.isError -> {
+                val errorScaffoldState = rememberScaffoldState()
+
                 viewModel.setLoading(false)
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    ErrorConnect(text = errorMessage) {
-                        viewModel.getAnimeDetails(animeId)
+
+                Scaffold(scaffoldState = errorScaffoldState) {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        ErrorConnect(text = errorMessage) {
+                            viewModel.getAnimeDetails(animeId)
+                        }
                     }
                 }
             }
@@ -122,57 +131,77 @@ fun AnimeDetails(
                     ) { innerPadding ->
                         when {
                             updateMyAnimeListResult.isSucceeded -> {
-                                scope.launch {
-                                    val message = if (type.equals("Anime", true)) {
-                                        if (data?.listStatus != null) {
-                                            "This anime has been updated on your Anime list"
+                                LaunchedEffect(updateMyAnimeListResult.isSucceeded) {
+                                    scope.launch {
+                                        val message = if (type.equals("Anime", true)) {
+                                            if (data?.listStatus != null) {
+                                                "This anime has been updated on your Anime list"
+                                            } else {
+                                                "This anime has been added on your Anime list"
+                                            }
                                         } else {
-                                            "This anime has been added on your Anime list"
+                                            if (data?.listStatus != null) {
+                                                "This manga has been updated on your Anime list"
+                                            } else {
+                                                "This manga has been added on your Anime list"
+                                            }
                                         }
-                                    } else {
-                                        if (data?.listStatus != null) {
-                                            "This manga has been updated on your Anime list"
-                                        } else {
-                                            "This manga has been added on your Anime list"
+                                        scaffoldState.snackbarHostState.showSnackbar(message)
+                                        viewModel.setUpdateMyAnimeListResult()
+                                        data?.id?.let { id ->
+                                            if (type.equals("Anime", true)) {
+                                                viewModel.getAnimeDetails(id)
+                                            } else {
+                                                viewModel.getMangaDetails(id)
+                                            }
                                         }
                                     }
-                                    scaffoldState.snackbarHostState.showSnackbar(message)
-                                    viewModel.setUpdateMyAnimeListResult()
-                                    data?.id?.let { id -> viewModel.getAnimeDetails(id) }
                                 }
                             }
                             updateMyAnimeListResult.isError -> {
-                                scope.launch {
-                                    val message = if (type.equals("Anime", true)) {
-                                        "Something went wrong when updating your Anime list. Please try again"
-                                    } else {
-                                        "Something went wrong when updating your Manga list. Please try again"
+                                LaunchedEffect(updateMyAnimeListResult.isError) {
+                                    scope.launch {
+                                        val message = if (type.equals("Anime", true)) {
+                                            "Something went wrong when updating your Anime list. Please try again"
+                                        } else {
+                                            "Something went wrong when updating your Manga list. Please try again"
+                                        }
+                                        scaffoldState.snackbarHostState.showSnackbar(message)
+                                        viewModel.setUpdateMyAnimeListResult()
                                     }
-                                    scaffoldState.snackbarHostState.showSnackbar(message)
-                                    viewModel.setUpdateMyAnimeListResult()
                                 }
                             }
                             deleteMyAnimeListResult.isSucceeded -> {
-                                scope.launch {
-                                    val message = if (type.equals("Anime", true)) {
-                                        "This anime has been deleted from your Anime list"
-                                    } else {
-                                        "This manga has been deleted from your Manga list"
+                                LaunchedEffect(deleteMyAnimeListResult.isSucceeded) {
+                                    scope.launch {
+                                        val message = if (type.equals("Anime", true)) {
+                                            "This anime has been deleted from your Anime list"
+                                        } else {
+                                            "This manga has been deleted from your Manga list"
+                                        }
+                                        scaffoldState.snackbarHostState.showSnackbar(message)
+                                        viewModel.setDeleteMyAnimeListResult()
+                                        data?.id?.let { id ->
+                                            if (type.equals("Anime", true)) {
+                                                viewModel.getAnimeDetails(id)
+                                            } else {
+                                                viewModel.getMangaDetails(id)
+                                            }
+                                        }
                                     }
-                                    scaffoldState.snackbarHostState.showSnackbar(message)
-                                    viewModel.setDeleteMyAnimeListResult()
-                                    data?.id?.let { id -> viewModel.getAnimeDetails(id) }
                                 }
                             }
                             deleteMyAnimeListResult.isError -> {
-                                scope.launch {
-                                    val message = if (type.equals("Anime", true)) {
-                                        "Something went wrong when updating your Anime list. Please try again"
-                                    } else {
-                                        "Something went wrong when updating your Manga list. Please try again"
+                                LaunchedEffect(deleteMyAnimeListResult.isError) {
+                                    scope.launch {
+                                        val message = if (type.equals("Anime", true)) {
+                                            "Something went wrong when updating your Anime list. Please try again"
+                                        } else {
+                                            "Something went wrong when updating your Manga list. Please try again"
+                                        }
+                                        scaffoldState.snackbarHostState.showSnackbar(message)
+                                        viewModel.setDeleteMyAnimeListResult()
                                     }
-                                    scaffoldState.snackbarHostState.showSnackbar(message)
-                                    viewModel.setDeleteMyAnimeListResult()
                                 }
                             }
                         }
@@ -418,10 +447,7 @@ fun AnimeDescriptionHeader(
             shape = MaterialTheme.shapes.small
         ) {
             if (!data.pictures.isNullOrEmpty()) {
-                val pagerState = rememberPagerState(
-                    pageCount = data.pictures.size,
-                    initialOffscreenLimit = 2,
-                )
+                val pagerState = rememberPagerState()
 
                 CommonAnimeCarousel(
                     pagerState = pagerState,
@@ -655,6 +681,7 @@ fun AnimeDetailsTopBar(
 ) {
     TopAppBar(
         elevation = 0.dp,
+        contentColor = White,
         modifier = Modifier
             .height(80.dp)
             .statusBarsPadding()
@@ -670,6 +697,7 @@ fun AnimeDetailsTopBar(
                 Icon(
                     imageVector = Icons.Filled.ArrowBack,
                     contentDescription = null,
+                    tint = White
                 )
             }
             Text(
@@ -677,7 +705,8 @@ fun AnimeDetailsTopBar(
                 softWrap = true,
                 modifier = Modifier.align(Alignment.CenterVertically),
                 text = title,
-                style = MaterialTheme.typography.h6
+                style = MaterialTheme.typography.h6,
+                color = White
             )
         }
     }

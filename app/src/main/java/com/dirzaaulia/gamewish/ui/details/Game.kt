@@ -79,15 +79,17 @@ fun GameDetails(
         when {
             updateGameResult.isSucceeded -> {
                 gameDetails?.id?.let { id -> viewModel.checkIfGameWishlisted(id) }
-                scope.launch {
-                    scaffoldState.bottomSheetState.collapse()
+                LaunchedEffect(updateGameResult.isSucceeded) {
+                    scope.launch {
+                        scaffoldState.bottomSheetState.collapse()
 
-                    if (wishlistData != null) {
-                        val text = "This game has been updated on your Wishlist."
-                        scaffoldState.snackbarHostState.showSnackbar(text)
-                    } else {
-                        val text = "This game has been added to your Wishlist."
-                        scaffoldState.snackbarHostState.showSnackbar(text)
+                        if (wishlistData != null) {
+                            val text = "This game has been updated on your Wishlist."
+                            scaffoldState.snackbarHostState.showSnackbar(text)
+                        } else {
+                            val text = "This game has been added to your Wishlist."
+                            scaffoldState.snackbarHostState.showSnackbar(text)
+                        }
                     }
                 }
             }
@@ -139,33 +141,42 @@ fun GameDetails(
                     }
 
                     if (deleteGameResult.equals("Success", true)) {
-                        scope.launch {
-                            scaffoldState.bottomSheetState.collapse()
-                            scaffoldState
-                                .snackbarHostState
-                                .showSnackbar("This game has been deleted from your Wishlist.")
+                        LaunchedEffect(deleteGameResult.equals("Success", true)) {
+                            scope.launch {
+                                scaffoldState.bottomSheetState.collapse()
+                                scaffoldState
+                                    .snackbarHostState
+                                    .showSnackbar("This game has been deleted from your Wishlist.")
+                            }
                         }
                     } else if (deleteGameResult.equals("Error", true)) {
-                        scope.launch {
-                            scaffoldState.bottomSheetState.collapse()
-                            scaffoldState
-                                .snackbarHostState
-                                .showSnackbar(
-                                    "Something went wrong when deleting game from your Wishlist."
-                                )
+                        LaunchedEffect(deleteGameResult.equals("Error", true)) {
+                            scope.launch {
+                                scaffoldState.bottomSheetState.collapse()
+                                scaffoldState
+                                    .snackbarHostState
+                                    .showSnackbar(
+                                        "Something went wrong when deleting game from your Wishlist."
+                                    )
+                            }
                         }
                     }
                 }
             }
             gameDetailsResult.isError -> {
+                val errorScaffoldState = rememberScaffoldState()
+
                 viewModel.setLoading(false)
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    ErrorConnect(text = stringResource(id = R.string.game_details_error)) {
-                        viewModel.getGameDetails(gameId)
-                        viewModel.getGameDetailsScreenshots(gameId)
+
+                Scaffold(scaffoldState = errorScaffoldState) {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        ErrorConnect(text = stringResource(id = R.string.game_details_error)) {
+                            viewModel.getGameDetails(gameId)
+                            viewModel.getGameDetailsScreenshots(gameId)
+                        }
                     }
                 }
             }
@@ -181,10 +192,7 @@ fun GameDetailsHeader(
 ) {
     Box {
         if (!screenshots.isNullOrEmpty()) {
-            val pagerState = rememberPagerState(
-                pageCount = screenshots.size,
-                initialOffscreenLimit = 2,
-            )
+            val pagerState = rememberPagerState()
 
             CommonGameCarousel(
                 pagerState = pagerState,
@@ -212,7 +220,8 @@ fun GameDetailsHeader(
             IconButton(onClick = upPress) {
                 Icon(
                     imageVector = Icons.Rounded.ArrowBack,
-                    contentDescription = stringResource(R.string.label_back)
+                    contentDescription = stringResource(R.string.label_back),
+                    tint = White
                 )
             }
         }
@@ -274,13 +283,20 @@ fun GameDetailsMiddleContent(
                 modifier = Modifier.weight(1f)
             ) {
                 data.released?.let {
+                    val releaseDate = if (it.isBlank()) {
+                        stringResource(R.string.no_release_date)
+                    } else {
+                        textDateFormatter2(it)
+                    }
+
+
                     Text(
                         text = stringResource(id = R.string.release_date),
                         style = MaterialTheme.typography.h6
 
                     )
                     Text(
-                        text = textDateFormatter2(it),
+                        text = releaseDate,
                         style = MaterialTheme.typography.body2
                     )
                 }

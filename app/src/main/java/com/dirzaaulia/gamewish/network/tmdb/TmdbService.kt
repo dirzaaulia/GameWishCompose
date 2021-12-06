@@ -4,9 +4,8 @@ import android.content.Context
 import com.chuckerteam.chucker.api.ChuckerCollector
 import com.chuckerteam.chucker.api.ChuckerInterceptor
 import com.dirzaaulia.gamewish.data.model.tmdb.MovieDetail
+import com.dirzaaulia.gamewish.data.response.tmdb.ImagesResponse
 import com.dirzaaulia.gamewish.data.response.tmdb.SearchMovieResponse
-import com.dirzaaulia.gamewish.network.rawg.RawgService
-import com.dirzaaulia.gamewish.utils.RawgConstant
 import com.dirzaaulia.gamewish.utils.TmdbConstant
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
@@ -42,6 +41,20 @@ interface TmdbService {
         @Path("movie_id") movieId: Long,
         @Query("api_key") apiKey : String = TmdbConstant.TMDB_KEY
     ): Response<MovieDetail>
+
+    @GET("movie/{movie_id}/images")
+    suspend fun getMovieImages(
+        @Path("movie_id") movieId: Long,
+        @Query("api_key") apiKey : String = TmdbConstant.TMDB_KEY
+    ): Response<ImagesResponse>
+
+    @GET("movie/{movie_id}/recommendations")
+    suspend fun getMovieRecommendations(
+        @Path("movie_id") movieId: Long,
+        @Query("api_key") apiKey: String = TmdbConstant.TMDB_KEY,
+        @Query("page") page : Int,
+        @Query("include_adult") includeAdult : Boolean = false
+    ): Response<SearchMovieResponse>
 
     companion object {
         fun create(context: Context): TmdbService {

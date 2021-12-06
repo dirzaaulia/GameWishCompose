@@ -5,30 +5,32 @@ object Versions {
 }
 
 object Libs {
-    const val androidGradlePlugin = "com.android.tools.build:gradle:7.0.1"
+    const val androidGradlePlugin = "com.android.tools.build:gradle:7.0.3"
 
     object Accompanist {
-        const val version = "0.18.0"
+        const val version = "0.21.3-beta"
         const val animation = "com.google.accompanist:accompanist-navigation-animation:$version"
         const val insets = "com.google.accompanist:accompanist-insets:$version"
         const val swipeRefresh = "com.google.accompanist:accompanist-swiperefresh:$version"
-        const val systemUiController = "com.google.accompanist:accompanist-systemuicontroller:$version"
+        const val systemUiController =
+            "com.google.accompanist:accompanist-systemuicontroller:$version"
         const val pager = "com.google.accompanist:accompanist-pager:$version"
+        const val flowLayout = "com.google.accompanist:accompanist-flowlayout:$version"
     }
 
     object AndroidX {
-        const val coreKtx = "androidx.core:core-ktx:1.6.0"
-        const val splashScreen = "androidx.core:core-splashscreen:1.0.0-alpha01"
-        const val navigation = "androidx.navigation:navigation-compose:2.4.0-alpha07"
+        const val coreKtx = "androidx.core:core-ktx:1.7.0"
+        const val splashScreen = "androidx.core:core-splashscreen:1.0.0-alpha02"
+        const val navigation = "androidx.navigation:navigation-compose:2.4.0-beta02"
         const val materialDesign = "com.google.android.material:material:1.4.0"
 
         object Activity {
-            const val activityCompose = "androidx.activity:activity-compose:1.3.1"
+            const val activityCompose = "androidx.activity:activity-compose:1.4.0"
         }
 
         object Compose {
             const val snapshot = ""
-            const val version = "1.0.1"
+            const val version = "1.0.5"
 
             const val animation = "androidx.compose.animation:animation:$version"
             const val foundation = "androidx.compose.foundation:foundation:$version"
@@ -48,30 +50,27 @@ object Libs {
             private const val version = "2.3.1"
 
             const val livedata = "androidx.lifecycle:lifecycle-livedata-ktx:$version"
-            const val viewModel_savedState = "androidx.lifecycle:lifecycle-viewmodel-savedstate:$version"
-        }
-
-        object LifecycleCompose {
-            private const val version = "1.0.0-alpha07"
+            const val viewModel_savedState =
+                "androidx.lifecycle:lifecycle-viewmodel-savedstate:$version"
             const val viewModel = "androidx.lifecycle:lifecycle-viewmodel-compose:$version"
         }
 
         object ConstraintLayout {
             const val constraintLayoutCompose =
-                "androidx.constraintlayout:constraintlayout-compose:1.0.0-beta02"
+                "androidx.constraintlayout:constraintlayout-compose:1.0.0-rc02"
         }
 
         object Test {
-            private const val version = "1.3.0"
+            private const val version = "1.4.0"
             const val core = "androidx.test:core:$version"
             const val rules = "androidx.test:rules:$version"
 
             object Ext {
-                private const val version = "1.1.2"
+                private const val version = "1.1.3"
                 const val junit = "androidx.test.ext:junit-ktx:$version"
             }
 
-            const val espressoCore = "androidx.test.espresso:espresso-core:3.3.0"
+            const val espressoCore = "androidx.test.espresso:espresso-core:3.4.0"
         }
     }
 
@@ -83,11 +82,11 @@ object Libs {
     }
 
     object Coil {
-        const val coilCompose = "io.coil-kt:coil-compose:1.3.0"
+        const val coilCompose = "io.coil-kt:coil-compose:1.4.0"
     }
 
     object Coroutines {
-        private const val version = "1.5.1"
+        private const val version = "1.5.2"
         const val core = "org.jetbrains.kotlinx:kotlinx-coroutines-core:$version"
         const val android = "org.jetbrains.kotlinx:kotlinx-coroutines-android:$version"
         const val playServices = "org.jetbrains.kotlinx:kotlinx-coroutines-play-services:$version"
@@ -95,7 +94,7 @@ object Libs {
     }
 
     object Firebase {
-        private const val version = "28.4.0"
+        private const val version = "29.0.0"
 
         const val bom = "com.google.firebase:firebase-bom:$version"
         const val database = "com.google.firebase:firebase-database-ktx"
@@ -113,47 +112,45 @@ object Libs {
 
     object Gms {
         const val plugin = "com.google.gms:google-services:4.3.10"
-        private const val version = "19.2.0"
 
+        private const val version = "19.2.0"
         const val playServiceAuth = "com.google.android.gms:play-services-auth:$version"
     }
 
     object Gson {
-        private const val version = "2.8.7"
+        private const val version = "2.8.9"
 
         const val core = "com.google.code.gson:gson:$version"
     }
 
     object Hilt {
-        private const val version = "2.38.1"
+        private const val version = "2.40.2"
 
         const val androidGradlePlugin = "com.google.dagger:hilt-android-gradle-plugin:$version"
         const val android = "com.google.dagger:hilt-android:$version"
         const val compiler = "com.google.dagger:hilt-android-compiler:$version"
 
         object Compose {
-            private const val version = "1.0.0-alpha03"
+            private const val version = "1.0.0-beta01"
 
             const val navigation = "androidx.hilt:hilt-navigation-compose:$version"
         }
     }
 
     object JUnit {
-        private const val version = "4.13"
+        private const val version = "4.13.2"
         const val junit = "junit:junit:$version"
     }
 
     object Kotlin {
-        private const val version = "1.5.21"
+        private const val version = "1.5.31"
         const val stdlib = "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$version"
         const val gradlePlugin = "org.jetbrains.kotlin:kotlin-gradle-plugin:$version"
         const val extensions = "org.jetbrains.kotlin:kotlin-android-extensions:$version"
     }
 
     object Other {
-        private const val version = "0.1.0"
-
-        const val imageSlideShow = "com.github.denzcoskun:imageslideshow:$version"
+        const val imageSlideShow = "com.github.denzcoskun:imageslideshow:0.1.0"
         const val photoView = "com.github.chrisbanes:photoview:2.2.0"
         const val timber = "com.jakewharton.timber:timber:4.7.1"
         const val currencyConverter = "com.github.vinisauter:currencyconverter:1.0"
@@ -161,12 +158,12 @@ object Libs {
     }
 
     object Paging {
-        private const val version = "3.0.1"
+        private const val version = "3.1.0"
 
         const val runtime = "androidx.paging:paging-runtime:$version"
 
         object Compose {
-            private const val version = "1.0.0-alpha12"
+            private const val version = "1.0.0-alpha14"
 
             const val compose = "androidx.paging:paging-compose:$version"
         }
@@ -179,10 +176,10 @@ object Libs {
         const val core = "androidx.datastore:datastore-core:$version"
 
         object Protobuf {
-            private const val version = "3.14.0"
+            private const val version = "3.19.1"
 
             const val javalite = "com.google.protobuf:protobuf-javalite:$version"
-            const val artifact = "com.google.protobuf:protoc:3.10.0"
+            const val artifact = "com.google.protobuf:protoc:$version"
         }
     }
 

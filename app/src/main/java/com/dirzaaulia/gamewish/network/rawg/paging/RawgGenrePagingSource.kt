@@ -4,7 +4,6 @@ import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.dirzaaulia.gamewish.data.model.rawg.Genre
 import com.dirzaaulia.gamewish.extension.pagingSucceeded
-import com.dirzaaulia.gamewish.repository.MyAnimeListRepository
 import com.dirzaaulia.gamewish.repository.RawgRepository
 
 class RawgGenrePagingSource(

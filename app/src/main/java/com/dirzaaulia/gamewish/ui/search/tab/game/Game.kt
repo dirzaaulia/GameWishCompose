@@ -31,6 +31,7 @@ import com.dirzaaulia.gamewish.data.request.myanimelist.SearchGameRequest
 import com.dirzaaulia.gamewish.extension.visible
 import com.dirzaaulia.gamewish.ui.common.*
 import com.dirzaaulia.gamewish.ui.search.SearchViewModel
+import com.dirzaaulia.gamewish.ui.theme.Grey50
 import com.dirzaaulia.gamewish.ui.theme.White
 import com.google.accompanist.insets.statusBarsPadding
 import kotlinx.coroutines.CoroutineScope
@@ -265,6 +266,7 @@ fun SearchGameAppBar(
 
     TopAppBar(
         elevation = 0.dp,
+        contentColor = White,
         modifier = Modifier
             .height(80.dp)
             .statusBarsPadding()
@@ -281,6 +283,7 @@ fun SearchGameAppBar(
                 Icon(
                     imageVector = Icons.Filled.ArrowBack,
                     contentDescription = null,
+                    tint = White
                 )
             }
             TextField(
@@ -303,7 +306,9 @@ fun SearchGameAppBar(
                     backgroundColor = MaterialTheme.colors.primarySurface,
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent,
-                    disabledIndicatorColor = Color.Transparent
+                    disabledIndicatorColor = Color.Transparent,
+                    cursorColor = White,
+                    textColor = White,
                 ),
                 keyboardOptions = KeyboardOptions(
                     imeAction = ImeAction.Done

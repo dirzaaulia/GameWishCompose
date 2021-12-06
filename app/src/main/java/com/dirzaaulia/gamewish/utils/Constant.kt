@@ -21,7 +21,7 @@ object DatabaseConstant {
 object TmdbConstant {
     const val TMDB_BASE_URL = "https://api.themoviedb.org/3/"
     const val TMDB_KEY = "2fce7a56fdfd95647be5e0d638d81da9"
-    const val TMDB_BASE_IMAGE_URL = "https://image.tmdb.org/t/p/original/"
+    const val TMDB_BASE_IMAGE_URL = "https://image.tmdb.org/t/p/original"
 }
 
 object RawgConstant {

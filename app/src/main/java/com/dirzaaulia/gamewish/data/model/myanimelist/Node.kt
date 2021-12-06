@@ -1,7 +1,6 @@
 package com.dirzaaulia.gamewish.data.model.myanimelist
 
 import android.os.Parcelable
-import com.dirzaaulia.gamewish.data.model.myanimelist.MainPicture
 import com.squareup.moshi.Json
 import kotlinx.parcelize.Parcelize
 

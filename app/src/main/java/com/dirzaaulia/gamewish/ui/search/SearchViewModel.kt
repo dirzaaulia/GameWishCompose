@@ -8,9 +8,7 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
 import com.dirzaaulia.gamewish.base.ResponseResult
-import com.dirzaaulia.gamewish.data.model.myanimelist.User
 import com.dirzaaulia.gamewish.data.request.myanimelist.SearchGameRequest
-import com.dirzaaulia.gamewish.network.cheapshark.paging.CheapSharkPagingSource
 import com.dirzaaulia.gamewish.network.myanimelist.paging.MyAnimeListPagingSource
 import com.dirzaaulia.gamewish.network.rawg.paging.RawgGenrePagingSource
 import com.dirzaaulia.gamewish.network.rawg.paging.RawgPlatformPagingSource
@@ -139,14 +137,14 @@ class SearchViewModel @Inject constructor(
     val searchMovieList = searchMovieQuery
         .flatMapLatest {
             Pager(PagingConfig(pageSize = 10)) {
-                TmdbPagingSource(tmdbRepository, it, 1)
+                TmdbPagingSource(tmdbRepository, it, 0, 1)
             }.flow.cachedIn(viewModelScope)
         }
 
     val searchTvList = searchMovieQuery
         .flatMapLatest {
             Pager(PagingConfig(pageSize = 10)) {
-                TmdbPagingSource(tmdbRepository, it, 2)
+                TmdbPagingSource(tmdbRepository, it, 0, 2)
             }.flow.cachedIn(viewModelScope)
         }
 

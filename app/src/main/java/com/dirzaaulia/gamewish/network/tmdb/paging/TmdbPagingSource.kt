@@ -9,6 +9,7 @@ import com.dirzaaulia.gamewish.repository.TmdbRepository
 class TmdbPagingSource (
     private val repository: TmdbRepository,
     private val searchQuery: String,
+    private val movieId: Long,
     private val serviceCode: Int,
 ): PagingSource<Int, Movie>() {
     override fun getRefreshKey(state: PagingState<Int, Movie>): Int? {
@@ -32,6 +33,15 @@ class TmdbPagingSource (
             }
             2 -> {
                 repository.searchTv(searchQuery, page).pagingSucceeded { data ->
+                    LoadResult.Page(
+                        data = data,
+                        prevKey = if (page == 1) null else page - 1,
+                        nextKey = if (data.isEmpty()) null else page.plus(1)
+                    )
+                }
+            }
+            3 -> {
+                repository.getMovieRecommendations(movieId, page).pagingSucceeded { data ->
                     LoadResult.Page(
                         data = data,
                         prevKey = if (page == 1) null else page - 1,

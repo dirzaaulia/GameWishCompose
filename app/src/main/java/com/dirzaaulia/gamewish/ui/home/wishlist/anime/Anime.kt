@@ -18,8 +18,8 @@ import com.dirzaaulia.gamewish.data.model.myanimelist.ParentNode
 import com.dirzaaulia.gamewish.extension.isError
 import com.dirzaaulia.gamewish.extension.isSucceeded
 import com.dirzaaulia.gamewish.extension.visible
-import com.dirzaaulia.gamewish.ui.common.CommonAnimeItem
 import com.dirzaaulia.gamewish.ui.common.AnimeVerticalList
+import com.dirzaaulia.gamewish.ui.common.CommonAnimeItem
 import com.dirzaaulia.gamewish.ui.common.WebViewMyAnimeList
 import com.dirzaaulia.gamewish.ui.home.HomeViewModel
 import com.dirzaaulia.gamewish.utils.capitalizeWords

@@ -10,9 +10,9 @@ import com.dirzaaulia.gamewish.data.model.myanimelist.Genre
 import com.dirzaaulia.gamewish.data.model.rawg.Developer
 import com.dirzaaulia.gamewish.data.model.rawg.EsrbRating
 import com.dirzaaulia.gamewish.data.model.rawg.Publisher
+import com.dirzaaulia.gamewish.data.model.tmdb.ProductionCompany
 import timber.log.Timber
 import vas.com.currencyconverter.CurrencyConverter
-import java.text.DecimalFormat
 import java.text.NumberFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -206,7 +206,7 @@ fun animeRatingFormat(value: String?) : String {
 
 fun animeGenreFormat(list: List<Genre>?): String {
     if (list?.isNotEmpty() == true) {
-        var genre: String = ""
+        var genre = ""
         list.forEach {
             genre += "${it.name} "
         }
@@ -231,4 +231,30 @@ fun animeScoreFormat(value: Int?): String {
             else -> ""
         }
     }
+}
+
+fun movieProductionCompaniesFormat(list: List<ProductionCompany>?): String {
+    if (list?.isNotEmpty() == true) {
+        var genre = ""
+        list.forEachIndexed { index, productionCompany ->
+            genre += if (index == (list.size - 1)) {
+                "${productionCompany.name}"
+            } else {
+                "${productionCompany.name}\n"
+            }
+        }
+        return genre
+    }
+    return ""
+}
+
+fun movieGenreFormat(list: List<com.dirzaaulia.gamewish.data.model.tmdb.Genre>?): String {
+    if (list?.isNotEmpty() == true) {
+        var genre = ""
+        list.forEach {
+            genre += "${it.name} "
+        }
+        return genre
+    }
+    return ""
 }

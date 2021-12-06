@@ -33,10 +33,35 @@ class TmdbRepository @Inject constructor(
         }
     }
 
+    suspend fun getMovieRecommendations(
+        movieId: Long,
+        page: Int
+    ): ResponseResult<List<Movie>> {
+        return withContext(Dispatchers.IO) {
+            executeWithResponse {
+                service.getMovieRecommendations(movieId = movieId, page = page)
+                    .body()?.results ?: emptyList()
+            }
+        }
+    }
+
     @WorkerThread
     fun getMovieDetails(movieId: Long) = flow {
         try {
             service.getMovieDetail(movieId = movieId).body()?.let {
+                emit(ResponseResult.Success(it))
+            } ?: run {
+                throw NotFoundException()
+            }
+        } catch (e: Exception) {
+            emit(ResponseResult.Error(e))
+        }
+    }
+
+    @WorkerThread
+    fun getMovieImages(movieId: Long) = flow {
+        try {
+            service.getMovieImages(movieId = movieId).body()?.let {
                 emit(ResponseResult.Success(it))
             } ?: run {
                 throw NotFoundException()

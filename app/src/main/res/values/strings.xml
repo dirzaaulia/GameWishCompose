@@ -102,6 +102,14 @@
     <string name="recommendation_manga_error">Something went wrong went getting recommendation.
         Check your internet connection and try again</string>
 
+    <!-- Movie Details -->
+    <string name="movie_details_error">Something wrong went getting Movie Details.
+        Check your internet connection and try again.
+    </string>
+    <string name="tv_show_details_error">Something wrong went getting TV Show Details.
+        Check your internet connection and try again.
+    </string>
+
     <!-- Deals -->
     <string name="deals_error">Something wrong went getting Deals.
         Check your internet connection and try again.
@@ -174,6 +182,10 @@
     <string name="search_movie_error">Something wrong went getting Movie.
         Check your internet connection and try again.
     </string>
+    <string name="search_movie_recommendations_error">
+        Something wrong went getting Movie recommendations.
+        Check your internet connection and try again.
+    </string>
 
     <string name="search_tv_empty_query">Search TV Show by Title. Please search with
     precise title to make sure TV Show you are looking for is found.</string>
@@ -183,4 +195,7 @@
     <string name="search_tv_error">Something wrong went getting Movie.
         Check your internet connection and try again.
     </string>
+    <string name="no_release_date">No Release Date</string>
+    <string name="runtime">Runtime</string>
+    <string name="synopsis">Synopsis</string>
 </resources>

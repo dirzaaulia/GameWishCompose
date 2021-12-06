@@ -14,14 +14,19 @@ import com.dirzaaulia.gamewish.data.model.rawg.Platforms
 import com.dirzaaulia.gamewish.data.model.rawg.Stores
 import com.dirzaaulia.gamewish.ui.theme.White
 import com.dirzaaulia.gamewish.utils.setPlatformsBackgroundColor
+import com.google.accompanist.flowlayout.FlowColumn
+import com.google.accompanist.flowlayout.FlowRow
 
 @Composable
 fun GameDetailsPlatformList(
     data: List<Platforms>,
     code: Int
 ) {
-    Column {
-        data.forEach {
+
+    FlowRow {
+        data
+            .sortedWith(compareBy { it.platform?.name?.length })
+            .forEach {
             GameDetailsItemPlatforms(data = it, code = code)
         }
     }
@@ -37,14 +42,13 @@ fun GameDetailsItemPlatforms(
         shape = MaterialTheme.shapes.small,
         modifier = Modifier
             .padding(4.dp)
-            .fillMaxWidth()
     ) {
         data.platform?.name?.let {
             Text(
                 text = it,
                 color = White,
                 style = MaterialTheme.typography.subtitle1,
-                modifier = Modifier.padding(4.dp),
+                modifier = Modifier.padding(vertical = 4.dp, horizontal = 12.dp),
                 textAlign = TextAlign.Center
             )
         }
@@ -56,8 +60,10 @@ fun GameDetailsStoresList(
     data: List<Stores>,
     code: Int
 ) {
-    Column {
-        data.forEach {
+    FlowRow {
+        data
+            .sortedWith(compareBy { it.store?.name?.length })
+            .forEach {
             GameDetailsItemStores(data = it, code = code)
         }
     }
@@ -73,14 +79,13 @@ fun GameDetailsItemStores(
         shape = MaterialTheme.shapes.small,
         modifier = Modifier
             .padding(4.dp)
-            .fillMaxWidth()
     ) {
         data.store?.name?.let {
             Text(
                 text = it,
                 color = White,
                 style = MaterialTheme.typography.subtitle1,
-                modifier = Modifier.padding(4.dp),
+                modifier = Modifier.padding(vertical = 4.dp, horizontal = 12.dp),
                 textAlign = TextAlign.Center
             )
         }

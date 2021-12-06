@@ -1,14 +1,18 @@
 package com.dirzaaulia.gamewish.ui.details
 
 import androidx.annotation.StringRes
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.Crossfade
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.ArrowDropUp
-import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -21,14 +25,17 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.dirzaaulia.gamewish.R
-import com.dirzaaulia.gamewish.data.model.myanimelist.Details
-import com.dirzaaulia.gamewish.data.model.tmdb.Backdrop
+import com.dirzaaulia.gamewish.data.model.tmdb.Image
 import com.dirzaaulia.gamewish.data.model.tmdb.Movie
+import com.dirzaaulia.gamewish.data.model.tmdb.MovieDetail
 import com.dirzaaulia.gamewish.data.model.wishlist.MovieWishlist
+import com.dirzaaulia.gamewish.extension.isError
+import com.dirzaaulia.gamewish.extension.isSucceeded
 import com.dirzaaulia.gamewish.extension.visible
-import com.dirzaaulia.gamewish.ui.common.CommonAnimeCarousel
-import com.dirzaaulia.gamewish.ui.common.CommonMovieCarousel
+import com.dirzaaulia.gamewish.ui.common.*
 import com.dirzaaulia.gamewish.ui.theme.Grey700
 import com.dirzaaulia.gamewish.ui.theme.Red700
 import com.dirzaaulia.gamewish.ui.theme.White
@@ -38,14 +45,14 @@ import com.google.accompanist.insets.statusBarsPadding
 import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import java.util.*
 
 @Composable
 fun MovieDetails(
     viewModel: DetailsViewModel = hiltViewModel(),
     upPress: () -> Unit,
-    type: String,
     movieId: Long,
-//    navigateToMovieDetails: (Long, String) -> Unit,
+    navigateToMovieDetails: (Long) -> Unit,
 ) {
     val menu  = MovieDetailsTab.values()
     val menuId: Int by viewModel.selectedMovieTab.collectAsState(0)
@@ -53,36 +60,341 @@ fun MovieDetails(
     val scaffoldState = rememberBottomSheetScaffoldState()
     val data by viewModel.movieDetails.collectAsState(null)
     val dataResult by viewModel.movieDetailsResult.collectAsState(null)
+    val images by viewModel.movieImages.collectAsState(null)
+    val imagesResult by viewModel.movieImagesResult.collectAsState(null)
+    val movieRecommendations: LazyPagingItems<Movie> =
+        viewModel.movieRecommendations.collectAsLazyPagingItems()
     val loading = viewModel.loading.value
+    val errorMessage =
+        stringResource(id = R.string.tv_show_details_error)
+
+    LaunchedEffect(viewModel) {
+        viewModel.setMovieId(movieId)
+        viewModel.getMovieImages(movieId)
+        viewModel.getMovieDetails(movieId)
+    }
+
+    CommonLoading(visibility = loading)
+    AnimatedVisibility(visible = !loading) {
+        when {
+            dataResult.isError -> {
+                val errorScaffoldState = rememberScaffoldState()
+
+                viewModel.setLoading(false)
+
+                Scaffold(scaffoldState = errorScaffoldState) {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        ErrorConnect(text = errorMessage) {
+                            viewModel.getMovieDetails(movieId)
+                        }
+                    }
+                }
+            }
+            dataResult.isSucceeded -> {
+                Scaffold(
+                    topBar = {
+                        MovieDetailsTopBar(
+                            upPress = upPress,
+                            loading = loading,
+                            imageList = images,
+                        )
+                    }
+                ) {
+                    BottomSheetScaffold(
+                        scaffoldState = scaffoldState,
+                        topBar = {
+                            MovieDetailsTabMenu(
+                                menu = menu,
+                                menuId = menuId,
+                                viewModel = viewModel
+                            )
+                        },
+                        sheetContent = {
+                            data?.let { value ->
+                                MovieDetailsSheetContent(
+                                    data = value,
+                                    wishlist = null,
+                                    viewModel = viewModel,
+                                    scope = scope,
+                                    scaffoldState = scaffoldState
+                                )
+                            }
+                        },
+                        sheetPeekHeight = 0.dp
+                    ) { innerPadding ->
+                        val innerModifier = Modifier.padding(innerPadding)
+                        Crossfade(
+                            targetState = MovieDetailsTab.getTabFromResource(menuId)
+                        ) { destination ->
+                            when (destination) {
+                                MovieDetailsTab.DESCRIPTION -> {
+                                    MovieDescriptionTab(
+                                        modifier = innerModifier,
+                                        loading = loading,
+                                        data = data,
+                                        scope = scope,
+                                        scaffoldState = scaffoldState
+                                    )
+                                }
+                                MovieDetailsTab.RECOMMENDATION -> {
+                                    MovieRecommendationsTab(
+                                        data = movieRecommendations,
+                                        navigateToMovieDetails = navigateToMovieDetails
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun MovieRecommendationsTab(
+    modifier: Modifier = Modifier,
+    data: LazyPagingItems<Movie>,
+    navigateToMovieDetails: (Long) -> Unit,
+) {
+    Column(modifier = modifier.padding(8.dp)) {
+        Text(
+            text = stringResource(R.string.movie_data_source),
+            style = MaterialTheme.typography.caption,
+        )
+        CommonVerticalList(
+            data = data,
+            lazyListState = rememberLazyListState(),
+            emptyString = "There is no recommendations for this Movie",
+            errorString = stringResource(id = R.string.search_movie_recommendations_error),
+        ) { movie ->
+            CommonMovieItem(
+                movie = movie,
+                type = "Movie",
+                navigateToDetails = navigateToMovieDetails
+            )
+        }
+    }
+}
+
+@Composable
+fun MovieDescriptionTab(
+    modifier: Modifier = Modifier,
+    loading: Boolean,
+    data: MovieDetail?,
+    scope: CoroutineScope,
+    scaffoldState: BottomSheetScaffoldState
+) {
+    LazyColumn(modifier = modifier.padding(8.dp)) {
+        item {
+            MovieDescriptionHeader(
+                loading = loading,
+                data = data
+            )
+        }
+        item {
+            MovieDescriptionFooter(
+                data = data,
+                scope = scope,
+                scaffoldState = scaffoldState
+            )
+        }
+    }
 }
 
 @Composable
 fun MovieDescriptionHeader(
-    type: String,
     loading: Boolean,
-    data: Movie,
-    backdrops: List<Backdrop>
+    data: MovieDetail?,
 ) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(300.dp),
-    ) {
-        if (!backdrops.isNullOrEmpty()) {
-            val pagerState = rememberPagerState(
-                pageCount = backdrops.size,
-                initialOffscreenLimit = 2,
-            )
+    Row(modifier = Modifier.height(IntrinsicSize.Min)) {
+        Card(
+            modifier = Modifier
+                .fillMaxHeight()
+                .padding(end = 4.dp)
+                .weight(1f),
+            shape = MaterialTheme.shapes.small
+        ) {
+            if (data?.posterPath.isNullOrBlank()) {
+                NetworkImage(
+                    modifier = Modifier.visible(!loading),
+                    url = OtherConstant.NO_IMAGE_URL,
+                    contentDescription = null
+                )
+            } else {
+                NetworkImage(
+                    modifier = Modifier.visible(!loading),
+                    url = "${TmdbConstant.TMDB_BASE_IMAGE_URL}${data?.posterPath}",
+                    contentDescription = null
+                )
+            }
+        }
+        Card(
+            modifier = Modifier
+                .weight(1f),
+            shape = MaterialTheme.shapes.small
+        ) {
+            Column(
+                modifier = Modifier.padding(8.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.SpaceEvenly
+            ) {
+                Card(
+                    backgroundColor = Grey700,
+                    shape = MaterialTheme.shapes.small,
+                    modifier = Modifier
+                        .padding(4.dp)
+                        .fillMaxWidth()
+                ) {
+                    data?.status?.let { status ->
+                        Text(
+                            text = status.replace("_"," ").capitalizeWords(),
+                            color = White,
+                            style = MaterialTheme.typography.caption,
+                            modifier = Modifier.padding(4.dp),
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
+                Text(
+                    text = stringResource(R.string.runtime),
+                    style = MaterialTheme.typography.subtitle2,
+                )
+                Text(
+                    text = "${data?.runtime}",
+                    color = Color.Gray,
+                    style = MaterialTheme.typography.caption,
+                )
+                Text(
+                    text = "Score",
+                    style = MaterialTheme.typography.subtitle2,
+                )
+                Text(
+                    text = "${data?.voteAverage}",
+                    color = Color.Gray,
+                    style = MaterialTheme.typography.caption,
+                )
+                Text(
+                    text = "Popularity",
+                    style = MaterialTheme.typography.subtitle2,
+                )
+                Text(
+                    text = "${data?.popularity}",
+                    color = Color.Gray,
+                    style = MaterialTheme.typography.caption,
+                )
+                Text(
+                    text = "Production Companies",
+                    style = MaterialTheme.typography.subtitle2,
+                )
+                Text(
+                    text = movieProductionCompaniesFormat(data?.productionCompanies),
+                    color = Color.Gray,
+                    style = MaterialTheme.typography.caption,
+                    textAlign = TextAlign.Center
+                )
+            }
+        }
+    }
+}
 
-            CommonMovieCarousel(
-                pagerState = pagerState,
-                backdrops = backdrops
+@Composable
+fun MovieDescriptionFooter(
+    data: MovieDetail?,
+    scope: CoroutineScope,
+    scaffoldState: BottomSheetScaffoldState
+) {
+    Column(modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)) {
+        data?.title?.let {
+            Text(
+                text = stringResource(id = R.string.movie_data_source),
+                style = MaterialTheme.typography.caption,
             )
-        } else if (backdrops.isEmpty()) {
-            NetworkImage(
-                modifier = Modifier.visible(!loading),
-                url = OtherConstant.NO_IMAGE_URL,
-                contentDescription = null
+        }
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            data?.title?.let {
+                Text(
+                    modifier = Modifier.weight(1f),
+                    text = it,
+                    style = MaterialTheme.typography.h4,
+                )
+            }
+            OutlinedButton(
+                modifier = Modifier.size(50.dp),
+                onClick = {
+                    scope.launch {
+                        if (scaffoldState.bottomSheetState.isCollapsed) {
+                            scaffoldState.bottomSheetState.expand()
+                        } else {
+                            scaffoldState.bottomSheetState.collapse()
+                        }
+                    }
+                },
+                shape = CircleShape,
+                border = BorderStroke(1.dp, MaterialTheme.colors.onSurface),
+                contentPadding = PaddingValues(0.dp),
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Favorite,
+                    contentDescription = null,
+                    tint = MaterialTheme.colors.onSurface
+                )
+            }
+        }
+        data?.tagline?.let {
+            Text(
+                text = it,
+                style = MaterialTheme.typography.subtitle1,
+                modifier = Modifier.padding(top = 4.dp)
+            )
+        }
+        data?.releaseDate?.let {
+            Text(
+                text = textDateFormatter2(it),
+                style = MaterialTheme.typography.body2,
+            )
+        }
+        Row {
+            data?.budget?.let {
+                Text(
+                    modifier = Modifier.weight(1f),
+                    text = "Budget : ${String.format(Locale.ITALIAN, "%,d", it)}",
+                    style = MaterialTheme.typography.caption,
+                )
+            }
+            data?.revenue?.let {
+                Text(
+                    modifier = Modifier.weight(1f),
+                    textAlign = TextAlign.End,
+                    text = "Revenue : ${String.format(Locale.ITALIAN, "%,d", it)}",
+                    style = MaterialTheme.typography.caption,
+                )
+            }
+        }
+        data?.genres?.let {
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp),
+                textAlign = TextAlign.Center,
+                text = movieGenreFormat(it),
+                style = MaterialTheme.typography.body2,
+            )
+        }
+        data?.overview?.let {
+            Text(
+                text = stringResource(R.string.synopsis),
+                style = MaterialTheme.typography.h6,
+            )
+            Text(
+                textAlign = TextAlign.Justify,
+                text = htmlToTextFormatter(it).toString(),
+                style = MaterialTheme.typography.body1,
             )
         }
     }
@@ -90,18 +402,35 @@ fun MovieDescriptionHeader(
 
 @Composable
 fun MovieDetailsTopBar(
-    title: String,
-    upPress: () -> Unit
+    upPress: () -> Unit,
+    loading: Boolean,
+    imageList: List<Image>?
 ) {
-    TopAppBar(
-        elevation = 0.dp,
-        modifier = Modifier
-            .height(80.dp)
-            .statusBarsPadding()
+    Box(modifier = Modifier
+        .height(300.dp)
+        .fillMaxWidth()
     ) {
-        Row(
-            horizontalArrangement = Arrangement.Start,
-            modifier = Modifier.fillMaxWidth()
+        if (!imageList.isNullOrEmpty()) {
+            val pagerState = rememberPagerState()
+
+            CommonMovieCarousel(
+                pagerState = pagerState,
+                imageList = imageList
+            )
+        } else if (imageList?.isEmpty() == true) {
+            NetworkImage(
+                modifier = Modifier.visible(!loading),
+                url = OtherConstant.NO_IMAGE_URL,
+                contentDescription = null
+            )
+        }
+        TopAppBar(
+            backgroundColor = Color.Transparent,
+            elevation = 0.dp,
+            contentColor = White,
+            modifier = Modifier
+                .height(80.dp)
+                .statusBarsPadding()
         ) {
             IconButton(
                 modifier = Modifier.align(Alignment.CenterVertically),
@@ -110,31 +439,24 @@ fun MovieDetailsTopBar(
                 Icon(
                     imageVector = Icons.Filled.ArrowBack,
                     contentDescription = null,
+                    tint = White
                 )
             }
-            Text(
-                maxLines = 2,
-                softWrap = true,
-                modifier = Modifier.align(Alignment.CenterVertically),
-                text = title,
-                style = MaterialTheme.typography.h6
-            )
         }
     }
 }
 
 @Composable
 fun MovieDetailsSheetContent(
-    type: String,
-    data: Movie,
-    wishlist: MovieWishlist,
+    data: MovieDetail,
+    wishlist: MovieWishlist?,
     viewModel: DetailsViewModel,
     scope: CoroutineScope,
     scaffoldState: BottomSheetScaffoldState
 ) {
 
     var statusExpanded by remember { mutableStateOf(false) }
-    val status = wishlist.status ?: "Plan To Watch"
+    val status = wishlist?.status ?: "Plan To Watch"
     val statusList = listOf("Watching", "Completed", "On-Hold", "Dropped", "Plan To Watch")
     var statusText by remember { mutableStateOf(status) }
 
@@ -149,14 +471,13 @@ fun MovieDetailsSheetContent(
         }
     }
 
-
     Column(
         modifier = Modifier
             .padding(16.dp)
             .fillMaxWidth()
             .navigationBarsWithImePadding()
     ) {
-        if (wishlist.status != null) {
+        if (wishlist?.status != null) {
             IconButton(
                 onClick = {
                     data.id?.let {
@@ -227,18 +548,11 @@ fun MovieDetailsSheetContent(
                 scope.launch { scaffoldState.bottomSheetState.collapse() }
             }
         ) {
-            val text = if (wishlist.status != null) {
-                if (type.equals("Movie", true)) {
-                    "Movie updated in your watchlist"
-                } else {
-                    "TV Show updated in your watchlist"
-                }
+            val text = if (wishlist?.status != null) {
+                "Movie updated in your watchlist"
             } else {
-                if (type.equals("Movie", true)) {
-                    "Movie added to your watchlist"
-                } else {
-                    "TV Show added to your watchlist"
-                }
+
+                "Movie added to your watchlist"
             }
             Text(text = text)
         }

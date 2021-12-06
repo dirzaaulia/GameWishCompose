@@ -40,6 +40,7 @@ fun Movie(
     searchMovieQuery: String,
     searchMovieList: LazyPagingItems<Movie>,
     searchTvList: LazyPagingItems<Movie>,
+    navigateToMovieDetails: (Long) -> Unit,
     upPress: () -> Unit,
 ) {
     val menu = SearchMovieTab.values()
@@ -69,14 +70,16 @@ fun Movie(
                        SearchMovieList(
                            data = searchMovieList,
                            lazyListState = lazyListStateMovie,
-                           searchMovieQuery = searchMovieQuery
+                           searchMovieQuery = searchMovieQuery,
+                           navigateToMovieDetails = navigateToMovieDetails
                        )
                     }
                     SearchMovieTab.TVSHOW -> {
                         SearchTvList(
                             data = searchTvList,
                             lazyListState = lazyListStateTv,
-                            searchMovieQuery = searchMovieQuery
+                            searchMovieQuery = searchMovieQuery,
+                            navigateToTvDetails = navigateToMovieDetails
                         )
                     }
                 }
@@ -90,7 +93,7 @@ fun SearchTvList(
     data: LazyPagingItems<Movie>,
     lazyListState: LazyListState,
     searchMovieQuery: String,
-//    navigateToAnimeDetails: (Long, String) -> Unit
+    navigateToTvDetails: (Long) -> Unit
 ) {
     Column (
         modifier = Modifier.padding(top = 4.dp, start = 8.dp, end = 8.dp)
@@ -116,7 +119,8 @@ fun SearchTvList(
         ) { movie ->
             CommonMovieItem(
                 movie = movie,
-                type = "TV Show"
+                type = "TV Show",
+                navigateToDetails = navigateToTvDetails
             )
         }
     }
@@ -128,7 +132,7 @@ fun SearchMovieList(
     data: LazyPagingItems<Movie>,
     lazyListState: LazyListState,
     searchMovieQuery: String,
-//    navigateToAnimeDetails: (Long, String) -> Unit
+    navigateToMovieDetails: (Long) -> Unit
 ) {
     Column (
         modifier = Modifier.padding(top = 4.dp, start = 8.dp, end = 8.dp)
@@ -154,7 +158,8 @@ fun SearchMovieList(
         ) { movie ->
             CommonMovieItem(
                 movie = movie,
-                type = "Movie"
+                type = "Movie",
+                navigateToDetails = navigateToMovieDetails
             )
         }
     }
@@ -188,6 +193,7 @@ fun SearchMovieAppBar(
                 Icon(
                     imageVector = Icons.Filled.ArrowBack,
                     contentDescription = null,
+                    tint = White
                 )
             }
             TextField(
@@ -208,7 +214,9 @@ fun SearchMovieAppBar(
                     backgroundColor = MaterialTheme.colors.primarySurface,
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent,
-                    disabledIndicatorColor = Color.Transparent
+                    disabledIndicatorColor = Color.Transparent,
+                    cursorColor = White,
+                    textColor = White,
                 ),
                 keyboardOptions = KeyboardOptions(
                     imeAction = ImeAction.Done

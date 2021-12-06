@@ -1,7 +1,5 @@
 package com.dirzaaulia.gamewish.base
 
-import timber.log.Timber
-
 /**
  * A generic class that holds a value or an exception
  */

@@ -3,7 +3,6 @@ package com.dirzaaulia.gamewish.network.myanimelist
 import android.content.Context
 import com.chuckerteam.chucker.api.ChuckerCollector
 import com.chuckerteam.chucker.api.ChuckerInterceptor
-import com.dirzaaulia.gamewish.base.ResponseResult
 import com.dirzaaulia.gamewish.data.model.myanimelist.Details
 import com.dirzaaulia.gamewish.data.model.myanimelist.ListStatus
 import com.dirzaaulia.gamewish.data.model.myanimelist.User
@@ -12,7 +11,6 @@ import com.dirzaaulia.gamewish.utils.MyAnimeListConstant
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import okhttp3.OkHttpClient
-import okhttp3.ResponseBody
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Response
 import retrofit2.Retrofit

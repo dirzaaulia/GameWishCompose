@@ -35,7 +35,6 @@ import com.dirzaaulia.gamewish.data.model.myanimelist.ParentNode
 import com.dirzaaulia.gamewish.data.request.myanimelist.SearchGameRequest
 import com.dirzaaulia.gamewish.extension.isError
 import com.dirzaaulia.gamewish.extension.isSucceeded
-import com.dirzaaulia.gamewish.extension.visible
 import com.dirzaaulia.gamewish.ui.common.CommonAnimeItem
 import com.dirzaaulia.gamewish.ui.common.CommonVerticalList
 import com.dirzaaulia.gamewish.ui.common.WebViewMyAnimeList
@@ -381,6 +380,7 @@ fun SearchAnimeAppBar(
                 Icon(
                     imageVector = Icons.Filled.ArrowBack,
                     contentDescription = null,
+                    tint = White
                 )
             }
             TextField(
@@ -409,7 +409,9 @@ fun SearchAnimeAppBar(
                     backgroundColor = MaterialTheme.colors.primarySurface,
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent,
-                    disabledIndicatorColor = Color.Transparent
+                    disabledIndicatorColor = Color.Transparent,
+                    cursorColor = White,
+                    textColor = White,
                 ),
                 keyboardOptions = KeyboardOptions(
                     imeAction = ImeAction.Done

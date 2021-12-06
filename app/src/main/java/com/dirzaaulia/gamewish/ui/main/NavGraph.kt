@@ -10,10 +10,11 @@ import androidx.compose.runtime.remember
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
-import androidx.navigation.compose.navArgument
+import androidx.navigation.navArgument
 import com.dirzaaulia.gamewish.ui.common.WebViewMyAnimeList
 import com.dirzaaulia.gamewish.ui.details.AnimeDetails
 import com.dirzaaulia.gamewish.ui.details.GameDetails
+import com.dirzaaulia.gamewish.ui.details.MovieDetails
 import com.dirzaaulia.gamewish.ui.home.HomeViewModel
 import com.dirzaaulia.gamewish.ui.search.Search
 import com.google.accompanist.insets.ProvideWindowInsets
@@ -44,10 +45,10 @@ fun NavGraph(navController: NavHostController) {
                 arguments = listOf(navArgument(NavScreen.Search.argument0) {
                     type = NavType.IntType
                 }),
-                enterTransition = { _, _ ->
+                enterTransition = {
                     fadeIn(animationSpec = tween(700))
                 },
-                exitTransition = { _, _ ->
+                exitTransition = {
                     fadeOut(animationSpec = tween(700))
                 }
             ) { backStackEntry ->
@@ -58,6 +59,7 @@ fun NavGraph(navController: NavHostController) {
                             menuId = argument.getInt(NavScreen.Search.argument0),
                             navigateToGameDetails = actions.navigateToGameDetails,
                             navigateToAnimeDetails = actions.navigateToAnimeDetails,
+                            navigateToMovieDetails = actions.navigateToMovieDetails,
                             upPress = actions.upPress
                         )
                     }
@@ -68,10 +70,10 @@ fun NavGraph(navController: NavHostController) {
                 arguments = listOf(navArgument(NavScreen.GameDetails.argument0) {
                     type = NavType.LongType
                 }),
-                enterTransition = {  _, _ ->
+                enterTransition = {
                     expandIn(animationSpec = tween(700))
                 },
-                exitTransition = { _, _ ->
+                exitTransition = {
                     shrinkOut(animationSpec = tween(700))
                 }
             ) { backStackEntry ->
@@ -95,10 +97,10 @@ fun NavGraph(navController: NavHostController) {
                         type = NavType.StringType
                     }
                 ),
-                enterTransition = {  _, _ ->
+                enterTransition = {
                     expandIn(animationSpec = tween(700))
                 },
-                exitTransition = { _, _ ->
+                exitTransition = {
                     shrinkOut(animationSpec = tween(700))
                 }
             ) { backStackEntry ->
@@ -113,6 +115,30 @@ fun NavGraph(navController: NavHostController) {
                                 upPress = actions.upPress
                             )
                         }
+                    }
+                }
+            }
+            composable(
+                route = NavScreen.MovieDetails.routeWithArgument,
+                arguments = listOf(
+                    navArgument(NavScreen.MovieDetails.argument0) {
+                        type = NavType.LongType
+                    }
+                ),
+                enterTransition = {
+                    expandIn(animationSpec = tween(700))
+                },
+                exitTransition = {
+                    shrinkOut(animationSpec = tween(700))
+                }
+            ) { backStackEntry ->
+                backStackEntry.arguments.let { bundle ->
+                    bundle?.let { argument ->
+                        MovieDetails(
+                            upPress = actions.upPress,
+                            movieId = argument.getLong(NavScreen.MovieDetails.argument0),
+                            navigateToMovieDetails = actions.navigateToMovieDetails
+                        )
                     }
                 }
             }

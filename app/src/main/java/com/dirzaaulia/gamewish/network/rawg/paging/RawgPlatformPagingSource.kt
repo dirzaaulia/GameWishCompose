@@ -3,7 +3,6 @@ package com.dirzaaulia.gamewish.network.rawg.paging
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.dirzaaulia.gamewish.data.model.rawg.Platform
-import com.dirzaaulia.gamewish.data.model.rawg.Publisher
 import com.dirzaaulia.gamewish.extension.pagingSucceeded
 import com.dirzaaulia.gamewish.repository.RawgRepository
 

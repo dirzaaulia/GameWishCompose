@@ -17,7 +17,9 @@ class MainActions(navController: NavHostController) {
 
     val navigateToSearch: (Int) -> Unit = { menuId: Int ->
         NavScreen.Search.apply {
-            navController.navigate(routeWithArgument.replace("{$argument0}", menuId.toString()))
+            navController.navigate(
+                routeWithArgument.replace("{$argument0}", menuId.toString())
+            )
         }
     }
 
@@ -35,6 +37,13 @@ class MainActions(navController: NavHostController) {
             navController.navigate(routeWithArgument.replace("{$argument0}", id.toString()))
         }
     }
+
+    val navigateToMovieDetails: (Long) -> Unit = { id: Long ->
+        NavScreen.MovieDetails.apply {
+            navController.navigate(routeWithArgument.replace("{$argument0}", id.toString()))
+        }
+    }
+
     val upPress: () -> Unit = {
         navController.navigateUp()
     }

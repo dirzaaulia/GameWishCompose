@@ -9,11 +9,11 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.dirzaaulia.gamewish.base.ResponseResult
-import com.dirzaaulia.gamewish.data.model.wishlist.GameWishlist
 import com.dirzaaulia.gamewish.data.model.cheapshark.Deals
-import com.dirzaaulia.gamewish.data.model.rawg.Stores
 import com.dirzaaulia.gamewish.data.model.myanimelist.ParentNode
 import com.dirzaaulia.gamewish.data.model.myanimelist.User
+import com.dirzaaulia.gamewish.data.model.rawg.Stores
+import com.dirzaaulia.gamewish.data.model.wishlist.GameWishlist
 import com.dirzaaulia.gamewish.data.request.cheapshark.DealsRequest
 import com.dirzaaulia.gamewish.data.response.myanimelist.MyAnimeListTokenResponse
 import com.dirzaaulia.gamewish.extension.error

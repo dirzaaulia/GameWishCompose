@@ -23,8 +23,8 @@ import androidx.compose.ui.unit.dp
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.dirzaaulia.gamewish.R
-import com.dirzaaulia.gamewish.data.model.wishlist.GameWishlist
 import com.dirzaaulia.gamewish.data.model.myanimelist.ParentNode
+import com.dirzaaulia.gamewish.data.model.wishlist.GameWishlist
 import com.dirzaaulia.gamewish.ui.common.AnimeFilterDialog
 import com.dirzaaulia.gamewish.ui.common.GameFilterDialog
 import com.dirzaaulia.gamewish.ui.common.MangaFilterDialog
