@@ -28,12 +28,26 @@
     <string name="recommendation">Recommendation</string>
 
     <!-- Game Tab -->
-    <string name="game_list_error">Something wrong went getting Game list data.
+    <string name="game_list_error">Something wrong happen went getting Game list data.
         Check your internet connection and try again.
     </string>
 
     <!-- Anime Tab -->
-    <string name="anime_list_error">Something wrong went getting Anime list data.
+    <string name="anime_list_error">Something wrong happen went getting Anime list data.
+        Check your internet connection and try again.
+    </string>
+
+    <!-- Manga Tab -->
+    <string name="manga_list_error">Something wrong happen went getting Manga list data.
+        Check your internet connection and try again.
+    </string>
+
+    <!-- Movie Tab -->
+    <string name="movie_list_error">Something wrong happen went getting Movie list data.
+        Check your internet connection and try again.</string>
+
+    <!-- TV Show Tab -->
+    <string name="tv_show_list_error">Something wrong happen went getting TV Show list data.
         Check your internet connection and try again.
     </string>
 
@@ -44,8 +58,8 @@
     <string name="about_app2">Checkout my other apps on <u>Google Play Store</u>
     </string>
     <string name="about_contact">
-        If you have suggestion, critic for this GameWish app or issue and problem that you encounter. Feel free to send
-        me e-mail
+        If you have suggestion and critic for this GameWish app or issue and problem that you encounter. Feel free to send
+        e-mail
     </string>
     <string name="myanimelist_user_error">
         Something went wrong went getting your MyAnimelist User data.
@@ -57,6 +71,8 @@
     </string>
     <string name="anime_manga_data_source">Anime and Manga data is provided by <u>MyAnimeList</u>
     </string>
+    <string name="movie_tv_show_data_source">Movie and TV Show data is provided by <u>TMDB</u>
+    </string>
     <string name="anime_data_source">
         Anime data is provided by <u>MyAnimeList</u>
     </string>
@@ -65,6 +81,9 @@
     </string>
     <string name="movie_data_source">
         Movie data is provided by <u>TheMovieDB</u>
+    </string>
+    <string name="tv_show_data_source">
+        TV Show data is provided by <u>TheMovieDB</u>
     </string>
     <string name="seasonal_data_source">Seasonal Anime data is provided by <u>MyAnimeList</u></string>
     <string name="games_data_source">Games data is provided by <u>RAWG</u></string>
@@ -186,6 +205,10 @@
         Something wrong went getting Movie recommendations.
         Check your internet connection and try again.
     </string>
+    <string name="search_tv_show_recommendations_error">
+        Something wrong went getting TV Show recommendations.
+        Check your internet connection and try again.
+    </string>
 
     <string name="search_tv_empty_query">Search TV Show by Title. Please search with
     precise title to make sure TV Show you are looking for is found.</string>
@@ -198,4 +221,5 @@
     <string name="no_release_date">No Release Date</string>
     <string name="runtime">Runtime</string>
     <string name="synopsis">Synopsis</string>
+    <string name="unknown">Unknown</string>
 </resources>

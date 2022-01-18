@@ -1,9 +1,9 @@
 package com.dirzaaulia.gamewish.data.response.rawg
 
-import androidx.compose.runtime.Immutable
+import androidx.annotation.Keep
 import com.dirzaaulia.gamewish.data.model.rawg.Screenshots
 
-@Immutable
+@Keep
 data class ScreenshotsResponse(
     val count: Int?,
     val next: String?,

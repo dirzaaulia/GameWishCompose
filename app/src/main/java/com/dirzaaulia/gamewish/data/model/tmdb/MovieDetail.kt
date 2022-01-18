@@ -1,9 +1,11 @@
 package com.dirzaaulia.gamewish.data.model.tmdb
 
 import android.os.Parcelable
+import androidx.annotation.Keep
 import com.squareup.moshi.Json
 import kotlinx.parcelize.Parcelize
 
+@Keep
 @Parcelize
 data class MovieDetail (
     val id: Long?,
@@ -12,6 +14,8 @@ data class MovieDetail (
     val homepage: String?,
     @Json(name = "original_title")
     val title: String?,
+    @Json(name = "original_name")
+    val name: String?,
     val tagline: String?,
     val overview: String?,
     @Json(name = "production_companies")
@@ -25,5 +29,11 @@ data class MovieDetail (
     val voteAverage: Double?,
     val popularity: Double?,
     @Json(name = "poster_path")
-    val posterPath: String?
+    val posterPath: String?,
+    @Json(name = "episode_run_time")
+    val episodeRunTime: List<Int>?,
+    @Json(name = "number_of_episodes")
+    val numberOfEpisodes: Int?,
+    @Json(name = "number_of_seasons")
+    val numberOfSeasons: Int?,
 ) : Parcelable

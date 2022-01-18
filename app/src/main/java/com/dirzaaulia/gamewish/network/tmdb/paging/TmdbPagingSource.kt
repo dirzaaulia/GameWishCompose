@@ -49,6 +49,15 @@ class TmdbPagingSource (
                     )
                 }
             }
+            4 -> {
+                repository.getTVRecommendations(movieId, page).pagingSucceeded { data ->
+                    LoadResult.Page(
+                        data = data,
+                        prevKey = if (page == 1) null else page - 1,
+                        nextKey = if (data.isEmpty()) null else page.plus(1)
+                    )
+                }
+            }
             else -> {
                 LoadResult.Page(
                     data = emptyList(),

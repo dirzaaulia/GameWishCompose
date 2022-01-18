@@ -32,11 +32,12 @@ import com.dirzaaulia.gamewish.data.model.rawg.Platform
 import com.dirzaaulia.gamewish.data.model.rawg.Publisher
 import com.dirzaaulia.gamewish.data.model.tmdb.Movie
 import com.dirzaaulia.gamewish.data.model.wishlist.GameWishlist
+import com.dirzaaulia.gamewish.data.model.wishlist.MovieWishlist
 import com.dirzaaulia.gamewish.data.request.myanimelist.SearchGameRequest
 import com.dirzaaulia.gamewish.extension.visible
 import com.dirzaaulia.gamewish.ui.home.HomeViewModel
 import com.dirzaaulia.gamewish.ui.search.SearchViewModel
-import com.dirzaaulia.gamewish.ui.theme.White
+import com.dirzaaulia.gamewish.theme.White
 import com.dirzaaulia.gamewish.utils.*
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
@@ -308,6 +309,70 @@ fun WishlistGameItem(
 }
 
 @Composable
+fun WishlistMovieItem(
+    movieWishlist: MovieWishlist,
+    modifier: Modifier = Modifier,
+    navigateToMovieDetails: (Long, String) -> Unit
+) {
+    Card(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(150.dp)
+            .padding(vertical = 4.dp)
+            .clickable(
+                onClick = {
+                    movieWishlist.id?.let { id ->
+                        movieWishlist.type?.let { type ->
+                            navigateToMovieDetails(id, type)
+                        }
+                    }
+                }
+            ),
+        shape = MaterialTheme.shapes.large,
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            movieWishlist.image.let {
+                val url = if (it.isNullOrBlank()) {
+                    OtherConstant.NO_IMAGE_URL
+                } else {
+                    "${TmdbConstant.TMDB_BASE_IMAGE_URL}$it"
+                }
+
+                NetworkImage(
+                    url = url,
+                    contentDescription = null,
+                    modifier = modifier
+                        .width(100.dp)
+                        .fillMaxHeight(),
+                    contentScale = ContentScale.FillBounds
+                )
+            }
+            Column(
+                modifier = modifier
+                    .padding(vertical = 4.dp, horizontal = 8.dp)
+                    .weight(1f)
+            ) {
+                movieWishlist.status?.let {
+                    Text(
+                        text = it,
+                        style = MaterialTheme.typography.caption
+                    )
+                }
+                movieWishlist.name?.let {
+                    Text(
+                        text = it,
+                        style = MaterialTheme.typography.subtitle1
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
 fun DealsItem(
     deals: Deals,
     modifier: Modifier = Modifier
@@ -390,7 +455,7 @@ fun DealsItem(
 fun CommonMovieItem(
     modifier: Modifier = Modifier,
     movie: Movie,
-    navigateToDetails: (Long) -> Unit,
+    navigateToDetails: (Long, String) -> Unit,
     type: String,
 ) {
     Card(
@@ -402,9 +467,9 @@ fun CommonMovieItem(
                 onClick = {
                     movie.id?.let {
                         if (type.equals("Movie", true)) {
-                            navigateToDetails(it)
+                            navigateToDetails(it, "Movie")
                         } else {
-                            //TODO Navigate To TV Show Details
+                            navigateToDetails(it, "TV Show")
                         }
                     }
                 }

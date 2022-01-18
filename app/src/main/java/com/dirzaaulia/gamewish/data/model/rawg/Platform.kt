@@ -1,9 +1,11 @@
 package com.dirzaaulia.gamewish.data.model.rawg
 
 import android.os.Parcelable
+import androidx.annotation.Keep
 import com.squareup.moshi.Json
 import kotlinx.parcelize.Parcelize
 
+@Keep
 @Parcelize
 data class Platform(
     val id: Int?,

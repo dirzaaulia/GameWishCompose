@@ -313,8 +313,8 @@ fun DealsAppBar(
     TopAppBar(
         elevation = 0.dp,
         modifier = Modifier
-            .height(80.dp)
             .statusBarsPadding()
+            .wrapContentHeight()
     ) {
         Image(
             modifier = Modifier

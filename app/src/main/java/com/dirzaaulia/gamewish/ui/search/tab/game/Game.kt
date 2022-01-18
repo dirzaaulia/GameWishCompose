@@ -1,7 +1,11 @@
 package com.dirzaaulia.gamewish.ui.search.tab.game
 
 import androidx.annotation.StringRes
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -31,8 +35,7 @@ import com.dirzaaulia.gamewish.data.request.myanimelist.SearchGameRequest
 import com.dirzaaulia.gamewish.extension.visible
 import com.dirzaaulia.gamewish.ui.common.*
 import com.dirzaaulia.gamewish.ui.search.SearchViewModel
-import com.dirzaaulia.gamewish.ui.theme.Grey50
-import com.dirzaaulia.gamewish.ui.theme.White
+import com.dirzaaulia.gamewish.theme.White
 import com.google.accompanist.insets.statusBarsPadding
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -129,30 +132,37 @@ fun SearchGameSheetContent(
     data: LazyPagingItems<Games>,
     lazyListStateSearchGames: LazyListState
 ) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+    CommonLoading(visibility = data.loadState.refresh is LoadState.Loading)
+    AnimatedVisibility(
+        visible = data.loadState.refresh is LoadState.NotLoading,
+        enter = fadeIn(tween(600)),
+        exit = fadeOut(tween(600))
     ) {
-        Card(
-            modifier = Modifier
-                .padding(vertical = 4.dp)
-                .width(64.dp)
-                .height(4.dp),
-            backgroundColor = MaterialTheme.colors.onSurface,
-            shape = MaterialTheme.shapes.small,
-            content = {}
-        )
-        Spacer(modifier = Modifier.height(4.dp))
-        CommonVerticalList(
-            data = data,
-            lazyListState = lazyListStateSearchGames,
-            emptyString = stringResource(id = R.string.search_games_empty),
-            errorString = stringResource(id = R.string.search_games_error),
-        ) { games ->
-            SearchGamesItem(
-                navigateToGameDetails = navigateToGameDetails,
-                games = games,
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Card(
+                modifier = Modifier
+                    .padding(vertical = 4.dp)
+                    .width(64.dp)
+                    .height(4.dp),
+                backgroundColor = MaterialTheme.colors.onSurface,
+                shape = MaterialTheme.shapes.small,
+                content = {}
             )
+            Spacer(modifier = Modifier.height(4.dp))
+            CommonVerticalList(
+                data = data,
+                lazyListState = lazyListStateSearchGames,
+                emptyString = stringResource(id = R.string.search_games_empty),
+                errorString = stringResource(id = R.string.search_games_error),
+            ) { games ->
+                SearchGamesItem(
+                    navigateToGameDetails = navigateToGameDetails,
+                    games = games,
+                )
+            }
         }
     }
 }
@@ -268,7 +278,7 @@ fun SearchGameAppBar(
         elevation = 0.dp,
         contentColor = White,
         modifier = Modifier
-            .height(80.dp)
+            .wrapContentHeight()
             .statusBarsPadding()
     ) {
         Row(

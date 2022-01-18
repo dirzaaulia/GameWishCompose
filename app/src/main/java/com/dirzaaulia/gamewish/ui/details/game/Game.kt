@@ -33,7 +33,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.dirzaaulia.gamewish.R
-import com.dirzaaulia.gamewish.base.ResponseResult
 import com.dirzaaulia.gamewish.data.model.rawg.GameDetails
 import com.dirzaaulia.gamewish.data.model.rawg.Screenshots
 import com.dirzaaulia.gamewish.data.model.wishlist.GameWishlist
@@ -43,8 +42,8 @@ import com.dirzaaulia.gamewish.extension.visible
 import com.dirzaaulia.gamewish.ui.common.CommonGameCarousel
 import com.dirzaaulia.gamewish.ui.common.CommonLoading
 import com.dirzaaulia.gamewish.ui.common.ErrorConnect
-import com.dirzaaulia.gamewish.ui.theme.Red700
-import com.dirzaaulia.gamewish.ui.theme.White
+import com.dirzaaulia.gamewish.theme.Red700
+import com.dirzaaulia.gamewish.theme.White
 import com.dirzaaulia.gamewish.utils.*
 import com.google.accompanist.insets.statusBarsPadding
 import com.google.accompanist.pager.rememberPagerState
@@ -60,10 +59,9 @@ fun GameDetails(
     val scope = rememberCoroutineScope()
     val scaffoldState = rememberBottomSheetScaffoldState()
     val loading = viewModel.loading.value
-    val wishlistData = viewModel.wishlistedData.value
+    val wishlistData = viewModel.gameWishlistedData.value
     val gameDetailsResult by viewModel.gameDetailsResult.collectAsState(null)
     val gameDetails by viewModel.gameDetails.collectAsState(null)
-    val screenshotsResult by viewModel.gameDetailsScreenshotsResult.collectAsState(null)
     val screenshots by viewModel.gameDetailsScreenshots.collectAsState(null)
     val updateGameResult by viewModel.updateGameResult.collectAsState()
     val deleteGameResult by viewModel.deleteGameResult.collectAsState()
@@ -77,25 +75,6 @@ fun GameDetails(
     CommonLoading(visibility = loading)
     AnimatedVisibility(visible = !loading) {
         when {
-            updateGameResult.isSucceeded -> {
-                gameDetails?.id?.let { id -> viewModel.checkIfGameWishlisted(id) }
-                LaunchedEffect(updateGameResult.isSucceeded) {
-                    scope.launch {
-                        scaffoldState.bottomSheetState.collapse()
-
-                        if (wishlistData != null) {
-                            val text = "This game has been updated on your Wishlist."
-                            scaffoldState.snackbarHostState.showSnackbar(text)
-                        } else {
-                            val text = "This game has been added to your Wishlist."
-                            scaffoldState.snackbarHostState.showSnackbar(text)
-                        }
-                    }
-                }
-            }
-        }
-
-        when {
             gameDetailsResult.isSucceeded -> {
                 BottomSheetScaffold(
                     sheetContent = {
@@ -104,7 +83,6 @@ fun GameDetails(
                                 it,
                                 wishlistData,
                                 viewModel,
-                                updateGameResult,
                                 scope,
                                 scaffoldState
                             )
@@ -116,17 +94,13 @@ fun GameDetails(
                     LazyColumn(
                         modifier = Modifier.fillMaxSize()
                     ) {
-                        item {
-                            when {
-                                screenshotsResult.isSucceeded -> {
-                                    screenshots?.results?.let {
-                                        GameDetailsHeader(
-                                            screenshots = it,
-                                            loading = loading,
-                                            upPress = upPress
-                                        )
-                                    }
-                                }
+                        screenshots?.results?.let {
+                            item {
+                                GameDetailsHeader(
+                                    screenshots = it,
+                                    loading = loading,
+                                    upPress = upPress
+                                )
                             }
                         }
                         item {
@@ -140,24 +114,38 @@ fun GameDetails(
                         }
                     }
 
-                    if (deleteGameResult.equals("Success", true)) {
-                        LaunchedEffect(deleteGameResult.equals("Success", true)) {
-                            scope.launch {
-                                scaffoldState.bottomSheetState.collapse()
-                                scaffoldState
-                                    .snackbarHostState
-                                    .showSnackbar("This game has been deleted from your Wishlist.")
+                    when {
+                        updateGameResult.isSucceeded -> {
+                            LaunchedEffect(updateGameResult) {
+                                if (wishlistData != null) {
+                                    val text = "This game has been updated on your Wishlist."
+                                    scaffoldState.snackbarHostState.showSnackbar(text)
+                                } else {
+                                    val text = "This game has been added to your Wishlist."
+                                    scaffoldState.snackbarHostState.showSnackbar(text)
+                                }
+                                gameDetails?.id?.let { id -> viewModel.checkIfGameWishlisted(id) }
                             }
                         }
-                    } else if (deleteGameResult.equals("Error", true)) {
-                        LaunchedEffect(deleteGameResult.equals("Error", true)) {
-                            scope.launch {
-                                scaffoldState.bottomSheetState.collapse()
-                                scaffoldState
-                                    .snackbarHostState
-                                    .showSnackbar(
-                                        "Something went wrong when deleting game from your Wishlist."
-                                    )
+                        updateGameResult.isError -> {
+                            LaunchedEffect(updateGameResult) {
+                                if (wishlistData != null) {
+                                    val text = "Something wrong happen went updating game in your Wishlist."
+                                    scaffoldState.snackbarHostState.showSnackbar(text)
+                                } else {
+                                    val text = "Something wrong happen went adding game into your Wishlist"
+                                    scaffoldState.snackbarHostState.showSnackbar(text)
+                                }
+                            }
+                        }
+                        deleteGameResult.isSucceeded -> {
+                            LaunchedEffect(deleteGameResult) {
+                                scaffoldState.snackbarHostState.showSnackbar("This game has been deleted from your Wishlist.")
+                            }
+                        }
+                        deleteGameResult.isError -> {
+                            LaunchedEffect(deleteGameResult) {
+                                scaffoldState.snackbarHostState.showSnackbar("Something went wrong when deleting game from your Wishlist.")
                             }
                         }
                     }
@@ -173,9 +161,14 @@ fun GameDetails(
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center,
                     ) {
-                        ErrorConnect(text = stringResource(id = R.string.game_details_error)) {
+                        ErrorConnect(
+                            text = stringResource(
+                                id = R.string.game_details_error
+                            )
+                        ) {
                             viewModel.getGameDetails(gameId)
                             viewModel.getGameDetailsScreenshots(gameId)
+                            viewModel.checkIfGameWishlisted(gameId)
                         }
                     }
                 }
@@ -415,7 +408,6 @@ fun GameWishlistSheetContent(
     gameDetails: GameDetails,
     gameWishlist: GameWishlist?,
     viewModel: DetailsViewModel,
-    updateGameResult: ResponseResult<Void>?,
     scope: CoroutineScope,
     scaffoldState: BottomSheetScaffoldState
 ) {
@@ -439,7 +431,10 @@ fun GameWishlistSheetContent(
             IconButton(
                 onClick = {
                     gameWishlist.let {
-                        viewModel.deleteWishlistFromFirestore(it)
+                        viewModel.deleteGameWishlist(it)
+                    }
+                    scope.launch {
+                        scaffoldState.bottomSheetState.collapse()
                     }
                 },
                 modifier = Modifier.align(Alignment.End)
@@ -501,7 +496,11 @@ fun GameWishlistSheetContent(
                 val data = gameDetails.let {
                     GameWishlist(it.id, it.name, it.backgroundImage, statusText)
                 }
-                viewModel.addWishlistToFirestore(data)
+                viewModel.addToGameWishlist(data)
+
+                scope.launch {
+                    scaffoldState.bottomSheetState.collapse()
+                }
             }
         ) {
             val text = if (gameWishlist != null) {

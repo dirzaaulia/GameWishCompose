@@ -11,10 +11,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.core.content.ContextCompat.startActivity
 import com.dirzaaulia.gamewish.data.model.rawg.Platforms
 import com.dirzaaulia.gamewish.data.model.rawg.Stores
-import com.dirzaaulia.gamewish.ui.theme.Green700
-import com.dirzaaulia.gamewish.ui.theme.Grey700
-import com.dirzaaulia.gamewish.ui.theme.LightBlue700
-import com.dirzaaulia.gamewish.ui.theme.Red700
+import com.dirzaaulia.gamewish.theme.Green700
+import com.dirzaaulia.gamewish.theme.Grey700
+import com.dirzaaulia.gamewish.theme.LightBlue700
+import com.dirzaaulia.gamewish.theme.Red700
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import timber.log.Timber
@@ -26,15 +26,19 @@ fun isOnline(context: Context): Boolean {
     val capabilities =
         connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
     if (capabilities != null) {
-        if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)) {
-            Timber.i("NetworkCapabilities.TRANSPORT_CELLULAR")
-            return true
-        } else if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
-            Timber.i("NetworkCapabilities.TRANSPORT_WIFI")
-            return true
-        } else if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)) {
-            Timber.i("NetworkCapabilities.TRANSPORT_ETHERNET")
-            return true
+        when {
+            capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> {
+                Timber.i("NetworkCapabilities.TRANSPORT_CELLULAR")
+                return true
+            }
+            capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> {
+                Timber.i("NetworkCapabilities.TRANSPORT_WIFI")
+                return true
+            }
+            capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> {
+                Timber.i("NetworkCapabilities.TRANSPORT_ETHERNET")
+                return true
+            }
         }
     }
     return false

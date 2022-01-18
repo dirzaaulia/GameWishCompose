@@ -1,4 +1,4 @@
-package com.dirzaaulia.gamewish.ui.theme
+package com.dirzaaulia.gamewish.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.*

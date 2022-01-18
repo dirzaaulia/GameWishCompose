@@ -1,4 +1,4 @@
-package com.dirzaaulia.gamewish.ui.main.login
+package com.dirzaaulia.gamewish.ui.home.login
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -7,10 +7,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MailOutline
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -75,11 +72,14 @@ fun Login(viewModel: HomeViewModel) {
                 val auth = viewModel.getFirebaseAuth()
                 auth.currentUser?.uid?.let { uid -> viewModel.setUserAuthId(uid) }
                 viewModel.getUserAuthStatus()
-                auth.currentUser?.uid?.let { uid -> viewModel.syncWishlist(uid) }
+                auth.currentUser?.uid?.let { uid ->
+                    viewModel.syncGameWishlist(uid)
+                    viewModel.syncMovieWishlist(uid)
+                }
                 viewModel.getGoogleUserData()
             }
             FirebaseState.Status.FAILED -> {
-                scope.launch {
+                LaunchedEffect(FirebaseState) {
                     scaffoldState.snackbarHostState.showSnackbar(
                         "Login went error! Please try again later."
                     )

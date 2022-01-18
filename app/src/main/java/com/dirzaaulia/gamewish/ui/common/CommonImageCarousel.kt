@@ -30,10 +30,12 @@ fun CommonGameCarousel(
         while (true) {
             yield()
             delay(2000)
-            pagerState.animateScrollToPage(
-                page = (pagerState.currentPage + 1) % (pagerState.pageCount),
-                animationSpec = tween(600)
-            )
+            tween<Float>(600)
+            if (pagerState.pageCount != 0) {
+                pagerState.animateScrollToPage(
+                    page = (pagerState.currentPage + 1) % (pagerState.pageCount)
+                )
+            }
         }
     }
 
@@ -69,9 +71,9 @@ fun CommonAnimeCarousel(
         while (true) {
             yield()
             delay(2000)
+            tween<Float>(600)
             pagerState.animateScrollToPage(
-                page = (pagerState.currentPage + 1) % (pagerState.pageCount),
-                animationSpec = tween(600)
+                page = (pagerState.currentPage + 1) % (pagerState.pageCount)
             )
         }
     }

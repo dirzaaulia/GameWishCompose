@@ -26,21 +26,19 @@ import com.dirzaaulia.gamewish.data.model.tmdb.Movie
 import com.dirzaaulia.gamewish.ui.common.CommonMovieItem
 import com.dirzaaulia.gamewish.ui.common.CommonVerticalList
 import com.dirzaaulia.gamewish.ui.search.SearchViewModel
-import com.dirzaaulia.gamewish.ui.theme.White
+import com.dirzaaulia.gamewish.theme.White
 import com.google.accompanist.insets.statusBarsPadding
-import kotlinx.coroutines.CoroutineScope
 
 @Composable
 fun Movie(
     modifier: Modifier = Modifier,
     viewModel: SearchViewModel,
-    scope: CoroutineScope,
     lazyListStateMovie: LazyListState,
     lazyListStateTv: LazyListState,
     searchMovieQuery: String,
     searchMovieList: LazyPagingItems<Movie>,
     searchTvList: LazyPagingItems<Movie>,
-    navigateToMovieDetails: (Long) -> Unit,
+    navigateToMovieDetails: (Long, String) -> Unit,
     upPress: () -> Unit,
 ) {
     val menu = SearchMovieTab.values()
@@ -51,9 +49,7 @@ fun Movie(
         backgroundColor = MaterialTheme.colors.primarySurface,
         topBar = {
             SearchMovieAppBar(
-                menuId = menuId,
                 searchQuery = searchMovieQuery,
-                scope = scope,
                 viewModel = viewModel,
                 upPress = upPress
             )
@@ -93,7 +89,7 @@ fun SearchTvList(
     data: LazyPagingItems<Movie>,
     lazyListState: LazyListState,
     searchMovieQuery: String,
-    navigateToTvDetails: (Long) -> Unit
+    navigateToTvDetails: (Long, String) -> Unit
 ) {
     Column (
         modifier = Modifier.padding(top = 4.dp, start = 8.dp, end = 8.dp)
@@ -107,7 +103,7 @@ fun SearchTvList(
 
         if (data.itemCount != 0 && data.loadState.refresh is LoadState.NotLoading) {
             Text(
-                text = stringResource(id = R.string.movie_data_source),
+                text = stringResource(id = R.string.tv_show_data_source),
                 style = MaterialTheme.typography.caption,
             )
         }
@@ -132,7 +128,7 @@ fun SearchMovieList(
     data: LazyPagingItems<Movie>,
     lazyListState: LazyListState,
     searchMovieQuery: String,
-    navigateToMovieDetails: (Long) -> Unit
+    navigateToMovieDetails: (Long, String) -> Unit
 ) {
     Column (
         modifier = Modifier.padding(top = 4.dp, start = 8.dp, end = 8.dp)
@@ -167,9 +163,7 @@ fun SearchMovieList(
 
 @Composable
 fun SearchMovieAppBar(
-    menuId: Int,
     searchQuery: String,
-    scope: CoroutineScope,
     viewModel: SearchViewModel,
     upPress: () -> Unit
 ) {
@@ -179,7 +173,7 @@ fun SearchMovieAppBar(
     TopAppBar(
         elevation = 0.dp,
         modifier = Modifier
-            .height(80.dp)
+            .wrapContentHeight()
             .statusBarsPadding()
     ) {
         Row(

@@ -4,6 +4,7 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import com.dirzaaulia.gamewish.data.model.wishlist.GameWishlist
+import com.dirzaaulia.gamewish.data.model.wishlist.MovieWishlist
 import com.dirzaaulia.gamewish.database.DatabaseDao
 import com.dirzaaulia.gamewish.utils.DatabaseConstant
 import kotlinx.coroutines.flow.Flow
@@ -13,35 +14,43 @@ import javax.inject.Inject
 class DatabaseRepository @Inject constructor(
     private val dao: DatabaseDao
 ) {
-    fun getWishlist(gameId: Long) = dao.getWishlist(gameId).distinctUntilChanged()
+    fun getGameWishlist(gameId: Long) = dao.getGameWishlist(gameId).distinctUntilChanged()
 
-//    suspend fun getFilteredWishlist(gameName : String) : Flow<List<Wishlist>> {
-//        return dao.getFilteredWishlist(gameName)
-//            .flowOn(Dispatchers.IO)
-//            .conflate()
-//    }
+    fun getMovieWishlist(movieId: Long) = dao.getMovieWishlist(movieId).distinctUntilChanged()
 
-    fun getFilteredWishlist(query: String, status: String): Flow<PagingData<GameWishlist>> {
+    fun getTVShowWishlist(tvShowId: Long) = dao.getTVShowWishlist(tvShowId).distinctUntilChanged()
+
+    fun getGameFilteredWishlist(query: String, status: String): Flow<PagingData<GameWishlist>> {
         return Pager(config = PagingConfig(pageSize = DatabaseConstant.DATABASE_PAGING_SIZE)) {
-            dao.getFilteredWishlist(query, status)
+            dao.getGameFilteredWishlist(query, status)
         }.flow
     }
 
-    fun getAllWishlist(): Flow<PagingData<GameWishlist>> {
+    fun getMovieFilteredWishlist(query: String, status: String): Flow<PagingData<MovieWishlist>> {
         return Pager(config = PagingConfig(pageSize = DatabaseConstant.DATABASE_PAGING_SIZE)) {
-            dao.getAllWishlist()
+            dao.getMovieFilteredWishlist(query, status)
         }.flow
     }
 
-    suspend fun addToWishlist(gameWishlist: GameWishlist) {
-        dao.insert(gameWishlist)
+    fun getTVShowFilteredWishlist(query: String, status: String): Flow<PagingData<MovieWishlist>> {
+        return Pager(config = PagingConfig(pageSize = DatabaseConstant.DATABASE_PAGING_SIZE)) {
+            dao.getTVShowFilteredWishlist(query, status)
+        }.flow
     }
 
-    suspend fun deleteWishlist(gameWishlist: GameWishlist) {
-        dao.delete(gameWishlist)
+    suspend fun addToGameWishlist(gameWishlist: GameWishlist) {
+        dao.insertGame(gameWishlist)
     }
 
-    suspend fun deleteWishlistById(gameId: Long) {
-        return dao.deleteById(gameId)
+    suspend fun deleteGameWishlist(gameWishlist: GameWishlist) {
+        dao.deleteGame(gameWishlist)
+    }
+
+    suspend fun addToMovieWishlist(movieWishlist: MovieWishlist) {
+        dao.insertMovie(movieWishlist)
+    }
+
+    suspend fun deleteMovieWishlist(movieWishlist: MovieWishlist) {
+        dao.deleteMovie(movieWishlist)
     }
 }

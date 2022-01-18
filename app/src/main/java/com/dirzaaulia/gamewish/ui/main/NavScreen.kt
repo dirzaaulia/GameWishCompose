@@ -24,7 +24,8 @@ sealed class NavScreen(val route: String) {
     }
 
     object MovieDetails: NavScreen("MovieDetails") {
-        const val routeWithArgument: String = "MovieDetails/{movieId}"
+        const val routeWithArgument: String = "MovieDetails/{movieId}/{type}"
         const val argument0: String = "movieId"
+        const val argument1: String = "type"
     }
 }

@@ -1,6 +1,6 @@
 package com.dirzaaulia.gamewish.utils
 
-data class FirebaseState private constructor(val status: Status, val msg: String? = null) {
+data class FirebaseState constructor(val status: Status, val msg: String? = null) {
     companion object {
         val LOADED = FirebaseState(Status.SUCCESS)
         val IDLE = FirebaseState(Status.IDLE)

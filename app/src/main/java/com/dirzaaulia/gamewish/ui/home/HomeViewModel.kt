@@ -14,6 +14,7 @@ import com.dirzaaulia.gamewish.data.model.myanimelist.ParentNode
 import com.dirzaaulia.gamewish.data.model.myanimelist.User
 import com.dirzaaulia.gamewish.data.model.rawg.Stores
 import com.dirzaaulia.gamewish.data.model.wishlist.GameWishlist
+import com.dirzaaulia.gamewish.data.model.wishlist.MovieWishlist
 import com.dirzaaulia.gamewish.data.request.cheapshark.DealsRequest
 import com.dirzaaulia.gamewish.data.response.myanimelist.MyAnimeListTokenResponse
 import com.dirzaaulia.gamewish.extension.error
@@ -66,7 +67,6 @@ class HomeViewModel @Inject constructor(
     val token = _token.asStateFlow()
 
     private val _refreshToken: MutableStateFlow<String> = MutableStateFlow("")
-    val refreshToken = _refreshToken.asStateFlow()
 
     private val _myAnimeListUser: MutableStateFlow<User> = MutableStateFlow(
         User(null, null, null, null, null, null, null)
@@ -86,12 +86,12 @@ class HomeViewModel @Inject constructor(
     private val _errorMessage: MutableStateFlow<String> = MutableStateFlow("")
     val errorMessage = _errorMessage.asStateFlow()
 
-    val query = MutableStateFlow("")
+    val gameQuery = MutableStateFlow("")
     val gameStatus = MutableStateFlow("")
-    val listWishlist = query
+    val listWishlist = gameQuery
         .flatMapLatest { query ->
             gameStatus.flatMapLatest {
-                databaseRepository.getFilteredWishlist(query, it)
+                databaseRepository.getGameFilteredWishlist(query, it)
             }
         }.cachedIn(viewModelScope)
 
@@ -142,6 +142,24 @@ class HomeViewModel @Inject constructor(
             }
         }
 
+    val movieQuery = MutableStateFlow("")
+    val movieStatus = MutableStateFlow("")
+    val movieWishlist = movieQuery
+        .flatMapLatest { query ->
+            movieStatus.flatMapLatest {
+                databaseRepository.getMovieFilteredWishlist(query, it)
+            }
+        }.cachedIn(viewModelScope)
+
+    val tvShowQuery = MutableStateFlow("")
+    val tvShowStatus = MutableStateFlow("")
+    val tvShowWishlist = tvShowQuery
+        .flatMapLatest { query ->
+            tvShowStatus.flatMapLatest {
+                databaseRepository.getTVShowFilteredWishlist(query, it)
+            }
+        }
+
     val myAnimeListUserResult: Flow<ResponseResult<User>> = _token
         .flatMapLatest { token ->
             myAnimeListRepository.getMyAnimeListUser(token)
@@ -166,13 +184,33 @@ class HomeViewModel @Inject constructor(
     }
 
     @MainThread
-    fun setSearchQuery(value: String) {
-        query.value = value
+    fun setGameQuery(value: String) {
+        gameQuery.value = value
     }
 
     @MainThread
     fun setGameStatus(status: String) {
         gameStatus.value = status
+    }
+
+    @MainThread
+    fun setMovieQuery(value: String) {
+        movieQuery.value = value
+    }
+
+    @MainThread
+    fun setMovieStatus(status: String) {
+        movieStatus.value = status
+    }
+
+    @MainThread
+    fun setTVShowQuery(value: String) {
+        tvShowQuery.value = value
+    }
+
+    @MainThread
+    fun setTVShowStatus(status: String) {
+        tvShowStatus.value = status
     }
 
     @MainThread
@@ -198,6 +236,18 @@ class HomeViewModel @Inject constructor(
     @MainThread
     fun setMangaStatus(request: String) {
         mangaStatus.value = request
+    }
+
+    private fun addToGameWishlist(gameWishlist: GameWishlist) {
+        viewModelScope.launch {
+            databaseRepository.addToGameWishlist(gameWishlist)
+        }
+    }
+
+    private fun addToMovieWishlist(movieWishlist: MovieWishlist) {
+        viewModelScope.launch {
+            databaseRepository.addToMovieWishlist(movieWishlist)
+        }
     }
 
     fun getFirebaseAuth(): FirebaseAuth {
@@ -247,12 +297,6 @@ class HomeViewModel @Inject constructor(
                 _storesResult.value = it
             }
             .launchIn(viewModelScope)
-    }
-
-    private fun addToWishlist(gameWishlist: GameWishlist) {
-        viewModelScope.launch {
-            databaseRepository.addToWishlist(gameWishlist)
-        }
     }
 
     fun getMyAnimeListToken(
@@ -341,13 +385,21 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun syncWishlist(uid: String) {
+    fun syncGameWishlist(uid: String) {
         viewModelScope.launch {
             Timber.i(uid)
             val data = firebaseRepository.getAllGameWishlist(uid)?.toObjects(GameWishlist::class.java)
-
             data?.forEach {
-                addToWishlist(it)
+                addToGameWishlist(it)
+            }
+        }
+    }
+
+    fun syncMovieWishlist(uid: String) {
+        viewModelScope.launch {
+            val data = firebaseRepository.getAllMovieWishlist(uid)?.toObjects(MovieWishlist::class.java)
+            data?.forEach {
+                addToMovieWishlist(it)
             }
         }
     }

@@ -56,6 +56,26 @@ interface TmdbService {
         @Query("include_adult") includeAdult : Boolean = false
     ): Response<SearchMovieResponse>
 
+    @GET("tv/{tv_id}")
+    suspend fun getTVDetail(
+        @Path("tv_id") tvId: Long,
+        @Query("api_key") apiKey : String = TmdbConstant.TMDB_KEY
+    ): Response<MovieDetail>
+
+    @GET("tv/{tv_id}/images")
+    suspend fun getTVImages(
+        @Path("tv_id") tvId: Long,
+        @Query("api_key") apiKey : String = TmdbConstant.TMDB_KEY
+    ): Response<ImagesResponse>
+
+    @GET("tv/{tv_id}/recommendations")
+    suspend fun getTVRecommendations(
+        @Path("tv_id") tvId: Long,
+        @Query("api_key") apiKey: String = TmdbConstant.TMDB_KEY,
+        @Query("page") page : Int,
+        @Query("include_adult") includeAdult : Boolean = false
+    ): Response<SearchMovieResponse>
+
     companion object {
         fun create(context: Context): TmdbService {
             val logger =

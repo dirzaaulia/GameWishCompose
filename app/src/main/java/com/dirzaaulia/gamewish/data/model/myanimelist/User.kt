@@ -1,7 +1,9 @@
 package com.dirzaaulia.gamewish.data.model.myanimelist
 
+import androidx.annotation.Keep
 import com.squareup.moshi.Json
 
+@Keep
 data class User(
     val id: String?,
     val name: String?,

@@ -40,7 +40,7 @@ import com.dirzaaulia.gamewish.ui.common.CommonVerticalList
 import com.dirzaaulia.gamewish.ui.common.WebViewMyAnimeList
 import com.dirzaaulia.gamewish.ui.home.HomeViewModel
 import com.dirzaaulia.gamewish.ui.search.SearchViewModel
-import com.dirzaaulia.gamewish.ui.theme.White
+import com.dirzaaulia.gamewish.theme.White
 import com.dirzaaulia.gamewish.utils.capitalizeWords
 import com.google.accompanist.insets.navigationBarsWithImePadding
 import com.google.accompanist.insets.statusBarsPadding
@@ -365,7 +365,7 @@ fun SearchAnimeAppBar(
     TopAppBar(
         elevation = 0.dp,
         modifier = Modifier
-            .height(80.dp)
+            .wrapContentHeight()
             .statusBarsPadding()
     ) {
         Row(

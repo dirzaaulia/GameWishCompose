@@ -1,16 +1,13 @@
 package com.dirzaaulia.gamewish.repository
 
 import androidx.annotation.WorkerThread
-import com.dirzaaulia.gamewish.base.NotFoundException
 import com.dirzaaulia.gamewish.base.ResponseResult
 import com.dirzaaulia.gamewish.data.model.wishlist.GameWishlist
+import com.dirzaaulia.gamewish.data.model.wishlist.MovieWishlist
 import com.dirzaaulia.gamewish.utils.FirebaseConstant.FIREBASE_COLLECTION_NAME
-import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -21,23 +18,10 @@ import timber.log.Timber
 class FirebaseRepository     {
 
     private val auth = Firebase.auth
-    //    private val realtimeDatabase = FirebaseDatabase.getInstance(FIREBASE_DATABASE_URL)
     private val database = Firebase.firestore
 
     fun getFirebaseAuth(): FirebaseAuth {
         return auth
-    }
-
-    fun getFirestore(): FirebaseFirestore {
-        return Firebase.firestore
-    }
-
-    fun getGoogleLoginStatus(): Boolean {
-        return auth.currentUser != null
-    }
-
-    fun authGoogleLogin(idToken: String): AuthCredential {
-        return GoogleAuthProvider.getCredential(idToken, null)
     }
 
     suspend fun signIn(credential: AuthCredential) {
@@ -45,45 +29,64 @@ class FirebaseRepository     {
     }
 
     @WorkerThread
-    fun getUserAuthId() = flow {
+    fun addGameToWishlist(uid: String, gameWishlist: GameWishlist) = flow {
         try {
-            auth.currentUser?.let {
-                emit(ResponseResult.Success(it.uid))
-            } ?: run {
-                throw NotFoundException()
-            }
+            val task = database.collection(FIREBASE_COLLECTION_NAME)
+                .document(uid)
+                .collection("game")
+                .document(gameWishlist.id.toString())
+                .set(gameWishlist)
+
+            emit(ResponseResult.Success(task))
         } catch (e: Exception) {
             emit(ResponseResult.Error(e))
         }
     }
 
     @WorkerThread
-    fun addGameToWishlist(uid: String, gameWishlist: GameWishlist) = flow {
+    fun addMovieToWishlist(uid: String, movieWishlist: MovieWishlist) = flow {
         try {
-            database.collection(FIREBASE_COLLECTION_NAME)
+            val task = database.collection(FIREBASE_COLLECTION_NAME)
                 .document(uid)
-                .collection("game")
-                .document(gameWishlist.id.toString())
-                .set(gameWishlist)
-                .result?.let {
-                    emit(ResponseResult.Success(it))
-                } ?: run {
-                    throw NotFoundException()
-                }
+                .collection("movie")
+                .document(movieWishlist.id.toString())
+                .set(movieWishlist)
+
+            emit(ResponseResult.Success(task))
         } catch (e: Exception) {
             emit(ResponseResult.Error(e))
         }
-
     }
 
-    fun removeGameFromWishlist(uid: String, gameWishlist: GameWishlist): Task<Void> {
-        return database.collection(FIREBASE_COLLECTION_NAME)
-            .document(uid)
-            .collection("game")
-            .document(gameWishlist.id.toString())
-            .delete()
+    @WorkerThread
+    fun removeGameFromWishlist(uid: String, gameWishlist: GameWishlist) = flow {
+        try {
+            val task = database.collection(FIREBASE_COLLECTION_NAME)
+                .document(uid)
+                .collection("game")
+                .document(gameWishlist.id.toString())
+                .delete()
+
+            emit(ResponseResult.Success(task))
+        } catch (e: Exception) {
+            emit(ResponseResult.Error(e))
+        }
     }
 
+    @WorkerThread
+    fun removeMovieFromWishlist(uid: String, movieWishlist: MovieWishlist) = flow {
+        try {
+            val task = database.collection(FIREBASE_COLLECTION_NAME)
+                .document(uid)
+                .collection("movie")
+                .document(movieWishlist.id.toString())
+                .delete()
+
+            emit(ResponseResult.Success(task))
+        } catch (e: Exception) {
+            emit(ResponseResult.Error(e))
+        }
+    }
 
     suspend fun getAllGameWishlist(uid: String): QuerySnapshot? {
         return database.collection(FIREBASE_COLLECTION_NAME)
@@ -96,6 +99,14 @@ class FirebaseRepository     {
             .addOnFailureListener {
                 Timber.i(it )
             }
+            .await()
+    }
+
+    suspend fun getAllMovieWishlist(uid: String): QuerySnapshot? {
+        return database.collection(FIREBASE_COLLECTION_NAME)
+            .document(uid)
+            .collection("movie")
+            .get()
             .await()
     }
 }

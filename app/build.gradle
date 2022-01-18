@@ -25,7 +25,7 @@ android {
             keyPassword 'stravinsky9'
         }
     }
-    compileSdk 31
+    compileSdkVersion 31
 
     defaultConfig {
         applicationId "com.dirzaaulia.gamewish"
@@ -39,12 +39,14 @@ android {
 
     buildTypes {
         debug {
-            minifyEnabled false
+            minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.debug
         }
         release {
             minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release
         }
@@ -140,6 +142,7 @@ dependencies {
     implementation Libs.Hilt.Compose.navigation
 
     implementation Libs.Kotlin.stdlib
+//    implementation Libs.Kotlin.Reflect.core
 
     implementation Libs.Gms.playServiceAuth
 

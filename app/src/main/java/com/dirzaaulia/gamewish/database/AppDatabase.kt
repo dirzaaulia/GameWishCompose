@@ -5,9 +5,14 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.dirzaaulia.gamewish.data.model.wishlist.GameWishlist
+import com.dirzaaulia.gamewish.data.model.wishlist.MovieWishlist
 import com.dirzaaulia.gamewish.utils.DatabaseConstant
 
-@Database(entities = [GameWishlist::class], version = 2, exportSchema = false)
+@Database(
+    entities = [GameWishlist::class, MovieWishlist::class],
+    version = 4,
+    exportSchema = false
+)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun databaseDao(): DatabaseDao

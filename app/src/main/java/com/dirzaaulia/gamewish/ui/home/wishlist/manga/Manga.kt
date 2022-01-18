@@ -56,7 +56,7 @@ fun WishlistManga(
                     data = data,
                     lazyListState = lazyListState,
                     emptyString = "Your Manga list is still empty!",
-                    errorString = stringResource(id = R.string.anime_list_error),
+                    errorString = stringResource(id = R.string.manga_list_error),
                     viewModel = viewModel
                 ) { parentNode ->
                     CommonAnimeItem(

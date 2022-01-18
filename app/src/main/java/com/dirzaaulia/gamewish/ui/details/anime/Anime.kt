@@ -1,4 +1,4 @@
-package com.dirzaaulia.gamewish.ui.details
+package com.dirzaaulia.gamewish.ui.details.anime
 
 import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedVisibility
@@ -35,9 +35,10 @@ import com.dirzaaulia.gamewish.ui.common.CommonAnimeCarousel
 import com.dirzaaulia.gamewish.ui.common.CommonAnimeItem
 import com.dirzaaulia.gamewish.ui.common.CommonLoading
 import com.dirzaaulia.gamewish.ui.common.ErrorConnect
-import com.dirzaaulia.gamewish.ui.theme.Grey700
-import com.dirzaaulia.gamewish.ui.theme.Red700
-import com.dirzaaulia.gamewish.ui.theme.White
+import com.dirzaaulia.gamewish.theme.Grey700
+import com.dirzaaulia.gamewish.theme.Red700
+import com.dirzaaulia.gamewish.theme.White
+import com.dirzaaulia.gamewish.ui.details.DetailsViewModel
 import com.dirzaaulia.gamewish.utils.*
 import com.google.accompanist.insets.navigationBarsWithImePadding
 import com.google.accompanist.insets.statusBarsPadding
@@ -953,7 +954,10 @@ fun AnimeDetailsSheetContent(
                     if (type.equals("Anime", true)) {
                         viewModel.updateMyAnimeListAnimeList(
                             it,
-                            statusText.lowerCaseWords().replace(" ","_"),
+                            statusText
+                                .lowerCaseWords()
+                                .replace("-", " ")
+                                .replace(" ","_"),
                             isRewatchingState.value,
                             scoreIndex + 1,
                             numberWatchedText.toInt()
@@ -961,7 +965,10 @@ fun AnimeDetailsSheetContent(
                     } else {
                         viewModel.updateMyAnimeListMangaList(
                             it,
-                            statusText.lowerCaseWords().replace(" ","_"),
+                            statusText
+                                .lowerCaseWords()
+                                .replace("-", " ")
+                                .replace(" ","_"),
                             isRewatchingState.value,
                             scoreIndex + 1,
                             numberWatchedText.toInt()

@@ -5,7 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.core.view.WindowCompat
 import androidx.navigation.NavHostController
-import com.dirzaaulia.gamewish.ui.theme.GameWishTheme
+import com.dirzaaulia.gamewish.theme.GameWishTheme
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import dagger.hilt.android.AndroidEntryPoint
 

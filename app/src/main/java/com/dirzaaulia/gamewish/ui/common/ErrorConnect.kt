@@ -21,7 +21,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.dirzaaulia.gamewish.R
-import com.dirzaaulia.gamewish.ui.theme.GameWishTheme
+import com.dirzaaulia.gamewish.theme.GameWishTheme
 
 @Composable
 fun ErrorConnect(

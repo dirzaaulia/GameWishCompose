@@ -1,24 +1,25 @@
 package com.dirzaaulia.gamewish.ui.details
 
-import android.media.ImageReader
 import androidx.annotation.MainThread
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
+import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.dirzaaulia.gamewish.base.ResponseResult
 import com.dirzaaulia.gamewish.data.model.myanimelist.Details
 import com.dirzaaulia.gamewish.data.model.myanimelist.ListStatus
 import com.dirzaaulia.gamewish.data.model.rawg.GameDetails
 import com.dirzaaulia.gamewish.data.model.tmdb.Image
+import com.dirzaaulia.gamewish.data.model.tmdb.Movie
 import com.dirzaaulia.gamewish.data.model.tmdb.MovieDetail
 import com.dirzaaulia.gamewish.data.model.wishlist.GameWishlist
+import com.dirzaaulia.gamewish.data.model.wishlist.MovieWishlist
 import com.dirzaaulia.gamewish.data.response.rawg.ScreenshotsResponse
-import com.dirzaaulia.gamewish.data.response.tmdb.ImagesResponse
+import com.dirzaaulia.gamewish.extension.isSucceeded
 import com.dirzaaulia.gamewish.extension.success
-import com.dirzaaulia.gamewish.network.rawg.paging.RawgSearchPagingSource
 import com.dirzaaulia.gamewish.network.tmdb.paging.TmdbPagingSource
 import com.dirzaaulia.gamewish.repository.*
 import com.google.android.gms.tasks.Task
@@ -29,24 +30,24 @@ import javax.inject.Inject
 
 @HiltViewModel
 class DetailsViewModel @Inject constructor(
+    protoRepository: ProtoRepository,
     private val databaseRepository: DatabaseRepository,
     private val rawgRepository: RawgRepository,
     private val firebaseRepository: FirebaseRepository,
     private val myAnimeListRepository: MyAnimeListRepository,
-    private val protoRepository: ProtoRepository,
     private val tmdbRepository: TmdbRepository,
 ) : ViewModel() {
 
     private val userPreferencesFlow = protoRepository.userPreferencesFlow
 
     val loading = mutableStateOf(true)
-    val wishlistedData = mutableStateOf<GameWishlist?>(null)
+
+    val gameWishlistedData = mutableStateOf<GameWishlist?>(null)
+    val movieWishlistedData = mutableStateOf<MovieWishlist?>(null)
 
     private var _token: MutableStateFlow<String> = MutableStateFlow("")
-    val token = _token.asStateFlow()
 
     private var _userAuthId: MutableStateFlow<String> = MutableStateFlow("")
-    val userAuthId = _userAuthId.asStateFlow()
 
     private val _gameDetailsResult: MutableStateFlow<ResponseResult<GameDetails>?> =
         MutableStateFlow(null)
@@ -55,19 +56,29 @@ class DetailsViewModel @Inject constructor(
     private val _gameDetails: MutableStateFlow<GameDetails?> = MutableStateFlow(null)
     val gameDetails = _gameDetails.asStateFlow()
 
-    private val _gameDetailsScreenshotsResult: MutableStateFlow<ResponseResult<ScreenshotsResponse>?> =
-        MutableStateFlow(null)
+    private val _gameDetailsScreenshotsResult:
+            MutableStateFlow<ResponseResult<ScreenshotsResponse>?> = MutableStateFlow(null)
     val gameDetailsScreenshotsResult = _gameDetailsScreenshotsResult.asStateFlow()
 
     private val _gameDetailsScreenshots: MutableStateFlow<ScreenshotsResponse?> =
         MutableStateFlow(null)
     val gameDetailsScreenshots = _gameDetailsScreenshots.asStateFlow()
 
-    private var _updateGameResult: MutableStateFlow<ResponseResult<Void>?> = MutableStateFlow(null)
+    private var _updateGameResult: MutableStateFlow<ResponseResult<Task<Void>>?> =
+        MutableStateFlow(null)
     val updateGameResult = _updateGameResult.asStateFlow()
 
-    private var _deleteGameResult: MutableStateFlow<String> = MutableStateFlow("")
+    private var _deleteGameResult: MutableStateFlow<ResponseResult<Task<Void>>?>
+    = MutableStateFlow(null)
     val deleteGameResult = _deleteGameResult.asStateFlow()
+
+    private var _updateMovieResult: MutableStateFlow<ResponseResult<Task<Void>>?> =
+        MutableStateFlow(null)
+    val updateMovieResult = _updateMovieResult.asStateFlow()
+
+    private var _deleteMovieResult: MutableStateFlow<ResponseResult<Task<Void>>?>
+            = MutableStateFlow(null)
+    val deleteMovieResult = _deleteMovieResult.asStateFlow()
 
     private val _animeDetailsResult: MutableStateFlow<ResponseResult<Details>?> =
         MutableStateFlow(null)
@@ -91,10 +102,6 @@ class DetailsViewModel @Inject constructor(
     private val _movieDetails: MutableStateFlow<MovieDetail?> = MutableStateFlow(null)
     val movieDetails = _movieDetails.asStateFlow()
 
-    private val _movieImagesResult: MutableStateFlow<ResponseResult<ImagesResponse>?> =
-        MutableStateFlow(null)
-    val movieImagesResult = _movieImagesResult.asStateFlow()
-
     private val _movieImages: MutableStateFlow<List<Image>?> = MutableStateFlow(null)
     val movieImages = _movieImages.asStateFlow()
 
@@ -104,17 +111,10 @@ class DetailsViewModel @Inject constructor(
     private val _selectedMovieTab: MutableStateFlow<Int> = MutableStateFlow(0)
     val selectedMovieTab = _selectedMovieTab.asStateFlow()
 
+    private val movieType = MutableStateFlow("")
+
     private val movieId = MutableStateFlow(0L)
-    val movieRecommendations = movieId.flatMapLatest {
-        Pager(PagingConfig(pageSize = 10)) {
-            TmdbPagingSource(
-                tmdbRepository,
-                "",
-                it,
-                3
-            )
-        }.flow.cachedIn(viewModelScope)
-    }
+    var movieRecommendations: Flow<PagingData<Movie>>? = null
 
     init {
         getUserAuthData()
@@ -123,6 +123,11 @@ class DetailsViewModel @Inject constructor(
     @MainThread
     fun setMovieId(movieId: Long) {
         this.movieId.value = movieId
+    }
+
+    @MainThread
+    fun setMovieType(type: String) {
+        movieType.value = type
     }
 
     @MainThread
@@ -165,6 +170,69 @@ class DetailsViewModel @Inject constructor(
                     _userAuthId.value = it.userAuthId
                 }
             }
+        }
+    }
+
+    private fun addGameWishlistToFirestore(gameWishlist: GameWishlist) {
+        firebaseRepository.addGameToWishlist(_userAuthId.value, gameWishlist)
+            .onEach {
+                if (it.isSucceeded) addGameToLocal(gameWishlist)
+                _updateGameResult.value = it
+            }
+            .launchIn(viewModelScope)
+    }
+
+    private fun addMovieWishlistToFirestore(movieWishlist: MovieWishlist) {
+        firebaseRepository.addMovieToWishlist(_userAuthId.value, movieWishlist)
+            .onEach {
+                 if (it.isSucceeded) {
+                     addMovieToLocal(movieWishlist)
+                     movieWishlist.id?.let { id -> checkIfMovieWishlisted(id) }
+                 }
+                _updateMovieResult.value = it
+            }
+            .launchIn(viewModelScope)
+    }
+
+    private fun deleteGameWishlistFromFirestore(gameWishlist: GameWishlist) {
+        firebaseRepository.removeGameFromWishlist(_userAuthId.value, gameWishlist)
+            .onEach {
+                if (it.isSucceeded) deleteGameFromLocal(gameWishlist)
+                _deleteGameResult.value = it
+            }
+            .launchIn(viewModelScope)
+    }
+
+    private fun deleteMovieWishlistFromFirestore(movieWishlist: MovieWishlist) {
+        firebaseRepository.removeMovieFromWishlist(_userAuthId.value, movieWishlist)
+            .onEach {
+                if (it.isSucceeded) deleteMovieFromLocal(movieWishlist)
+                _deleteMovieResult.value = it
+            }
+            .launchIn(viewModelScope)
+    }
+
+    private fun addGameToLocal(gameWishlist: GameWishlist) {
+        viewModelScope.launch {
+            databaseRepository.addToGameWishlist(gameWishlist)
+        }
+    }
+
+    private fun deleteGameFromLocal(gameWishlist: GameWishlist) {
+        viewModelScope.launch {
+            databaseRepository.deleteGameWishlist(gameWishlist)
+        }
+    }
+
+    private fun addMovieToLocal(movieWishlist: MovieWishlist) {
+        viewModelScope.launch {
+            databaseRepository.addToMovieWishlist(movieWishlist)
+        }
+    }
+
+    private fun deleteMovieFromLocal(movieWishlist: MovieWishlist) {
+        viewModelScope.launch {
+            databaseRepository.deleteMovieWishlist(movieWishlist)
         }
     }
 
@@ -216,57 +284,92 @@ class DetailsViewModel @Inject constructor(
     }
 
     fun getMovieDetails(movieId: Long) {
-        tmdbRepository.getMovieDetails(movieId)
-            .onEach {
-                it.success { data ->
-                    _movieDetails.value = data
+        if (movieType.value.equals("Movie", true)) {
+            tmdbRepository.getMovieDetails(movieId)
+                .onEach {
+                    it.success { data ->
+                        _movieDetails.value = data
+                    }
+                    _movieDetailsResult.value = it
+                    loading.value = false
                 }
-                _movieDetailsResult.value = it
-                loading.value = false
-            }
-            .launchIn(viewModelScope)
+                .launchIn(viewModelScope)
+        } else {
+            tmdbRepository.getTVDetails(movieId)
+                .onEach {
+                    it.success { data ->
+                        _movieDetails.value = data
+                    }
+                    _movieDetailsResult.value = it
+                    loading.value = false
+                }
+                .launchIn(viewModelScope)
+        }
     }
 
     fun getMovieImages(movieId: Long) {
-        tmdbRepository.getMovieImages(movieId)
-            .onEach {
-                it.success { data ->
-                    _movieImages.value = data.imageList
+        if (movieType.value.equals("Movie", true)) {
+            tmdbRepository.getMovieImages(movieId)
+                .onEach {
+                    it.success { data ->
+                        _movieImages.value = data.imageList
+                    }
                 }
-                _movieImagesResult.value = it
-            }
-            .launchIn(viewModelScope)
+                .launchIn(viewModelScope)
+        } else {
+            tmdbRepository.getTVImages(movieId)
+                .onEach {
+                    it.success { data ->
+                        _movieImages.value = data.imageList
+                    }
+                }
+                .launchIn(viewModelScope)
+        }
     }
 
     fun checkIfGameWishlisted(gameId: Long) {
         viewModelScope.launch {
-            databaseRepository.getWishlist(gameId).collect {
-                wishlistedData.value = it
+            databaseRepository.getGameWishlist(gameId).collect {
+                gameWishlistedData.value = it
             }
         }
     }
 
-    fun addWishlistToFirestore(gameWishlist: GameWishlist) {
-       firebaseRepository.addGameToWishlist(_userAuthId.value, gameWishlist)
-           .onEach {
-               _updateGameResult.value = it
-           }
-           .launchIn(viewModelScope)
-    }
-
-    fun deleteWishlistFromFirestore(gameWishlist: GameWishlist): Task<Void> {
-        return firebaseRepository.removeGameFromWishlist(_userAuthId.value, gameWishlist)
-    }
-
-    fun addToWishlist(gameWishlist: GameWishlist) {
+    fun checkIfMovieWishlisted(id: Long) {
         viewModelScope.launch {
-            databaseRepository.addToWishlist(gameWishlist)
+            if (movieType.value.equals("Movie", true)) {
+                databaseRepository.getMovieWishlist(id).collect {
+                    movieWishlistedData.value = it
+                }
+            } else {
+                databaseRepository.getTVShowWishlist(id).collect {
+                    movieWishlistedData.value = it
+                }
+            }
         }
     }
 
-    fun deleteWishlist(gameWishlist: GameWishlist) {
+    fun addToGameWishlist(gameWishlist: GameWishlist) {
         viewModelScope.launch {
-            databaseRepository.deleteWishlist(gameWishlist)
+            addGameWishlistToFirestore(gameWishlist)
+        }
+    }
+
+    fun deleteGameWishlist(gameWishlist: GameWishlist) {
+        viewModelScope.launch {
+            deleteGameWishlistFromFirestore(gameWishlist)
+        }
+    }
+
+    fun addToMovieWishlist(movieWishlist: MovieWishlist) {
+        viewModelScope.launch {
+            addMovieWishlistToFirestore(movieWishlist)
+        }
+    }
+
+    fun deleteMovieWishlist(movieWishlist: MovieWishlist) {
+        viewModelScope.launch {
+            deleteMovieWishlistFromFirestore(movieWishlist)
         }
     }
 
@@ -322,5 +425,31 @@ class DetailsViewModel @Inject constructor(
                 _deleteMyAnimeListResult.value = it
             }
             .launchIn(viewModelScope)
+    }
+
+    fun getMovieRecommendations() {
+        if (movieType.value.equals("Movie", true)) {
+            movieRecommendations = movieId.flatMapLatest {
+                Pager(PagingConfig(pageSize = 10)) {
+                    TmdbPagingSource(
+                        tmdbRepository,
+                        "",
+                        it,
+                        3
+                    )
+                }.flow.cachedIn(viewModelScope)
+            }
+        } else {
+            movieRecommendations = movieId.flatMapLatest {
+                Pager(PagingConfig(pageSize = 10)) {
+                    TmdbPagingSource(
+                        tmdbRepository,
+                        "",
+                        it,
+                        4
+                    )
+                }.flow.cachedIn(viewModelScope)
+            }
+        }
     }
 }

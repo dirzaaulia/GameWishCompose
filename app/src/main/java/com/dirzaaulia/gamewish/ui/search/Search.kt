@@ -12,7 +12,6 @@ import androidx.compose.material.icons.filled.Tv
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.paging.compose.LazyPagingItems
@@ -31,7 +30,6 @@ import com.dirzaaulia.gamewish.ui.search.tab.game.SearchGame
 import com.dirzaaulia.gamewish.ui.search.tab.movie.Movie
 import com.google.accompanist.insets.navigationBarsHeight
 import com.google.accompanist.insets.navigationBarsPadding
-import java.util.*
 
 @Composable
 fun Search(
@@ -40,7 +38,7 @@ fun Search(
     menuId: Int,
     navigateToGameDetails: (Long) -> Unit,
     navigateToAnimeDetails: (Long, String) -> Unit,
-    navigateToMovieDetails: (Long) -> Unit,
+    navigateToMovieDetails: (Long, String) -> Unit,
     upPress: () -> Unit
 ) {
     val accessTokenResult by homeViewModel.tokenResult.collectAsState()
@@ -145,7 +143,6 @@ fun Search(
                     Movie(
                         modifier = innerModifier,
                         viewModel = viewModel,
-                        scope = scope,
                         lazyListStateMovie = lazyListStateMovie,
                         lazyListStateTv = lazyListStateTv,
                         searchMovieQuery = searchMovieQuery,
@@ -172,7 +169,7 @@ fun SearchBottomBar(
         menu.forEach { menu ->
             BottomNavigationItem(
                 icon = { Icon(imageVector = menu.icon, contentDescription = null) },
-                label = { Text(stringResource(menu.title).uppercase(Locale.getDefault())) },
+//                label = { Text(stringResource(menu.title).uppercase(Locale.getDefault())) },
                 selected = menu == SearchNavMenu.getSearchNavMenuFromResource(menuId),
                 onClick = {
                     viewModel.selectBottomNavMenu(menu.title)

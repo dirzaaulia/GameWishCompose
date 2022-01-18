@@ -8,7 +8,7 @@ object Libs {
     const val androidGradlePlugin = "com.android.tools.build:gradle:7.0.3"
 
     object Accompanist {
-        const val version = "0.21.3-beta"
+        private const val version = "0.21.3-beta"
         const val animation = "com.google.accompanist:accompanist-navigation-animation:$version"
         const val insets = "com.google.accompanist:accompanist-insets:$version"
         const val swipeRefresh = "com.google.accompanist:accompanist-swiperefresh:$version"
@@ -30,7 +30,7 @@ object Libs {
 
         object Compose {
             const val snapshot = ""
-            const val version = "1.0.5"
+            private const val version = "1.0.5"
 
             const val animation = "androidx.compose.animation:animation:$version"
             const val foundation = "androidx.compose.foundation:foundation:$version"
@@ -147,6 +147,12 @@ object Libs {
         const val stdlib = "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$version"
         const val gradlePlugin = "org.jetbrains.kotlin:kotlin-gradle-plugin:$version"
         const val extensions = "org.jetbrains.kotlin:kotlin-android-extensions:$version"
+
+        object Reflect {
+            private const val version = "1.6.10"
+
+            const val core = "org.jetbrains.kotlin:kotlin-reflect:$version"
+        }
     }
 
     object Other {

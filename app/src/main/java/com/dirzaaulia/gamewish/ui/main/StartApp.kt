@@ -5,13 +5,14 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import com.dirzaaulia.gamewish.ui.home.Home
 import com.dirzaaulia.gamewish.ui.home.HomeViewModel
-import com.dirzaaulia.gamewish.ui.main.login.Login
+import com.dirzaaulia.gamewish.ui.home.login.Login
 
 @Composable
 fun StartApp(
     viewModel: HomeViewModel,
     navigateToGameDetails: (Long) -> Unit,
     navigateToAnimeDetails: (Long, String) -> Unit,
+    navigateToMovieDetails: (Long, String) -> Unit,
     navigateToMyAnimeListLogin: () -> Unit,
     navigateToSearch: (Int) -> Unit,
 ) {
@@ -26,6 +27,7 @@ fun StartApp(
                 viewModel = viewModel,
                 navigateToGameDetails = navigateToGameDetails,
                 navigateToAnimeDetails = navigateToAnimeDetails,
+                navigateToMovieDetails = navigateToMovieDetails,
                 navigateToMyAnimeListLogin = navigateToMyAnimeListLogin,
                 navigateToSearch = navigateToSearch
             )

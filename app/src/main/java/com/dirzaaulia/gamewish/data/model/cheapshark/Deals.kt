@@ -1,5 +1,8 @@
 package com.dirzaaulia.gamewish.data.model.cheapshark
 
+import androidx.annotation.Keep
+
+@Keep
 data class Deals(
     val internalName: String?,
     val title: String?,

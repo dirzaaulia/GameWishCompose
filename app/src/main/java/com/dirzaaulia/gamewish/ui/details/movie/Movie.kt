@@ -1,4 +1,4 @@
-package com.dirzaaulia.gamewish.ui.details
+package com.dirzaaulia.gamewish.ui.details.movie
 
 import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedVisibility
@@ -7,7 +7,6 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
@@ -36,9 +35,10 @@ import com.dirzaaulia.gamewish.extension.isError
 import com.dirzaaulia.gamewish.extension.isSucceeded
 import com.dirzaaulia.gamewish.extension.visible
 import com.dirzaaulia.gamewish.ui.common.*
-import com.dirzaaulia.gamewish.ui.theme.Grey700
-import com.dirzaaulia.gamewish.ui.theme.Red700
-import com.dirzaaulia.gamewish.ui.theme.White
+import com.dirzaaulia.gamewish.theme.Grey700
+import com.dirzaaulia.gamewish.theme.Red700
+import com.dirzaaulia.gamewish.theme.White
+import com.dirzaaulia.gamewish.ui.details.DetailsViewModel
 import com.dirzaaulia.gamewish.utils.*
 import com.google.accompanist.insets.navigationBarsWithImePadding
 import com.google.accompanist.insets.statusBarsPadding
@@ -52,26 +52,93 @@ fun MovieDetails(
     viewModel: DetailsViewModel = hiltViewModel(),
     upPress: () -> Unit,
     movieId: Long,
-    navigateToMovieDetails: (Long) -> Unit,
+    type: String,
+    navigateToMovieDetails: (Long, String) -> Unit,
 ) {
     val menu  = MovieDetailsTab.values()
     val menuId: Int by viewModel.selectedMovieTab.collectAsState(0)
     val scope = rememberCoroutineScope()
     val scaffoldState = rememberBottomSheetScaffoldState()
     val data by viewModel.movieDetails.collectAsState(null)
+    val wishlistData = viewModel.movieWishlistedData.value
     val dataResult by viewModel.movieDetailsResult.collectAsState(null)
     val images by viewModel.movieImages.collectAsState(null)
-    val imagesResult by viewModel.movieImagesResult.collectAsState(null)
-    val movieRecommendations: LazyPagingItems<Movie> =
-        viewModel.movieRecommendations.collectAsLazyPagingItems()
+    val movieRecommendations: LazyPagingItems<Movie>? =
+        viewModel.movieRecommendations?.collectAsLazyPagingItems()
+    val updateMovieResult by viewModel.updateMovieResult.collectAsState()
+    val deleteMovieResult by viewModel.deleteMovieResult.collectAsState()
     val loading = viewModel.loading.value
     val errorMessage =
         stringResource(id = R.string.tv_show_details_error)
 
     LaunchedEffect(viewModel) {
+        viewModel.setMovieType(type)
         viewModel.setMovieId(movieId)
         viewModel.getMovieImages(movieId)
         viewModel.getMovieDetails(movieId)
+        viewModel.getMovieRecommendations()
+        viewModel.checkIfMovieWishlisted(movieId)
+    }
+
+    when {
+        updateMovieResult.isSucceeded -> {
+            LaunchedEffect(updateMovieResult) {
+                if (wishlistData != null) {
+                    val text = if (type.equals("Movie", true)) {
+                        "This Movie has been updated on your Watchlist"
+                    } else {
+                        "This TV Show has been updated on your Watchlist"
+                    }
+                    scaffoldState.snackbarHostState.showSnackbar(text)
+                } else {
+                    val text = if (type.equals("Movie", true)) {
+                        "This Movie has been added to your Watchlist"
+                    } else {
+                        "This TV Show has been added to your Watchlist"
+                    }
+                    scaffoldState.snackbarHostState.showSnackbar(text)
+                }
+            }
+        }
+        updateMovieResult.isError -> {
+            LaunchedEffect(updateMovieResult) {
+                if (wishlistData != null) {
+                    val text = if (type.equals("Movie", true)) {
+                        "Something wrong happen went updating Movie on your Watchlist"
+                    } else {
+                        "Something wrong happen went updating TV Show on your Watchlist"
+                    }
+                    scaffoldState.snackbarHostState.showSnackbar(text)
+                } else {
+                    val text = if (type.equals("Movie", true)) {
+                        "Something wrong happen went adding Movie into your Watchlist"
+                    } else {
+                        "Something wrong happen went updating TV Show on your Watchlist"
+                    }
+                    scaffoldState.snackbarHostState.showSnackbar(text)
+                }
+            }
+        }
+        deleteMovieResult.isSucceeded -> {
+            LaunchedEffect(deleteMovieResult) {
+                val text = if (type.equals("Movie", true)) {
+                    "This Movie has been deleted from your Watchlist"
+                } else {
+                    "This TV Show has been deleted from your Watchlist"
+                }
+                scaffoldState.snackbarHostState.showSnackbar(text)
+            }
+        }
+        deleteMovieResult.isError -> {
+            LaunchedEffect(deleteMovieResult) {
+                val text = if (type.equals("Movie", true)) {
+                    "Something wrong happen when deleting Movie from your Watchlist"
+                } else {
+                    "Something wrong happen when deleting TV Show from your Watchlist"
+                }
+                scaffoldState.snackbarHostState.showSnackbar(text)
+            }
+        }
     }
 
     CommonLoading(visibility = loading)
@@ -116,7 +183,8 @@ fun MovieDetails(
                             data?.let { value ->
                                 MovieDetailsSheetContent(
                                     data = value,
-                                    wishlist = null,
+                                    type = type,
+                                    wishlist = wishlistData,
                                     viewModel = viewModel,
                                     scope = scope,
                                     scaffoldState = scaffoldState
@@ -135,15 +203,19 @@ fun MovieDetails(
                                         modifier = innerModifier,
                                         loading = loading,
                                         data = data,
+                                        type = type,
                                         scope = scope,
                                         scaffoldState = scaffoldState
                                     )
                                 }
                                 MovieDetailsTab.RECOMMENDATION -> {
-                                    MovieRecommendationsTab(
-                                        data = movieRecommendations,
-                                        navigateToMovieDetails = navigateToMovieDetails
-                                    )
+                                    movieRecommendations?.let { item ->
+                                        MovieRecommendationsTab(
+                                            data = item,
+                                            type = type,
+                                            navigateToMovieDetails = navigateToMovieDetails
+                                        )
+                                    }
                                 }
                             }
                         }
@@ -158,22 +230,42 @@ fun MovieDetails(
 fun MovieRecommendationsTab(
     modifier: Modifier = Modifier,
     data: LazyPagingItems<Movie>,
-    navigateToMovieDetails: (Long) -> Unit,
+    type: String,
+    navigateToMovieDetails: (Long, String) -> Unit,
 ) {
+    val emptyString = if (type.equals("Movie", true)) {
+        "There is no recommendations for this Movie"
+    } else {
+        "There is no recommendations for this TV Show"
+    }
+
+    val errorString = if (type.equals("Movie", true)) {
+        stringResource(id = R.string.search_movie_recommendations_error)
+    } else {
+        stringResource(id = R.string.search_tv_show_recommendations_error)
+    }
+
     Column(modifier = modifier.padding(8.dp)) {
-        Text(
-            text = stringResource(R.string.movie_data_source),
-            style = MaterialTheme.typography.caption,
-        )
+        if (type.equals("Movie", true)) {
+            Text(
+                text = stringResource(R.string.movie_data_source),
+                style = MaterialTheme.typography.caption,
+            )
+        } else {
+            Text(
+                text = stringResource(R.string.tv_show_data_source),
+                style = MaterialTheme.typography.caption,
+            )
+        }
         CommonVerticalList(
             data = data,
             lazyListState = rememberLazyListState(),
-            emptyString = "There is no recommendations for this Movie",
-            errorString = stringResource(id = R.string.search_movie_recommendations_error),
+            emptyString = emptyString,
+            errorString = errorString,
         ) { movie ->
             CommonMovieItem(
                 movie = movie,
-                type = "Movie",
+                type = type,
                 navigateToDetails = navigateToMovieDetails
             )
         }
@@ -185,6 +277,7 @@ fun MovieDescriptionTab(
     modifier: Modifier = Modifier,
     loading: Boolean,
     data: MovieDetail?,
+    type: String,
     scope: CoroutineScope,
     scaffoldState: BottomSheetScaffoldState
 ) {
@@ -192,13 +285,15 @@ fun MovieDescriptionTab(
         item {
             MovieDescriptionHeader(
                 loading = loading,
-                data = data
+                data = data,
+                type = type
             )
         }
         item {
             MovieDescriptionFooter(
                 data = data,
                 scope = scope,
+                type = type,
                 scaffoldState = scaffoldState
             )
         }
@@ -209,6 +304,7 @@ fun MovieDescriptionTab(
 fun MovieDescriptionHeader(
     loading: Boolean,
     data: MovieDetail?,
+    type: String
 ) {
     Row(modifier = Modifier.height(IntrinsicSize.Min)) {
         Card(
@@ -263,11 +359,19 @@ fun MovieDescriptionHeader(
                     text = stringResource(R.string.runtime),
                     style = MaterialTheme.typography.subtitle2,
                 )
-                Text(
-                    text = "${data?.runtime}",
-                    color = Color.Gray,
-                    style = MaterialTheme.typography.caption,
-                )
+                if (type.equals("Movie", true)) {
+                    Text(
+                        text = "${data?.runtime}",
+                        color = Color.Gray,
+                        style = MaterialTheme.typography.caption,
+                    )
+                } else {
+                    Text(
+                        text = "${data?.episodeRunTime?.get(0) ?: stringResource(R.string.unknown)}",
+                        color = Color.Gray,
+                        style = MaterialTheme.typography.caption,
+                    )
+                }
                 Text(
                     text = "Score",
                     style = MaterialTheme.typography.subtitle2,
@@ -305,25 +409,44 @@ fun MovieDescriptionHeader(
 fun MovieDescriptionFooter(
     data: MovieDetail?,
     scope: CoroutineScope,
-    scaffoldState: BottomSheetScaffoldState
+    scaffoldState: BottomSheetScaffoldState,
+    type: String
 ) {
     Column(modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)) {
-        data?.title?.let {
-            Text(
-                text = stringResource(id = R.string.movie_data_source),
-                style = MaterialTheme.typography.caption,
-            )
+        data?.id?.let {
+            if (type.equals("Movie", true)) {
+                Text(
+                    text = stringResource(id = R.string.movie_data_source),
+                    style = MaterialTheme.typography.caption,
+                )
+            } else {
+                Text(
+                    text = stringResource(id = R.string.tv_show_data_source),
+                    style = MaterialTheme.typography.caption,
+                )
+            }
         }
         Row(
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            data?.title?.let {
-                Text(
-                    modifier = Modifier.weight(1f),
-                    text = it,
-                    style = MaterialTheme.typography.h4,
-                )
+            if (type.equals("Movie", true)) {
+                data?.title?.let {
+                    Text(
+                        modifier = Modifier.weight(1f),
+                        text = it,
+                        style = MaterialTheme.typography.h4,
+                    )
+                }
+            } else {
+                data?.name?.let {
+                    Text(
+                        modifier = Modifier.weight(1f),
+                        text = it,
+                        style = MaterialTheme.typography.h4,
+                    )
+                }
             }
+
             OutlinedButton(
                 modifier = Modifier.size(50.dp),
                 onClick = {
@@ -357,25 +480,47 @@ fun MovieDescriptionFooter(
             Text(
                 text = textDateFormatter2(it),
                 style = MaterialTheme.typography.body2,
+                modifier = Modifier.padding(top = 8.dp)
             )
         }
-        Row {
-            data?.budget?.let {
-                Text(
-                    modifier = Modifier.weight(1f),
-                    text = "Budget : ${String.format(Locale.ITALIAN, "%,d", it)}",
-                    style = MaterialTheme.typography.caption,
-                )
+        if (type.equals("Movie", true)) {
+            Row {
+                data?.budget?.let {
+                    Text(
+                        modifier = Modifier.weight(1f),
+                        text = "Budget : ${String.format(Locale.ITALIAN, "%,d", it)}",
+                        style = MaterialTheme.typography.caption,
+                    )
+                }
+                data?.revenue?.let {
+                    Text(
+                        modifier = Modifier.weight(1f),
+                        textAlign = TextAlign.End,
+                        text = "Revenue : ${String.format(Locale.ITALIAN, "%,d", it)}",
+                        style = MaterialTheme.typography.caption,
+                    )
+                }
             }
-            data?.revenue?.let {
-                Text(
-                    modifier = Modifier.weight(1f),
-                    textAlign = TextAlign.End,
-                    text = "Revenue : ${String.format(Locale.ITALIAN, "%,d", it)}",
-                    style = MaterialTheme.typography.caption,
-                )
+        } else {
+            Row {
+                data?.numberOfSeasons?.let {
+                    Text(
+                        modifier = Modifier.weight(1f),
+                        text = "Seasons : ${String.format(Locale.ITALIAN, "%,d", it)}",
+                        style = MaterialTheme.typography.caption,
+                    )
+                }
+                data?.numberOfEpisodes?.let {
+                    Text(
+                        modifier = Modifier.weight(1f),
+                        textAlign = TextAlign.End,
+                        text = "Episodes : ${String.format(Locale.ITALIAN, "%,d", it)}",
+                        style = MaterialTheme.typography.caption,
+                    )
+                }
             }
         }
+
         data?.genres?.let {
             Text(
                 modifier = Modifier
@@ -449,6 +594,7 @@ fun MovieDetailsTopBar(
 @Composable
 fun MovieDetailsSheetContent(
     data: MovieDetail,
+    type: String,
     wishlist: MovieWishlist?,
     viewModel: DetailsViewModel,
     scope: CoroutineScope,
@@ -477,10 +623,11 @@ fun MovieDetailsSheetContent(
             .fillMaxWidth()
             .navigationBarsWithImePadding()
     ) {
-        if (wishlist?.status != null) {
+        if (wishlist != null) {
             IconButton(
                 onClick = {
-                    data.id?.let {
+                    wishlist.let {
+                        viewModel.deleteMovieWishlist(it)
                     }
                     scope.launch {
                         scaffoldState.bottomSheetState.collapse()
@@ -542,17 +689,36 @@ fun MovieDetailsSheetContent(
                 .padding(top = 4.dp, bottom = 16.dp)
                 .fillMaxWidth(),
             onClick = {
-                data.id?.let {
-
+                if (type.equals("Movie", true)) {
+                    val item = data.let {
+                        MovieWishlist(it.id, it.title, it.posterPath, statusText, type)
+                    }
+                    viewModel.addToMovieWishlist(item)
+                } else {
+                    val item = data.let {
+                        MovieWishlist(it.id, it.name, it.posterPath, statusText, type)
+                    }
+                    viewModel.addToMovieWishlist(item)
                 }
-                scope.launch { scaffoldState.bottomSheetState.collapse() }
+
+
+                scope.launch {
+                    scaffoldState.bottomSheetState.collapse()
+                }
             }
         ) {
             val text = if (wishlist?.status != null) {
-                "Movie updated in your watchlist"
+                if (type.equals("Movie", true)) {
+                    "Update Movie in your Watchlist"
+                } else {
+                    "Update TV Show in your Watchlist"
+                }
             } else {
-
-                "Movie added to your watchlist"
+                if (type.equals("Movie", true)) {
+                    "Add Movie into your Watchlist"
+                } else {
+                    "Add TV Show into your Watchlist"
+                }
             }
             Text(text = text)
         }

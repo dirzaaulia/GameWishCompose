@@ -24,7 +24,7 @@ class ProtoRepository @Inject constructor(
         serializer = ProtoSerializer
     )
 
-    private var userAuthId: String = ""
+//    private var userAuthId: String = ""
 
     val userPreferencesFlow: Flow<UserPreferences> = context.userPreferencesStore.data
         .catch { exception ->
@@ -55,11 +55,11 @@ class ProtoRepository @Inject constructor(
         }
     }
 
-    suspend fun updateLocalDataStatus(status: Boolean) {
-        context.userPreferencesStore.updateData { preference ->
-            preference.toBuilder().setIsLocalData(status).build()
-        }
-    }
+//    suspend fun updateLocalDataStatus(status: Boolean) {
+//        context.userPreferencesStore.updateData { preference ->
+//            preference.toBuilder().setIsLocalData(status).build()
+//        }
+//    }
 
     suspend fun updateUserAuthId(uid: String) {
         context.userPreferencesStore.updateData { preference ->

@@ -12,9 +12,9 @@ import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import com.dirzaaulia.gamewish.ui.common.WebViewMyAnimeList
-import com.dirzaaulia.gamewish.ui.details.AnimeDetails
 import com.dirzaaulia.gamewish.ui.details.GameDetails
-import com.dirzaaulia.gamewish.ui.details.MovieDetails
+import com.dirzaaulia.gamewish.ui.details.anime.AnimeDetails
+import com.dirzaaulia.gamewish.ui.details.movie.MovieDetails
 import com.dirzaaulia.gamewish.ui.home.HomeViewModel
 import com.dirzaaulia.gamewish.ui.search.Search
 import com.google.accompanist.insets.ProvideWindowInsets
@@ -36,6 +36,7 @@ fun NavGraph(navController: NavHostController) {
                     viewModel = homeViewModel,
                     navigateToGameDetails = actions.navigateToGameDetails,
                     navigateToAnimeDetails = actions.navigateToAnimeDetails,
+                    navigateToMovieDetails = actions.navigateToMovieDetails,
                     navigateToMyAnimeListLogin = actions.navigateToMyAnimeListLogin,
                     navigateToSearch = actions.navigateToSearch
                 )
@@ -123,6 +124,9 @@ fun NavGraph(navController: NavHostController) {
                 arguments = listOf(
                     navArgument(NavScreen.MovieDetails.argument0) {
                         type = NavType.LongType
+                    },
+                    navArgument(NavScreen.MovieDetails.argument1) {
+                        type = NavType.StringType
                     }
                 ),
                 enterTransition = {
@@ -134,11 +138,14 @@ fun NavGraph(navController: NavHostController) {
             ) { backStackEntry ->
                 backStackEntry.arguments.let { bundle ->
                     bundle?.let { argument ->
-                        MovieDetails(
-                            upPress = actions.upPress,
-                            movieId = argument.getLong(NavScreen.MovieDetails.argument0),
-                            navigateToMovieDetails = actions.navigateToMovieDetails
-                        )
+                        argument.getString(NavScreen.MovieDetails.argument1)?.let {
+                            MovieDetails(
+                                upPress = actions.upPress,
+                                movieId = argument.getLong(NavScreen.MovieDetails.argument0),
+                                type = it,
+                                navigateToMovieDetails = actions.navigateToMovieDetails
+                            )
+                        }
                     }
                 }
             }

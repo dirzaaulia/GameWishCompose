@@ -38,9 +38,12 @@ class MainActions(navController: NavHostController) {
         }
     }
 
-    val navigateToMovieDetails: (Long) -> Unit = { id: Long ->
+    val navigateToMovieDetails: (Long, String) -> Unit = { id: Long, type: String ->
         NavScreen.MovieDetails.apply {
-            navController.navigate(routeWithArgument.replace("{$argument0}", id.toString()))
+            var route = routeWithArgument.replace("{${argument0}}", id.toString())
+            route = route.replace("{${argument1}}", type)
+
+            navController.navigate(route)
         }
     }
 

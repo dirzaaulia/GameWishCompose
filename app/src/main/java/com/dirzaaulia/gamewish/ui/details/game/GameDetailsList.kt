@@ -1,7 +1,5 @@
 package com.dirzaaulia.gamewish.ui.details
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
@@ -12,9 +10,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.dirzaaulia.gamewish.data.model.rawg.Platforms
 import com.dirzaaulia.gamewish.data.model.rawg.Stores
-import com.dirzaaulia.gamewish.ui.theme.White
+import com.dirzaaulia.gamewish.theme.White
 import com.dirzaaulia.gamewish.utils.setPlatformsBackgroundColor
-import com.google.accompanist.flowlayout.FlowColumn
 import com.google.accompanist.flowlayout.FlowRow
 
 @Composable
@@ -64,8 +61,8 @@ fun GameDetailsStoresList(
         data
             .sortedWith(compareBy { it.store?.name?.length })
             .forEach {
-            GameDetailsItemStores(data = it, code = code)
-        }
+                GameDetailsItemStores(data = it, code = code)
+            }
     }
 }
 

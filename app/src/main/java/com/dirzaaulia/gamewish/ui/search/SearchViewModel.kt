@@ -27,8 +27,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SearchViewModel @Inject constructor(
+    protoRepository: ProtoRepository,
     private val rawgRepository: RawgRepository,
-    private val protoRepository: ProtoRepository,
     private val myAnimeListRepository: MyAnimeListRepository,
     private val tmdbRepository: TmdbRepository,
 ) : ViewModel() {
@@ -48,13 +48,10 @@ class SearchViewModel @Inject constructor(
     val selectedSearchMovieTab: StateFlow<Int> get() = _selectedSearchMovieTab.asStateFlow()
 
     private var _tokenResult: MutableStateFlow<ResponseResult<String>?> = MutableStateFlow(null)
-    val tokenResult = _tokenResult.asStateFlow()
 
     private var _token: MutableStateFlow<String> = MutableStateFlow("")
-    val token = _token.asStateFlow()
 
     private val _refreshToken: MutableStateFlow<String> = MutableStateFlow("")
-    val refreshToken = _refreshToken.asStateFlow()
 
     val genres =  Pager(PagingConfig(pageSize = 10)) {
         RawgGenrePagingSource(rawgRepository)

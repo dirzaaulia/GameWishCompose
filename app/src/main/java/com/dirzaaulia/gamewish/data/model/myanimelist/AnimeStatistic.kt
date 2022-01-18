@@ -1,7 +1,9 @@
 package com.dirzaaulia.gamewish.data.model.myanimelist
 
+import androidx.annotation.Keep
 import com.squareup.moshi.Json
 
+@Keep
 data class AnimeStatistic(
     @Json(name = "num_items_watching")
     val numItemsWatching: Int?,

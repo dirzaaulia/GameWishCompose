@@ -307,6 +307,18 @@ fun DataSourceSection() {
                 ),
                 onClick = { openLink(context, "https://wwww.myanimelist.net/") }
             )
+            ClickableText(
+                style = MaterialTheme.typography.caption,
+                modifier = Modifier.fillMaxWidth(),
+                text = AnnotatedString(
+                    stringResource(id = R.string.movie_tv_show_data_source),
+                    SpanStyle(
+                        color = MaterialTheme.colors.onSurface,
+                        textDecoration = TextDecoration.Underline
+                    ),
+                ),
+                onClick = { openLink(context, "https://wwww.themoviedb.org/") }
+            )
         }
     }
 }
@@ -319,7 +331,7 @@ fun ContactMeSection() {
         shape = MaterialTheme.shapes.large
     ) {
         Column(modifier = Modifier.padding(8.dp)) {
-            Text(text = "Contact Me")
+            Text(text = "Contact")
             Text(
                 modifier = Modifier.fillMaxWidth(),
                 text = stringResource(id = R.string.about_contact),
@@ -348,8 +360,8 @@ fun AboutAppBar() {
     TopAppBar(
         elevation = 0.dp,
         modifier = Modifier
-            .height(80.dp)
             .statusBarsPadding()
+            .wrapContentHeight()
     ) {
         Image(
             modifier = Modifier

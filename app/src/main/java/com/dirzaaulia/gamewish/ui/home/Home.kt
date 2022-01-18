@@ -9,10 +9,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.LocalOffer
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
@@ -36,6 +33,7 @@ fun Home(
     viewModel: HomeViewModel = hiltViewModel(),
     navigateToGameDetails: (Long) -> Unit,
     navigateToAnimeDetails: (Long, String) -> Unit,
+    navigateToMovieDetails: (Long, String) -> Unit,
     navigateToMyAnimeListLogin: () -> Unit,
     navigateToSearch: (Int) -> Unit
 ) {
@@ -63,8 +61,10 @@ fun Home(
         ) { destination ->
             when {
                 myAnimeListTokenResponse.isError -> {
-                    scope.launch {
-                        scaffoldState.snackbarHostState.showSnackbar(errorMessage)
+                    LaunchedEffect(myAnimeListTokenResponse.isError) {
+                        scope.launch {
+                            scaffoldState.snackbarHostState.showSnackbar(errorMessage)
+                        }
                     }
                 }
             }
@@ -77,6 +77,7 @@ fun Home(
                         viewModel = viewModel,
                         navigateToGameDetails = navigateToGameDetails,
                         navigateToAnimeDetails = navigateToAnimeDetails,
+                        navigateToMovieDetails = navigateToMovieDetails,
                         navigateToSearch = navigateToSearch
                     )
                 }
