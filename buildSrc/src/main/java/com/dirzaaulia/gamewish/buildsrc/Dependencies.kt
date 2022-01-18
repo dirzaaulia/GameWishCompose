@@ -101,6 +101,14 @@ object Libs {
         const val storage = "com.google.firebase:firebase-storage-ktx"
         const val auth = "com.google.firebase:firebase-auth-ktx"
         const val firestore = "com.google.firebase:firebase-firestore-ktx"
+        const val crashlytics = "com.google.firebase:firebase-crashlytics-ktx"
+        const val analytics = "com.google.firebase:firebase-analytics-ktx"
+
+        object Crashlytics {
+            private const val version = "2.8.1"
+
+            const val gradlePlugin = "com.google.firebase:firebase-crashlytics-gradle:$version"
+        }
 
         object UI {
             private const val version = "8.0.0"

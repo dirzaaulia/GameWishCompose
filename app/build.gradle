@@ -8,6 +8,7 @@ plugins {
     id 'dagger.hilt.android.plugin'
     id "com.google.protobuf" version "0.8.12"
     id 'com.google.gms.google-services'
+    id 'com.google.firebase.crashlytics'
 }
 
 android {
@@ -31,8 +32,8 @@ android {
         applicationId "com.dirzaaulia.gamewish"
         minSdk 24
         targetSdk 30
-        versionCode 23
-        versionName "4.0"
+        versionCode 24
+        versionName "4.1"
         vectorDrawables.useSupportLibrary true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -134,6 +135,8 @@ dependencies {
     implementation Libs.Firebase.storage
     implementation Libs.Firebase.auth
     implementation Libs.Firebase.firestore
+    implementation Libs.Firebase.crashlytics
+    implementation Libs.Firebase.analytics
     implementation Libs.Firebase.UI.database
     implementation Libs.Firebase.UI.auth
 

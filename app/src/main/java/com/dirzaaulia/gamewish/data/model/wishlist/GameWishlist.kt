@@ -1,10 +1,13 @@
 package com.dirzaaulia.gamewish.data.model.wishlist
 
 import android.os.Parcelable
+import androidx.annotation.Keep
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.google.firebase.firestore.PropertyName
 import kotlinx.parcelize.Parcelize
 
+@Keep
 @Entity(tableName = "wishlist_table")
 @Parcelize
 data class GameWishlist(

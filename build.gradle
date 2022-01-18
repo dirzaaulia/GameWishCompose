@@ -10,10 +10,11 @@ buildscript {
 
     dependencies {
         classpath Libs.androidGradlePlugin
-        classpath Libs.Kotlin.gradlePlugin
-        classpath Libs.Hilt.androidGradlePlugin
+        classpath Libs.Firebase.Crashlytics.gradlePlugin
         classpath Libs.Gms.plugin
+        classpath Libs.Hilt.androidGradlePlugin
         classpath Libs.Kotlin.Reflect.core
+        classpath Libs.Kotlin.gradlePlugin
     }
 }
 
