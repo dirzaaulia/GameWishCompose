@@ -23,6 +23,7 @@ object Libs {
         const val splashScreen = "androidx.core:core-splashscreen:1.0.0-alpha02"
         const val navigation = "androidx.navigation:navigation-compose:2.4.0-beta02"
         const val materialDesign = "com.google.android.material:material:1.4.0"
+        const val webkit = "androidx.webkit:webkit:1.4.0"
 
         object Activity {
             const val activityCompose = "androidx.activity:activity-compose:1.4.0"

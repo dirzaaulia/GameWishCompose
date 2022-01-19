@@ -3,10 +3,10 @@
     <style name="Theme.Material.DayNight.NoActionBar" parent="@android:style/Theme.Material.Light.NoActionBar" />
 
     <style name="Theme.GameWish" parent="@style/Theme.Material.DayNight.NoActionBar">
-        <item name="android:colorPrimary">#ff00ff</item>
-        <item name="android:colorAccent">#ff00ff</item>
+        <item name="android:colorPrimary">#FF616161</item>
+        <item name="android:colorAccent">#FF424242</item>
         <item name="android:statusBarColor">@color/immersive_sys_ui</item>
-        <item name="android:navigationBarColor">@color/nav_bar</item>
+        <item name="android:navigationBarColor">@color/nav_bar</item>\
     </style>
 
 </resources>
