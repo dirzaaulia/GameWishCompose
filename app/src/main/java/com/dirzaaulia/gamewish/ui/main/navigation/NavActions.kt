@@ -1,8 +1,8 @@
-package com.dirzaaulia.gamewish.ui.main
+package com.dirzaaulia.gamewish.ui.main.navigation
 
 import androidx.navigation.NavHostController
 
-class MainActions(navController: NavHostController) {
+class NavActions(navController: NavHostController) {
     val navigateToHome: () -> Unit = {
         NavScreen.Login.apply {
             navController.navigate(this.route)
@@ -40,8 +40,8 @@ class MainActions(navController: NavHostController) {
 
     val navigateToMovieDetails: (Long, String) -> Unit = { id: Long, type: String ->
         NavScreen.MovieDetails.apply {
-            var route = routeWithArgument.replace("{${argument0}}", id.toString())
-            route = route.replace("{${argument1}}", type)
+            var route = routeWithArgument.replace("{$argument0}", id.toString())
+            route = route.replace("{$argument1}", type)
 
             navController.navigate(route)
         }

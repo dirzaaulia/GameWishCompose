@@ -1,4 +1,4 @@
-package com.dirzaaulia.gamewish.ui.main
+package com.dirzaaulia.gamewish.ui.main.navigation
 
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandIn
@@ -16,6 +16,7 @@ import com.dirzaaulia.gamewish.ui.details.GameDetails
 import com.dirzaaulia.gamewish.ui.details.anime.AnimeDetails
 import com.dirzaaulia.gamewish.ui.details.movie.MovieDetails
 import com.dirzaaulia.gamewish.ui.home.HomeViewModel
+import com.dirzaaulia.gamewish.ui.main.StartApp
 import com.dirzaaulia.gamewish.ui.search.Search
 import com.google.accompanist.insets.ProvideWindowInsets
 import com.google.accompanist.navigation.animation.AnimatedNavHost
@@ -23,7 +24,7 @@ import com.google.accompanist.navigation.animation.composable
 
 @Composable
 fun NavGraph(navController: NavHostController) {
-    val actions = remember(navController) { MainActions(navController) }
+    val actions = remember(navController) { NavActions(navController) }
     val homeViewModel: HomeViewModel = hiltViewModel()
 
     ProvideWindowInsets {

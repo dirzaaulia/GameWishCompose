@@ -1,4 +1,4 @@
-package com.dirzaaulia.gamewish.ui.main
+package com.dirzaaulia.gamewish.ui.main.navigation
 
 sealed class NavScreen(val route: String) {
     object Login : NavScreen("Login")

@@ -158,7 +158,7 @@ class HomeViewModel @Inject constructor(
             tvShowStatus.flatMapLatest {
                 databaseRepository.getTVShowFilteredWishlist(query, it)
             }
-        }
+        }.cachedIn(viewModelScope)
 
     val myAnimeListUserResult: Flow<ResponseResult<User>> = _token
         .flatMapLatest { token ->

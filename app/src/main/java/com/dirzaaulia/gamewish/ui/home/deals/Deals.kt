@@ -172,11 +172,11 @@ fun DealsFilter(
         }
         OutlinedTextField(
             value = lowPrice.toString(),
-            onValueChange = {
-                lowPrice = if (it.isEmpty()) {
+            onValueChange = { value ->
+                lowPrice = if (value.isEmpty()) {
                     0
                 } else {
-                    it.toLong()
+                    value.filter { it.isDigit() }.toLong()
                 }
 
                 viewModel.setDealsRequest(
@@ -203,11 +203,11 @@ fun DealsFilter(
         )
         OutlinedTextField(
             value = upperPrice.toString(),
-            onValueChange = {
-                upperPrice = if (it.isEmpty()) {
+            onValueChange = { value ->
+                upperPrice = if (value.isEmpty()) {
                     0
                 } else {
-                    it.toLong()
+                    value.filter { it.isDigit() }.toLong()
                 }
 
                 viewModel.setDealsRequest(
