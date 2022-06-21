@@ -44,6 +44,8 @@ import com.dirzaaulia.gamewish.ui.common.CommonLoading
 import com.dirzaaulia.gamewish.ui.common.ErrorConnect
 import com.dirzaaulia.gamewish.theme.Red700
 import com.dirzaaulia.gamewish.theme.White
+import com.dirzaaulia.gamewish.ui.details.game.GameDetailsPlatformList
+import com.dirzaaulia.gamewish.ui.details.game.GameDetailsStoresList
 import com.dirzaaulia.gamewish.utils.*
 import com.google.accompanist.insets.statusBarsPadding
 import com.google.accompanist.pager.rememberPagerState

@@ -1,14 +1,15 @@
 package com.dirzaaulia.gamewish.buildsrc
 
 object Versions {
-    const val ktlint = "0.41.0"
+    const val ktlint = "0.45.2"
 }
 
 object Libs {
     const val androidGradlePlugin = "com.android.tools.build:gradle:7.0.3"
 
     object Accompanist {
-        private const val version = "0.21.3-beta"
+        const val version = "0.23.1"
+
         const val animation = "com.google.accompanist:accompanist-navigation-animation:$version"
         const val insets = "com.google.accompanist:accompanist-insets:$version"
         const val swipeRefresh = "com.google.accompanist:accompanist-swiperefresh:$version"
@@ -31,7 +32,7 @@ object Libs {
 
         object Compose {
             const val snapshot = ""
-            private const val version = "1.0.5"
+            const val version = "1.1.1"
 
             const val animation = "androidx.compose.animation:animation:$version"
             const val foundation = "androidx.compose.foundation:foundation:$version"
