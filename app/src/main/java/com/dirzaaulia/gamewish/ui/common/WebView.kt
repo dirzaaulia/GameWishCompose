@@ -2,10 +2,7 @@ package com.dirzaaulia.gamewish.ui.common
 
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
-import android.webkit.WebResourceError
-import android.webkit.WebResourceRequest
-import android.webkit.WebView
-import android.webkit.WebViewClient
+import android.webkit.*
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.LinearProgressIndicator
@@ -82,6 +79,7 @@ fun WebViewMyAnimeList(
                 factory = {
                     WebView(it).apply {
                         settings.javaScriptEnabled = true
+
                         webViewClient = object : WebViewClient() {
                             override fun shouldOverrideUrlLoading(
                                 view: WebView?,
@@ -90,6 +88,7 @@ fun WebViewMyAnimeList(
                                 val urlValue = request?.url.toString()
                                 val code = request?.url?.getQueryParameter("code")
                                 val error = request?.url?.getQueryParameter("error")
+                                Timber.d(urlValue)
 
                                 urlValue.let { url ->
                                     if (url.contains(MYANIMELIST_BASE_URL_CALLBACK)) {
@@ -130,7 +129,9 @@ fun WebViewMyAnimeList(
                                 request: WebResourceRequest?,
                                 error: WebResourceError?
                             ) {
-                                errorState.value = error?.description.toString()
+                                val errorDesc = error?.description.toString()
+                                errorState.value = errorDesc
+                                Timber.d("url: ${request?.url} | errorDesc : $errorDesc")
                                 reload = { view?.reload() }
                             }
                         }

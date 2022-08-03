@@ -507,7 +507,7 @@ fun AnimeDescriptionHeader(
                     }
                 }
                 Text(
-                    text = animeSourceFormat(data.mediaType),
+                    text = data.mediaType.animeSourceFormat(),
                     style = MaterialTheme.typography.subtitle2,
                 )
 
@@ -554,7 +554,7 @@ fun AnimeDescriptionHeader(
                     style = MaterialTheme.typography.subtitle2,
                 )
                 Text(
-                    text = numberFormatter(data.members?.toDouble()),
+                    text = data.members?.toDouble().toNumberFormat(),
                     color = Color.Gray,
                     style = MaterialTheme.typography.caption,
                 )
@@ -632,7 +632,7 @@ fun AnimeDescriptionFooter(
                 Text(
                     modifier = Modifier.weight(1f),
                     textAlign = TextAlign.End,
-                    text = animeRatingFormat(it),
+                    text = it.animeRatingFormat(),
                     style = MaterialTheme.typography.body2,
                 )
             }
@@ -643,7 +643,7 @@ fun AnimeDescriptionFooter(
                     .fillMaxWidth()
                     .padding(vertical = 4.dp),
                 textAlign = TextAlign.Center,
-                text = animeGenreFormat(it),
+                text = it.toAnimeGenre(),
                 style = MaterialTheme.typography.body2,
             )
         }
@@ -654,7 +654,7 @@ fun AnimeDescriptionFooter(
             )
             Text(
                 textAlign = TextAlign.Justify,
-                text = htmlToTextFormatter(it).toString(),
+                text = it.fromHtml(),
                 style = MaterialTheme.typography.body1,
             )
         }
@@ -667,7 +667,7 @@ fun AnimeDescriptionFooter(
                 )
                 Text(
                     textAlign = TextAlign.Justify,
-                    text = htmlToTextFormatter(it).toString(),
+                    text = it.fromHtml(),
                     style = MaterialTheme.typography.body1,
                 )
             }
@@ -740,7 +740,7 @@ fun AnimeDetailsSheetContent(
     }
 
     val score = if (data.listStatus?.score != null) {
-        animeScoreFormat(data.listStatus?.score)
+        data.listStatus?.score.toAnimeScoreFormat()
     } else {
         "(0) - Appaling"
     }

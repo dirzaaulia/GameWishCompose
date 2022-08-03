@@ -2,6 +2,8 @@ package com.dirzaaulia.gamewish.ui.home.about
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyVerticalGrid
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.ClickableText
@@ -43,31 +45,43 @@ fun About(
     myAnimeListUserResult: ResponseResult<User>?,
     myAnimeListUser: User,
     navigateToMyAnimeListLogin: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
 
     val accessToken by viewModel.token.collectAsState()
 
     Scaffold(
+        modifier = modifier,
         topBar = {
             AboutAppBar()
         }
     ) {
-        Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-            GoogleSection(
-                googleProfileImage = googleProfileImage,
-                googleUsername = googleUsername,
-                viewModel = viewModel
-            )
-            MyAnimeListSection(
-                accessToken = accessToken,
-                myAnimeListUserResult = myAnimeListUserResult,
-                myAnimeListUser = myAnimeListUser,
-                viewModel = viewModel,
-                navigateToMyAnimeListLogin = navigateToMyAnimeListLogin
-            )
-            GameWishAboutSection()
-            DataSourceSection()
-            ContactMeSection()
+        LazyColumn {
+            item {
+                GoogleSection(
+                    googleProfileImage = googleProfileImage,
+                    googleUsername = googleUsername,
+                    viewModel = viewModel
+                )
+            }
+            item {
+                MyAnimeListSection(
+                    accessToken = accessToken,
+                    myAnimeListUserResult = myAnimeListUserResult,
+                    myAnimeListUser = myAnimeListUser,
+                    viewModel = viewModel,
+                    navigateToMyAnimeListLogin = navigateToMyAnimeListLogin
+                )
+            }
+            item {
+                GameWishAboutSection()
+            }
+            item {
+                DataSourceSection()
+            }
+            item {
+                ContactMeSection()
+            }
         }
     }
 }
@@ -342,7 +356,7 @@ fun ContactMeSection() {
                     .padding(top = 4.dp)
                     .fillMaxWidth(),
                 onClick = {
-                    sendEmail(context)
+                    context.sendEmail()
                 },
             ) {
                 Text(

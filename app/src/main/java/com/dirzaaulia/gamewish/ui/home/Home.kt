@@ -94,6 +94,7 @@ fun Home(
                     myAnimeListUserResult = myAnimeListUserResult,
                     myAnimeListUser = myAnimeListUser,
                     navigateToMyAnimeListLogin = navigateToMyAnimeListLogin,
+                    modifier = innerModifier,
                 )
             }
         }

@@ -1,4 +1,4 @@
-package com.dirzaaulia.gamewish.ui.details
+package com.dirzaaulia.gamewish.ui.details.game
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.dirzaaulia.gamewish.R
+import com.dirzaaulia.gamewish.data.model.rawg.EsrbRating
 import com.dirzaaulia.gamewish.data.model.rawg.GameDetails
 import com.dirzaaulia.gamewish.data.model.rawg.Screenshots
 import com.dirzaaulia.gamewish.data.model.wishlist.GameWishlist
@@ -44,8 +45,7 @@ import com.dirzaaulia.gamewish.ui.common.CommonLoading
 import com.dirzaaulia.gamewish.ui.common.ErrorConnect
 import com.dirzaaulia.gamewish.theme.Red700
 import com.dirzaaulia.gamewish.theme.White
-import com.dirzaaulia.gamewish.ui.details.game.GameDetailsPlatformList
-import com.dirzaaulia.gamewish.ui.details.game.GameDetailsStoresList
+import com.dirzaaulia.gamewish.ui.details.DetailsViewModel
 import com.dirzaaulia.gamewish.utils.*
 import com.google.accompanist.insets.statusBarsPadding
 import com.google.accompanist.pager.rememberPagerState
@@ -186,7 +186,7 @@ fun GameDetailsHeader(
     upPress: () -> Unit
 ) {
     Box {
-        if (!screenshots.isNullOrEmpty()) {
+        if (screenshots.isNotEmpty()) {
             val pagerState = rememberPagerState()
 
             CommonGameCarousel(
@@ -281,7 +281,7 @@ fun GameDetailsMiddleContent(
                     val releaseDate = if (it.isBlank()) {
                         stringResource(R.string.no_release_date)
                     } else {
-                        textDateFormatter2(it)
+                        it.changeDateFormat("yyyy-MM-dd")
                     }
 
 
@@ -301,7 +301,7 @@ fun GameDetailsMiddleContent(
                         style = MaterialTheme.typography.h6
                     )
                     Text(
-                        text = gameDeveloperFormatter(it),
+                        text = it.toDeveloper(),
                         style = MaterialTheme.typography.body2
                     )
                 }
@@ -311,7 +311,7 @@ fun GameDetailsMiddleContent(
                         style = MaterialTheme.typography.h6
                     )
                     Text(
-                        text = gamePublishersFormatter(it),
+                        text = it.toPublisher(),
                         style = MaterialTheme.typography.body2
                     )
                 }
@@ -343,7 +343,7 @@ fun GameDetailsMiddleContent(
                             )
                             ClickableText(
                                 text = AnnotatedString(
-                                    getSubReddit(url),
+                                    url.getSubReddit(),
                                     SpanStyle(
                                         color = MaterialTheme.colors.onSurface,
                                         textDecoration = TextDecoration.Underline
@@ -367,7 +367,7 @@ fun GameDetailsMiddleContent(
                         style = MaterialTheme.typography.h6
                     )
                     Image(
-                        painter = painterResource(id = esrbRatingFormatter(it)),
+                        painter = painterResource(id = EsrbRating.getRatingDrawable(it)),
                         contentDescription = null,
                         modifier = Modifier.size(60.dp, 70.dp)
                     )
@@ -398,7 +398,7 @@ fun GameDetailsMiddleContent(
             )
             Text(
                 textAlign = TextAlign.Justify,
-                text = AnnotatedString(htmlToTextFormatter(it).toString()),
+                text = AnnotatedString(it.fromHtml()),
                 style = MaterialTheme.typography.body1
             )
         }

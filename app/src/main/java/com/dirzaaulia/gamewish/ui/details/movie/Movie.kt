@@ -27,6 +27,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.dirzaaulia.gamewish.R
+import com.dirzaaulia.gamewish.data.model.tmdb.Genre
 import com.dirzaaulia.gamewish.data.model.tmdb.Image
 import com.dirzaaulia.gamewish.data.model.tmdb.Movie
 import com.dirzaaulia.gamewish.data.model.tmdb.MovieDetail
@@ -34,10 +35,10 @@ import com.dirzaaulia.gamewish.data.model.wishlist.MovieWishlist
 import com.dirzaaulia.gamewish.extension.isError
 import com.dirzaaulia.gamewish.extension.isSucceeded
 import com.dirzaaulia.gamewish.extension.visible
-import com.dirzaaulia.gamewish.ui.common.*
 import com.dirzaaulia.gamewish.theme.Grey700
 import com.dirzaaulia.gamewish.theme.Red700
 import com.dirzaaulia.gamewish.theme.White
+import com.dirzaaulia.gamewish.ui.common.*
 import com.dirzaaulia.gamewish.ui.details.DetailsViewModel
 import com.dirzaaulia.gamewish.utils.*
 import com.google.accompanist.insets.navigationBarsWithImePadding
@@ -347,7 +348,7 @@ fun MovieDescriptionHeader(
                 ) {
                     data?.status?.let { status ->
                         Text(
-                            text = status.replace("_"," ").capitalizeWords(),
+                            text = status.replace("_", " ").capitalizeWords(),
                             color = White,
                             style = MaterialTheme.typography.caption,
                             modifier = Modifier.padding(4.dp),
@@ -395,7 +396,7 @@ fun MovieDescriptionHeader(
                     style = MaterialTheme.typography.subtitle2,
                 )
                 Text(
-                    text = movieProductionCompaniesFormat(data?.productionCompanies),
+                    text = data?.productionCompanies.toProductionCompany(),
                     color = Color.Gray,
                     style = MaterialTheme.typography.caption,
                     textAlign = TextAlign.Center
@@ -477,8 +478,13 @@ fun MovieDescriptionFooter(
             )
         }
         data?.releaseDate?.let {
+            val releaseDate = if (it.isNotBlank()) {
+                it.changeDateFormat("yyyy-MM-dd")
+            } else {
+                stringResource(R.string.no_release_date)
+            }
             Text(
-                text = textDateFormatter2(it),
+                text = releaseDate,
                 style = MaterialTheme.typography.body2,
                 modifier = Modifier.padding(top = 8.dp)
             )
@@ -527,7 +533,7 @@ fun MovieDescriptionFooter(
                     .fillMaxWidth()
                     .padding(vertical = 4.dp),
                 textAlign = TextAlign.Center,
-                text = movieGenreFormat(it),
+                text = it.toMovieGenre(),
                 style = MaterialTheme.typography.body2,
             )
         }
@@ -538,7 +544,7 @@ fun MovieDescriptionFooter(
             )
             Text(
                 textAlign = TextAlign.Justify,
-                text = htmlToTextFormatter(it).toString(),
+                text = it.fromHtml(),
                 style = MaterialTheme.typography.body1,
             )
         }

@@ -12,7 +12,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import com.dirzaaulia.gamewish.ui.common.WebViewMyAnimeList
-import com.dirzaaulia.gamewish.ui.details.GameDetails
+import com.dirzaaulia.gamewish.ui.details.game.GameDetails
 import com.dirzaaulia.gamewish.ui.details.anime.AnimeDetails
 import com.dirzaaulia.gamewish.ui.details.movie.MovieDetails
 import com.dirzaaulia.gamewish.ui.home.HomeViewModel

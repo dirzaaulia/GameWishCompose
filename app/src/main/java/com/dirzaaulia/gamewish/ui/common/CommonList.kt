@@ -435,14 +435,14 @@ fun DealsItem(
                 }
                 deals.normalPrice?.let {
                     Text(
-                        text = currencyFormatter(it.toDouble(), Locale.US),
+                        text = it.toDouble().toCurrencyFormat(),
                         style = MaterialTheme.typography.caption,
                         textDecoration = TextDecoration.LineThrough
                     )
                 }
                 deals.salePrice?.let {
                     Text(
-                        text = currencyFormatter(it.toDouble(), Locale.US),
+                        text = it.toDouble().toCurrencyFormat(),
                         style = MaterialTheme.typography.caption
                     )
                 }
@@ -505,7 +505,7 @@ fun CommonMovieItem(
                     val releaseDate = if (it.isBlank()) {
                         stringResource(R.string.no_release_date)
                     } else {
-                        textDateFormatter2(it)
+                        it.changeDateFormat("yyyy-MM-dd")
                     }
 
                     Text(
@@ -660,7 +660,7 @@ fun SearchGamesItem(
         Column(modifier = modifier.padding(top = 4.dp)) {
             games.released?.let { released ->
                 Text(
-                    text = textDateFormatter2(released),
+                    text = released.changeDateFormat("yyyy-MM-dd"),
                     style = MaterialTheme.typography.caption,
                     modifier = Modifier
                         .padding(horizontal = 8.dp)

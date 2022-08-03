@@ -67,11 +67,9 @@ object Dependencies {
         }
 
         object Lifecycle {
-            private const val livedata = "androidx.lifecycle:lifecycle-livedata-ktx:${Version.lifecycle}"
             private const val viewModel = "androidx.lifecycle:lifecycle-viewmodel-compose:${Version.lifecycle}"
 
             val implementation = arrayListOf<String>().apply {
-                add(livedata)
                 add(viewModel)
             }
         }
