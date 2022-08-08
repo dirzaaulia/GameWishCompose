@@ -1,0 +1,1 @@
+GameWish is my personal Android App project. Some of GameWish feature is you can organize wishlist / watchlist for Games, Anime & Manga with MyAnimeList support, Movie and TV Show. You can look for your favorite Games, Anime & Manga, Movie & TV Show details and also you can search for Game Deals in popular game store like Steam, GreenManGaming and etc. 
