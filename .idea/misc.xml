@@ -3,6 +3,8 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Android Studio/Projects/GameWishCompose/app/src/main/res/drawable-hdpi/ic_splash_screen_logo.xml" value="0.1825" />
+        <entry key="..\:/Android Studio/Projects/GameWishCompose/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.1465" />
         <entry key="..\:/Android Studio/Projects/GameWishCompose/app/src/main/res/drawable-xxhdpi/ic_gamewish_dark.xml" value="0.25025641025641027" />
         <entry key="..\:/Android Studio/Projects/GameWishCompose/app/src/main/res/drawable-xxxhdpi/ic_reddit_logo.xml" value="0.17407407407407408" />
         <entry key="..\:/Android Studio/Projects/GameWishCompose/app/src/main/res/drawable/ic_baseline_favorite_24.xml" value="0.25416666666666665" />
@@ -10,7 +12,11 @@
         <entry key="..\:/Android Studio/Projects/GameWishCompose/app/src/main/res/drawable/ic_baseline_local_offer_24.xml" value="0.1359375" />
         <entry key="..\:/Android Studio/Projects/GameWishCompose/app/src/main/res/drawable/ic_gamewish.xml" value="0.2388888888888889" />
         <entry key="..\:/Android Studio/Projects/GameWishCompose/app/src/main/res/drawable/ic_gamewish_dark.xml" value="0.18425925925925926" />
+        <entry key="..\:/Android Studio/Projects/GameWishCompose/app/src/main/res/drawable/ic_launcher_background.xml" value="0.1825" />
+        <entry key="..\:/Android Studio/Projects/GameWishCompose/app/src/main/res/drawable/ic_splash_screen.xml" value="0.1465" />
+        <entry key="..\:/Android Studio/Projects/GameWishCompose/app/src/main/res/drawable/ic_splash_screen_background.xml" value="0.1465" />
         <entry key="..\:/Android Studio/Projects/GameWishCompose/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.1824074074074074" />
+        <entry key="..\:/Android Studio/Projects/GameWishCompose/app/src/main/res/mipmap-anydpi-v26/ic_splash_screen.xml" value="0.1465" />
       </map>
     </option>
   </component>

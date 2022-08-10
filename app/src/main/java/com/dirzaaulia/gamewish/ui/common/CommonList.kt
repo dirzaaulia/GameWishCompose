@@ -1,12 +1,11 @@
 package com.dirzaaulia.gamewish.ui.common
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -20,6 +19,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import androidx.paging.CombinedLoadStates
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.items
@@ -37,15 +37,14 @@ import com.dirzaaulia.gamewish.data.request.myanimelist.SearchGameRequest
 import com.dirzaaulia.gamewish.extension.visible
 import com.dirzaaulia.gamewish.ui.home.HomeViewModel
 import com.dirzaaulia.gamewish.ui.search.SearchViewModel
-import com.dirzaaulia.gamewish.theme.White
 import com.dirzaaulia.gamewish.utils.*
+import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.material.shimmer
+import com.google.accompanist.placeholder.placeholder
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
 import com.google.accompanist.swiperefresh.SwipeRefreshState
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 import timber.log.Timber
-import java.util.*
 
 @Composable
 fun <T : Any> CommonVerticalSwipeList(
@@ -125,6 +124,7 @@ fun <T : Any> CommonVerticalSwipeList(
 fun <T : Any> CommonVerticalList(
     data: LazyPagingItems<T>,
     lazyListState: LazyListState,
+    placeholderType: Int = PlaceholderConstant.DEFAULT,
     emptyString: String,
     errorString: String,
     content: @Composable (T) -> Unit
@@ -133,8 +133,7 @@ fun <T : Any> CommonVerticalList(
         LazyColumn(
             state = lazyListState,
             modifier = Modifier
-                .fillMaxSize()
-                .visible(data.loadState.refresh !is LoadState.Loading),
+                .fillMaxSize(),
         ) {
 
             items(data) { data ->
@@ -152,14 +151,21 @@ fun <T : Any> CommonVerticalList(
                         val error = data.loadState.refresh as LoadState.Error
                         item {
                             Timber.e("Refresh Error: ${error.error.localizedMessage}")
+                            ErrorConnect(text = errorString) {
+                                retry()
+                            }
                         }
                     }
-//                    loadState.append is LoadState.Error -> {
-//                        val error = data.loadState.refresh as LoadState.Error
-//                        item {
-//                            Timber.e("Append Error: ${error.error.localizedMessage}")
-//                        }
-//                    }
+                    loadState.append is LoadState.Error -> {
+                        val error = data.loadState.append as LoadState.Error
+                        item {
+                            Timber.e("Append Error: ${error.error.localizedMessage}")
+                            CommonPagingAppendError(
+                                message = errorString,
+                                retry = { retry() }
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -167,7 +173,40 @@ fun <T : Any> CommonVerticalList(
 
     when {
         data.loadState.refresh is LoadState.Loading -> {
-            CommonLoading(visibility = data.loadState.refresh is LoadState.Loading)
+            LazyColumn(
+                state = lazyListState,
+                modifier = Modifier.fillMaxSize(),
+            ) {
+                items(25) {
+                    when (placeholderType) {
+                        PlaceholderConstant.GAME_WISHLIST ->  {
+                            WishlistGameItem(gameWishlist = GameWishlist(), loadState = data.loadState)
+                        }
+                        PlaceholderConstant.MOVIE_WISHLIST -> {
+                            WishlistMovieItem(movieWishlist = MovieWishlist(), loadState = data.loadState )
+                        }
+                        PlaceholderConstant.DEALS -> {
+                            DealsItem(deals = Deals(), loadStates = data.loadState)
+                        }
+                        PlaceholderConstant.SEARCH_GAME_TAB -> {
+                            SearchGenreItem(genre = Genre(), loadStates = data.loadState)
+                        }
+                        PlaceholderConstant.SEARCH_GAME -> {
+                            SearchGamesItem(games = Games(), loadStates = data.loadState)
+                        }
+                        PlaceholderConstant.ANIME -> {
+                            CommonAnimeItem(
+                                parentNode = ParentNode(),
+                                type = "",
+                                loadState = data.loadState
+                            )
+                        }
+                        else -> {
+                            WishlistGameItem(gameWishlist = GameWishlist(), loadState = data.loadState)
+                        }
+                    }
+                }
+            }
         }
         data.loadState.refresh is LoadState.Error -> {
             val error = data.loadState.refresh as LoadState.Error
@@ -222,12 +261,15 @@ fun <T : Any> AnimeVerticalList(
                             Timber.e("Refresh Error: ${error.error.localizedMessage}")
                         }
                     }
-//                    loadState.append is LoadState.NotLoading -> {
-//                        val error = data.loadState.refresh as LoadState.NotLoading
-//                        item {
-//                            Timber.e("Append Error: Not Loading")
-//                        }
-//                    }
+                    loadState.append is LoadState.Error -> {
+                        item {
+                            Timber.e("Append Error: Not Loading")
+                            CommonPagingAppendError(
+                                message = errorString,
+                                retry = { retry() }
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -235,7 +277,18 @@ fun <T : Any> AnimeVerticalList(
 
     when {
         data.loadState.refresh is LoadState.Loading -> {
-            CommonLoading(visibility = data.loadState.refresh is LoadState.Loading)
+            LazyColumn(
+                state = lazyListState,
+                modifier = Modifier.fillMaxSize(),
+            ) {
+                items(10) {
+                    CommonAnimeItem(
+                        parentNode = ParentNode(),
+                        loadState = data.loadState,
+                        type = "Anime"
+                    )
+                }
+            }
         }
         data.loadState.refresh is LoadState.Error -> {
             val error = data.loadState.refresh as LoadState.Error
@@ -263,9 +316,10 @@ fun <T : Any> AnimeVerticalList(
 
 @Composable
 fun WishlistGameItem(
-    gameWishlist: GameWishlist,
     modifier: Modifier = Modifier,
-    navigateToGameDetails: (Long) -> Unit = { }
+    gameWishlist: GameWishlist,
+    loadState: CombinedLoadStates,
+    navigateToGameDetails: (Long) -> Unit = { },
 ) {
     Surface(
         modifier = modifier
@@ -275,45 +329,62 @@ fun WishlistGameItem(
             ),
         elevation = 0.dp,
     ) {
-        Column {
-            gameWishlist.image?.let { imageUrl ->
-                NetworkImage(
-                    url = imageUrl,
-                    contentDescription = null,
-                    modifier = modifier
-                        .fillMaxWidth()
-                        .height(200.dp),
-                    contentScale = ContentScale.FillBounds
-                )
-            }
-            gameWishlist.status?.let { status ->
-                Text(
-                    text = status,
-                    style = MaterialTheme.typography.body2,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 4.dp, start = 8.dp)
-                )
-            }
-            gameWishlist.name?.let { name ->
-                Text(
-                    text = name,
-                    style = MaterialTheme.typography.h5,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 8.dp, bottom = 4.dp)
-                )
-            }
+        Column (
+            modifier = Modifier.padding(bottom = 8.dp)
+        ) {
+            NetworkImage(
+                url = gameWishlist.image.toString(),
+                contentDescription = null,
+                modifier = modifier
+                    .fillMaxWidth()
+                    .height(200.dp)
+                    .placeholder(
+                        visible = loadState.refresh is LoadState.Loading,
+                        highlight = PlaceholderHighlight.shimmer(),
+                        color = MaterialTheme.colors.secondary,
+                        shape = MaterialTheme.shapes.small
+                    ),
+                contentScale = ContentScale.FillBounds
+            )
+            Text(
+                text = gameWishlist.status.toString(),
+                style = MaterialTheme.typography.body2,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 4.dp, start = 8.dp)
+                    .placeholder(
+                        visible = loadState.refresh is LoadState.Loading,
+                        highlight = PlaceholderHighlight.shimmer(),
+                        color = MaterialTheme.colors.secondary,
+                        shape = MaterialTheme.shapes.small
+                    )
+            )
+            Text(
+                text = gameWishlist.name.toString(),
+                style = MaterialTheme.typography.h5,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 8.dp, top = 4.dp, bottom = 4.dp)
+                    .placeholder(
+                        visible = loadState.refresh is LoadState.Loading,
+                        highlight = PlaceholderHighlight.shimmer(),
+                        color = MaterialTheme.colors.secondary,
+                        shape = MaterialTheme.shapes.small
+                    )
+
+            )
         }
     }
 }
 
 @Composable
 fun WishlistMovieItem(
-    movieWishlist: MovieWishlist,
     modifier: Modifier = Modifier,
-    navigateToMovieDetails: (Long, String) -> Unit
-) {
+    movieWishlist: MovieWishlist,
+    loadState: CombinedLoadStates,
+    navigateToMovieDetails: (Long, String) -> Unit = { _: Long, _: String -> },
+
+    ) {
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -334,39 +405,54 @@ fun WishlistMovieItem(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            movieWishlist.image.let {
-                val url = if (it.isNullOrBlank()) {
-                    OtherConstant.NO_IMAGE_URL
-                } else {
-                    "${TmdbConstant.TMDB_BASE_IMAGE_URL}$it"
-                }
-
-                NetworkImage(
-                    url = url,
-                    contentDescription = null,
-                    modifier = modifier
-                        .width(100.dp)
-                        .fillMaxHeight(),
-                    contentScale = ContentScale.FillBounds
-                )
+            val url = if (movieWishlist.image.isNullOrBlank()) {
+                OtherConstant.NO_IMAGE_URL
+            } else {
+                "${TmdbConstant.TMDB_BASE_IMAGE_URL}${movieWishlist.image}"
             }
+
+            NetworkImage(
+                url = url,
+                contentDescription = null,
+                modifier = modifier
+                    .width(100.dp)
+                    .fillMaxHeight()
+                    .placeholder(
+                        visible = loadState.refresh is LoadState.Loading,
+                        highlight = PlaceholderHighlight.shimmer(),
+                        color = MaterialTheme.colors.secondary,
+                        shape = MaterialTheme.shapes.small
+                    ),
+                contentScale = ContentScale.FillBounds
+            )
             Column(
                 modifier = modifier
                     .padding(vertical = 4.dp, horizontal = 8.dp)
                     .weight(1f)
             ) {
-                movieWishlist.status?.let {
-                    Text(
-                        text = it,
-                        style = MaterialTheme.typography.caption
-                    )
-                }
-                movieWishlist.name?.let {
-                    Text(
-                        text = it,
-                        style = MaterialTheme.typography.subtitle1
-                    )
-                }
+                Text(
+                    modifier = Modifier
+                        .placeholder(
+                            visible = loadState.refresh is LoadState.Loading,
+                            highlight = PlaceholderHighlight.shimmer(),
+                            color = MaterialTheme.colors.secondary,
+                            shape = MaterialTheme.shapes.small
+                        ),
+                    text = movieWishlist.status.toString(),
+                    style = MaterialTheme.typography.caption
+                )
+                Text(
+                    modifier = Modifier
+                        .padding(top = 4.dp)
+                        .placeholder(
+                            visible = loadState.refresh is LoadState.Loading,
+                            highlight = PlaceholderHighlight.shimmer(),
+                            color = MaterialTheme.colors.secondary,
+                            shape = MaterialTheme.shapes.small
+                        ),
+                    text = movieWishlist.name.toString(),
+                    style = MaterialTheme.typography.subtitle1
+                )
             }
         }
     }
@@ -374,8 +460,9 @@ fun WishlistMovieItem(
 
 @Composable
 fun DealsItem(
+    modifier: Modifier = Modifier,
     deals: Deals,
-    modifier: Modifier = Modifier
+    loadStates: CombinedLoadStates
 ) {
     val context = LocalContext.current
 
@@ -392,60 +479,85 @@ fun DealsItem(
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
-            deals.thumb?.let {
-                val url = if (it.isBlank()) {
-                    OtherConstant.NO_IMAGE_URL
-                } else {
-                    it
-                }
-
-                NetworkImage(
-                    url = url,
-                    contentDescription = null,
-                    modifier = modifier
-                        .width(100.dp)
-                        .fillMaxHeight(),
-                    contentScale = ContentScale.FillBounds
-                )
+            val url = deals.thumb?.ifBlank {
+                OtherConstant.NO_IMAGE_URL
             }
+
+            NetworkImage(
+                url = url.toString(),
+                contentDescription = null,
+                modifier = modifier
+                    .width(100.dp)
+                    .fillMaxHeight()
+                    .placeholder(
+                        visible = loadStates.refresh is LoadState.Loading,
+                        highlight = PlaceholderHighlight.shimmer(),
+                        color = MaterialTheme.colors.secondary,
+                        shape = MaterialTheme.shapes.small
+                    ),
+                contentScale = ContentScale.FillBounds
+            )
             Column(
                 modifier = modifier
                     .padding(4.dp)
                     .weight(1f)
             ) {
-                deals.savings?.let {
-                    Surface(
-                        shape = CircleShape,
-                        color = MaterialTheme.colors.primary,
-                        modifier = modifier.padding(top = 4.dp)
-                    ) {
-                        Text(
-                            modifier = modifier.padding(2.dp),
-                            textAlign = TextAlign.Center,
-                            text = String.format("%.2f%% Off", it.toFloat()),
-                            style = MaterialTheme.typography.caption
-                        )
-                    }
-                }
-                deals.title?.let {
+                Surface(
+                    modifier = Modifier
+                        .padding(top = 4.dp)
+                        .placeholder(
+                            visible = loadStates.refresh is LoadState.Loading,
+                            highlight = PlaceholderHighlight.shimmer(),
+                            color = MaterialTheme.colors.secondary,
+                            shape = MaterialTheme.shapes.small
+                        ),
+                    shape = CircleShape,
+                    color = MaterialTheme.colors.primary,
+                ) {
                     Text(
-                        text = it,
-                        style = MaterialTheme.typography.subtitle1
-                    )
-                }
-                deals.normalPrice?.let {
-                    Text(
-                        text = it.toDouble().toCurrencyFormat(),
-                        style = MaterialTheme.typography.caption,
-                        textDecoration = TextDecoration.LineThrough
-                    )
-                }
-                deals.salePrice?.let {
-                    Text(
-                        text = it.toDouble().toCurrencyFormat(),
+                        modifier = modifier.padding(vertical = 4.dp, horizontal = 8.dp),
+                        textAlign = TextAlign.Center,
+                        text = String.format("%.2f%% Off", deals.savings?.toFloat()),
                         style = MaterialTheme.typography.caption
                     )
                 }
+                Text(
+                    modifier = Modifier
+                        .padding(top = 4.dp)
+                        .placeholder(
+                            visible = loadStates.refresh is LoadState.Loading,
+                            highlight = PlaceholderHighlight.shimmer(),
+                            color = MaterialTheme.colors.secondary,
+                            shape = MaterialTheme.shapes.small
+                        ),
+                    text = deals.title.toString(),
+                    style = MaterialTheme.typography.subtitle1
+                )
+                Text(
+                    modifier = Modifier
+                        .padding(top = 4.dp)
+                        .placeholder(
+                            visible = loadStates.refresh is LoadState.Loading,
+                            highlight = PlaceholderHighlight.shimmer(),
+                            color = MaterialTheme.colors.secondary,
+                            shape = MaterialTheme.shapes.small
+                        ),
+                    text = deals.normalPrice?.toDouble().toCurrencyFormat(),
+                    style = MaterialTheme.typography.caption,
+                    textDecoration = TextDecoration.LineThrough
+                )
+                Text(
+                    modifier = Modifier
+                        .padding(top = 4.dp)
+                        .placeholder(
+                            visible = loadStates.refresh is LoadState.Loading,
+                            highlight = PlaceholderHighlight.shimmer(),
+                            color = MaterialTheme.colors.secondary,
+                            shape = MaterialTheme.shapes.small
+                        ),
+                    text = deals.salePrice?.toDouble().toCurrencyFormat(),
+                    style = MaterialTheme.typography.caption
+                )
             }
         }
     }
@@ -534,8 +646,9 @@ fun CommonMovieItem(
 fun CommonAnimeItem(
     modifier: Modifier = Modifier,
     parentNode: ParentNode,
-    navigateToAnimeDetails: (Long, String) -> Unit,
     type: String,
+    loadState: CombinedLoadStates? = null,
+    navigateToAnimeDetails: (Long, String) -> Unit = { _: Long, _: String -> },
 ) {
     Card(
         modifier = modifier
@@ -559,31 +672,45 @@ fun CommonAnimeItem(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            parentNode.node?.mainPicture?.large?.let {
-                val url = if (it.isBlank()) {
-                    OtherConstant.NO_IMAGE_URL
-                } else {
-                    it
-                }
-
-                NetworkImage(
-                    url = url,
-                    contentDescription = null,
-                    modifier = modifier
-                        .width(100.dp)
-                        .fillMaxHeight(),
-                    contentScale = ContentScale.FillBounds
-                )
+            val url = parentNode.node?.mainPicture?.large?.ifBlank {
+                OtherConstant.NO_IMAGE_URL
             }
+
+            NetworkImage(
+                url = url.toString(),
+                contentDescription = null,
+                modifier = modifier
+                    .width(100.dp)
+                    .fillMaxHeight()
+                    .placeholder(
+                        visible = loadState?.refresh is LoadState.Loading,
+                        highlight = PlaceholderHighlight.shimmer(),
+                        color = MaterialTheme.colors.secondary,
+                        shape = MaterialTheme.shapes.small
+                    ),
+                contentScale = ContentScale.FillBounds
+            )
             Column(
                 modifier = modifier
                     .padding(vertical = 4.dp, horizontal = 8.dp)
                     .weight(1f)
             ) {
-                parentNode.listStatus?.score?.let {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.End,
+                val isScorePlaceholderVisible = if (loadState?.refresh is LoadState.Loading) {
+                    true
+                } else loadState?.refresh is LoadState.NotLoading && parentNode.listStatus?.score != null
+
+                AnimatedVisibility(
+                    modifier = Modifier
+                        .placeholder(
+                            visible = loadState?.refresh is LoadState.Loading,
+                            highlight = PlaceholderHighlight.shimmer(),
+                            color = MaterialTheme.colors.secondary,
+                            shape = MaterialTheme.shapes.small
+                        )
+                        .align(Alignment.End),
+                    visible = isScorePlaceholderVisible
+                ) {
+                    Row (
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(
@@ -591,50 +718,105 @@ fun CommonAnimeItem(
                             contentDescription = null
                         )
                         Text(
-                            text = it.toString(),
+                            text = parentNode.listStatus?.score.toString(),
                             style = MaterialTheme.typography.caption
                         )
                     }
                 }
-                parentNode.listStatus?.status?.let {
-                    var statusFormatted = it.replace("_"," ")
-                    statusFormatted = statusFormatted.capitalizeWords()
 
+                var statusFormatted = parentNode.listStatus?.status
+                    .toString()
+                    .replace("_"," ")
+                statusFormatted = statusFormatted.capitalizeWords()
+
+                val isStatusPlaceholderVisible = if (loadState?.refresh is LoadState.Loading) {
+                    true
+                } else loadState?.refresh is LoadState.NotLoading && parentNode.listStatus?.status != null
+
+                AnimatedVisibility(
+                    modifier = Modifier
+                        .placeholder(
+                            visible = loadState?.refresh is LoadState.Loading,
+                            highlight = PlaceholderHighlight.shimmer(),
+                            color = MaterialTheme.colors.secondary,
+                            shape = MaterialTheme.shapes.small
+                        ),
+                    visible = isStatusPlaceholderVisible
+                ) {
                     Text(
                         text = statusFormatted,
                         style = MaterialTheme.typography.body2
                     )
                 }
-                parentNode.relationType?.let {
+
+                val isRelationTypePlaceholderVisible = if (loadState?.refresh is LoadState.Loading) {
+                    true
+                } else if (loadState?.refresh is LoadState.NotLoading && parentNode.relationType != null) {
+                    true
+                } else loadState == null && parentNode.relationType != null
+
+                AnimatedVisibility(
+                    modifier = Modifier
+                        .padding(top = 4.dp)
+                        .placeholder(
+                            visible = loadState?.refresh is LoadState.Loading,
+                            highlight = PlaceholderHighlight.shimmer(),
+                            color = MaterialTheme.colors.secondary,
+                            shape = MaterialTheme.shapes.small
+                        ),
+                    visible = isRelationTypePlaceholderVisible
+                ) {
                     Text(
-                        text = it,
+                        text = parentNode.relationType.toString(),
                         style = MaterialTheme.typography.body2
                     )
                 }
-                parentNode.node?.title?.let {
-                    Text(
-                        text = it,
-                        style = MaterialTheme.typography.subtitle1
-                    )
-                }
-                parentNode.listStatus?.status?.let { status ->
-                    if (type.equals("Anime", true)) {
-                        if (!status.equals("plan_to_watch", true)) {
-                            parentNode.listStatus?.episodes?.let {
-                                Text(
-                                    text = "$it Episodes Watched",
-                                    style = MaterialTheme.typography.caption
-                                )
-                            }
+
+                Text(
+                    modifier = Modifier
+                        .padding(top = 4.dp)
+                        .placeholder(
+                            visible = loadState?.refresh is LoadState.Loading,
+                            highlight = PlaceholderHighlight.shimmer(),
+                            color = MaterialTheme.colors.secondary,
+                            shape = MaterialTheme.shapes.small
+                        ),
+                    text = parentNode.node?.title.toString(),
+                    style = MaterialTheme.typography.subtitle1
+                )
+
+                if (type.equals("Anime", true)) {
+                    if (!parentNode.listStatus?.status.equals("plan_to_watch", true)) {
+                        parentNode.listStatus?.episodes?.let {
+                            Text(
+                                modifier = Modifier
+                                    .padding(top = 4.dp)
+                                    .placeholder(
+                                        visible = loadState?.refresh is LoadState.Loading,
+                                        highlight = PlaceholderHighlight.shimmer(),
+                                        color = MaterialTheme.colors.secondary,
+                                        shape = MaterialTheme.shapes.small
+                                    ),
+                                text = "$it Episodes Watched",
+                                style = MaterialTheme.typography.caption
+                            )
                         }
-                    } else {
-                        if (!status.equals("plan_to_read", true)) {
-                            parentNode.listStatus?.chapters?.let {
-                                Text(
-                                    text = "$it Chapters Watched",
-                                    style = MaterialTheme.typography.caption
-                                )
-                            }
+                    }
+                } else {
+                    if (!parentNode.listStatus?.status.equals("plan_to_read", true)) {
+                        parentNode.listStatus?.chapters?.let {
+                            Text(
+                                modifier = Modifier
+                                    .padding(top = 4.dp)
+                                    .placeholder(
+                                        visible = loadState?.refresh is LoadState.Loading,
+                                        highlight = PlaceholderHighlight.shimmer(),
+                                        color = MaterialTheme.colors.secondary,
+                                        shape = MaterialTheme.shapes.small
+                                    ),
+                                text = "$it Chapters Watched",
+                                style = MaterialTheme.typography.caption
+                            )
                         }
                     }
                 }
@@ -648,6 +830,7 @@ fun SearchGamesItem(
     modifier: Modifier = Modifier,
     navigateToGameDetails: (Long) -> Unit = { },
     games: Games,
+    loadStates: CombinedLoadStates,
 ) {
     Surface(
         modifier = modifier
@@ -658,44 +841,32 @@ fun SearchGamesItem(
         elevation = 0.dp,
     ) {
         Column(modifier = modifier.padding(top = 4.dp)) {
-            games.released?.let { released ->
-                Text(
-                    text = released.changeDateFormat("yyyy-MM-dd"),
-                    style = MaterialTheme.typography.caption,
-                    modifier = Modifier
-                        .padding(horizontal = 8.dp)
-                        .fillMaxWidth()
-                )
-            }
-            games.name?.let { name ->
-                Text(
-                    text = name,
-                    style = MaterialTheme.typography.h6,
-                    modifier = Modifier
-                        .padding(horizontal = 8.dp)
-                        .fillMaxWidth()
-                )
-            }
-            games.platforms?.let { platforms ->
-                LazyRow(modifier = Modifier.padding(start = 8.dp)
-                ) {
-                    items(platforms) { data ->
-                        Surface(
-                            shape = CircleShape,
-                            color = setPlatformsBackgroundColor(data, 0),
-                            modifier = modifier.padding(top = 4.dp, end = 4.dp)
-                        ) {
-                            Text(
-                                modifier = modifier.padding(4.dp),
-                                textAlign = TextAlign.Center,
-                                text = String.format("${data.platform?.name}"),
-                                style = MaterialTheme.typography.caption,
-                                color = White
-                            )
-                        }
-                    }
-                }
-            }
+            Text(
+                text = "Release Date : ${games.released?.changeDateFormat("yyyy-MM-dd")}",
+                style = MaterialTheme.typography.caption,
+                modifier = Modifier
+                    .padding(horizontal = 8.dp)
+                    .fillMaxWidth()
+                    .placeholder(
+                        visible = loadStates.refresh is LoadState.Loading,
+                        highlight = PlaceholderHighlight.shimmer(),
+                        color = MaterialTheme.colors.secondary,
+                        shape = MaterialTheme.shapes.small
+                    )
+            )
+            Text(
+                text = games.name.toString(),
+                style = MaterialTheme.typography.h6,
+                modifier = Modifier
+                    .padding(start = 8.dp, end = 4.dp, top = 4.dp)
+                    .fillMaxWidth()
+                    .placeholder(
+                        visible = loadStates.refresh is LoadState.Loading,
+                        highlight = PlaceholderHighlight.shimmer(),
+                        color = MaterialTheme.colors.secondary,
+                        shape = MaterialTheme.shapes.small
+                    )
+            )
             Divider(
                 modifier = Modifier
                     .padding(top = 8.dp)
@@ -709,9 +880,8 @@ fun SearchGamesItem(
 fun SearchGenreItem(
     modifier: Modifier = Modifier,
     genre: Genre,
-    viewModel: SearchViewModel,
-    scope: CoroutineScope,
-    scaffoldState: BackdropScaffoldState
+    viewModel: SearchViewModel? = null,
+    loadStates: CombinedLoadStates,
 ) {
     Surface(
         modifier = modifier
@@ -719,43 +889,49 @@ fun SearchGenreItem(
             .clickable(
                 onClick = {
                     genre.id?.let {
-                        viewModel.setSearchGameRequest(
-                            SearchGameRequest("", it, null, null)
-                        )
-                    }
-                    scope.launch {
-                        scaffoldState.conceal()
+                        viewModel?.apply {
+                            selectSearchGameTab(0)
+                            setSearchGameRequest(
+                                SearchGameRequest("", it, null, null)
+                            )
+                        }
                     }
                 }
             ),
         elevation = 0.dp,
     ) {
         Column {
-            genre.imageBackground?.let { imageUrl ->
-                val url = if (imageUrl.isBlank()) {
-                    OtherConstant.NO_IMAGE_URL
-                } else {
-                    imageUrl
-                }
+            val url = genre.imageBackground?.ifBlank {
+                OtherConstant.NO_IMAGE_URL
+            }
 
-                NetworkImage(
-                    url = url,
-                    contentDescription = null,
-                    modifier = modifier
-                        .fillMaxWidth()
-                        .height(200.dp),
-                    contentScale = ContentScale.FillBounds
-                )
-            }
-            genre.name?.let { name ->
-                Text(
-                    text = name,
-                    style = MaterialTheme.typography.h5,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 8.dp, bottom = 4.dp)
-                )
-            }
+            NetworkImage(
+                url = url.toString(),
+                contentDescription = null,
+                modifier = modifier
+                    .fillMaxWidth()
+                    .height(200.dp)
+                    .placeholder(
+                        visible = loadStates.refresh is LoadState.Loading,
+                        highlight = PlaceholderHighlight.shimmer(),
+                        color = MaterialTheme.colors.secondary,
+                        shape = MaterialTheme.shapes.small
+                    ),
+                contentScale = ContentScale.FillBounds
+            )
+            Text(
+                text = genre.name.toString(),
+                style = MaterialTheme.typography.h5,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 8.dp, top = 4.dp, bottom = 4.dp)
+                    .placeholder(
+                        visible = loadStates.refresh is LoadState.Loading,
+                        highlight = PlaceholderHighlight.shimmer(),
+                        color = MaterialTheme.colors.secondary,
+                        shape = MaterialTheme.shapes.small
+                    )
+            )
         }
     }
 }
@@ -765,8 +941,6 @@ fun SearchPublisherItem(
     modifier: Modifier = Modifier,
     publisher: Publisher,
     viewModel: SearchViewModel,
-    scope: CoroutineScope,
-    scaffoldState: BackdropScaffoldState
 ) {
     Surface(
         modifier = modifier
@@ -774,12 +948,12 @@ fun SearchPublisherItem(
             .clickable(
                 onClick = {
                     publisher.id?.let {
-                        viewModel.setSearchGameRequest(
-                            SearchGameRequest("", null, it, null)
-                        )
-                    }
-                    scope.launch {
-                        scaffoldState.conceal()
+                        viewModel.apply {
+                            selectSearchGameTab(0)
+                            setSearchGameRequest(
+                                SearchGameRequest("", null, it, null)
+                            )
+                        }
                     }
                 }
             ),
@@ -814,8 +988,6 @@ fun SearchPlatformItem(
     modifier: Modifier = Modifier,
     platform: Platform,
     viewModel: SearchViewModel,
-    scope: CoroutineScope,
-    scaffoldState: BackdropScaffoldState
 ) {
     Surface(
         modifier = modifier
@@ -823,12 +995,12 @@ fun SearchPlatformItem(
             .clickable(
                 onClick = {
                     platform.id?.let {
-                        viewModel.setSearchGameRequest(
-                            SearchGameRequest("", null, null, it)
-                        )
-                    }
-                    scope.launch {
-                        scaffoldState.conceal()
+                        viewModel.apply {
+                            selectSearchGameTab(0)
+                            setSearchGameRequest(
+                                SearchGameRequest("", null, null, it)
+                            )
+                        }
                     }
                 }
             ),
@@ -854,6 +1026,27 @@ fun SearchPlatformItem(
                         .padding(start = 8.dp, bottom = 4.dp)
                 )
             }
+        }
+    }
+}
+
+@Composable
+fun CommonPagingAppendError(
+    message: String,
+    retry: () -> Unit
+) {
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(
+            text = message,
+            style = MaterialTheme.typography.subtitle2,
+            textAlign = TextAlign.Center
+        )
+        Button(onClick = { retry() }) {
+            Text(text = "Try Again")
         }
     }
 }

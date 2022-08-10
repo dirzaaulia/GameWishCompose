@@ -8,15 +8,15 @@ import kotlinx.parcelize.Parcelize
 @Keep
 @Parcelize
 data class Games(
-    val id: Long?,
-    val name: String?,
-    val released: String?,
-    val metacritic: Int?,
-    val platforms: List<Platforms>?,
+    val id: Long? = null,
+    val name: String? = null,
+    val released: String? = null,
+    val metacritic: Int? = null,
+    val platforms: List<Platforms>? = null,
     @Json(name = "background_image")
-    val backgroundImage: String?,
+    val backgroundImage: String? = null,
     @Json(name = "esrb_rating")
-    val esrbRating: EsrbRating?,
+    val esrbRating: EsrbRating? = null,
     @Json(name = "short_screenshots")
-    val shortScreenshots: List<ShortScreenshots>?
+    val shortScreenshots: List<ShortScreenshots>? = null
 ) : Parcelable

@@ -26,6 +26,7 @@ import com.dirzaaulia.gamewish.utils.FirebaseState
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -100,6 +101,7 @@ class HomeViewModel @Inject constructor(
     )
     val deals: Flow<PagingData<Deals>> = dealsRequest
         .flatMapLatest {
+            delay(5000)
             Pager(PagingConfig(pageSize = 10)) {
                 CheapSharkPagingSource(
                     cheapSharkRepository,

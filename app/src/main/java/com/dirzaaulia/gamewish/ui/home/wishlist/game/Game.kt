@@ -17,6 +17,10 @@ import com.dirzaaulia.gamewish.data.model.wishlist.GameWishlist
 import com.dirzaaulia.gamewish.extension.visible
 import com.dirzaaulia.gamewish.ui.common.CommonVerticalList
 import com.dirzaaulia.gamewish.ui.common.WishlistGameItem
+import com.dirzaaulia.gamewish.utils.PlaceholderConstant
+import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.material.shimmer
+import com.google.accompanist.placeholder.placeholder
 
 @Composable
 fun WishlistGame(
@@ -38,16 +42,24 @@ fun WishlistGame(
             modifier = Modifier
                 .padding(vertical = 4.dp, horizontal = 8.dp)
                 .align(Alignment.End)
+                .placeholder(
+                    visible = data.loadState.refresh is LoadState.Loading,
+                    highlight = PlaceholderHighlight.shimmer(),
+                    color = MaterialTheme.colors.secondary,
+                    shape = MaterialTheme.shapes.small
+                )
                 .visible(data.loadState.refresh is LoadState.NotLoading)
         )
         CommonVerticalList(
             data = data,
             lazyListState = lazyListState,
+            placeholderType = PlaceholderConstant.GAME_WISHLIST,
             emptyString = "Your Game Wishlist is still empty!",
             errorString = stringResource(id = R.string.game_list_error)
         ) { wishlist ->
             WishlistGameItem(
                 gameWishlist = wishlist,
+                loadState = data.loadState,
                 navigateToGameDetails = navigateToGameDetails,
             )
         }

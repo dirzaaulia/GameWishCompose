@@ -23,7 +23,7 @@ interface RawgService {
     suspend fun searchGames(
         @Query("key") key: String = RawgConstant.RAWG_KEY,
         @Query("page") page: Int,
-        @Query("page_size") pageSize: Int = 10,
+        @Query("page_size") pageSize: Int = 50,
         @Query("search_precise") searchPrecise: Boolean = true,
         @Query("search") search: String?,
         @Query("genres") genres: Int?,

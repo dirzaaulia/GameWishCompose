@@ -1,5 +1,6 @@
 package com.dirzaaulia.gamewish.ui.search.tab.anime
 
+import android.annotation.SuppressLint
 import androidx.annotation.StringRes
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.clickable
@@ -35,18 +36,21 @@ import com.dirzaaulia.gamewish.data.model.myanimelist.ParentNode
 import com.dirzaaulia.gamewish.data.request.myanimelist.SearchGameRequest
 import com.dirzaaulia.gamewish.extension.isError
 import com.dirzaaulia.gamewish.extension.isSucceeded
+import com.dirzaaulia.gamewish.theme.White
 import com.dirzaaulia.gamewish.ui.common.CommonAnimeItem
 import com.dirzaaulia.gamewish.ui.common.CommonVerticalList
-import com.dirzaaulia.gamewish.ui.common.WebViewMyAnimeList
+import com.dirzaaulia.gamewish.ui.common.MyAnimeListWebViewClient
 import com.dirzaaulia.gamewish.ui.home.HomeViewModel
 import com.dirzaaulia.gamewish.ui.search.SearchViewModel
-import com.dirzaaulia.gamewish.theme.White
+import com.dirzaaulia.gamewish.utils.PlaceholderConstant
 import com.dirzaaulia.gamewish.utils.capitalizeWords
-import com.google.accompanist.insets.navigationBarsWithImePadding
-import com.google.accompanist.insets.statusBarsPadding
+import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.material.shimmer
+import com.google.accompanist.placeholder.placeholder
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun SearchAnime(
     modifier: Modifier = Modifier,
@@ -134,7 +138,7 @@ fun SearchAnime(
         }
 
         accessTokenResult.isError -> {
-            WebViewMyAnimeList(
+            MyAnimeListWebViewClient(
                 from = 1,
                 viewModel = homeViewModel,
                 upPress = {}
@@ -168,13 +172,15 @@ fun SearchMangaList(
         CommonVerticalList(
             data = data,
             lazyListState = lazyListState,
+            placeholderType = PlaceholderConstant.ANIME,
             emptyString = emptyString,
             errorString = stringResource(id = R.string.search_manga_error),
         ) { parentNode ->
             CommonAnimeItem(
                 parentNode = parentNode,
                 navigateToAnimeDetails = navigateToAnimeDetails,
-                type = "Manga"
+                type = "Manga",
+                loadState = data.loadState
             )
         }
     }
@@ -205,13 +211,15 @@ fun SearchAnimeList(
         CommonVerticalList(
             data = data,
             lazyListState = lazyListState,
+            placeholderType = PlaceholderConstant.ANIME,
             emptyString = emptyString,
             errorString = stringResource(id = R.string.search_anime_error),
         ) { parentNode ->
             CommonAnimeItem(
                 parentNode = parentNode,
                 navigateToAnimeDetails = navigateToAnimeDetails,
-                type = "Anime"
+                type = "Anime",
+                loadState = data.loadState
             )
         }
     }
@@ -234,46 +242,60 @@ fun SeasonalAnime(
     Column (
         modifier = Modifier.padding(top = 4.dp, start = 8.dp, end = 8.dp)
     ){
-        if (data.itemCount != 0 && data.loadState.refresh is LoadState.NotLoading) {
-            Row {
-                Text(
-                    text = "${season.capitalizeWords()} $year",
-                    style = MaterialTheme.typography.body1,
-                    modifier = Modifier.align(Alignment.CenterVertically)
-                )
-                IconButton(
-                    modifier = Modifier.align(Alignment.CenterVertically),
-                    onClick = {
-                        scope.launch {
-                            if (scaffoldState.bottomSheetState.isCollapsed) {
-                                scaffoldState.bottomSheetState.expand()
-                            } else {
-                                scaffoldState.bottomSheetState.collapse()
-                            }
+        Row {
+            Text(
+                text = "${season.capitalizeWords()} $year",
+                style = MaterialTheme.typography.body1,
+                modifier = Modifier
+                    .align(Alignment.CenterVertically)
+                    .placeholder(
+                        visible = data.loadState.refresh is LoadState.Loading,
+                        highlight = PlaceholderHighlight.shimmer(),
+                        color = MaterialTheme.colors.secondary,
+                        shape = MaterialTheme.shapes.small
+                    )
+            )
+            IconButton(
+                modifier = Modifier.align(Alignment.CenterVertically),
+                onClick = {
+                    scope.launch {
+                        if (scaffoldState.bottomSheetState.isCollapsed) {
+                            scaffoldState.bottomSheetState.expand()
+                        } else {
+                            scaffoldState.bottomSheetState.collapse()
                         }
                     }
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.ArrowDropDown,
-                        contentDescription = null
-                    )
                 }
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.ArrowDropDown,
+                    contentDescription = null
+                )
             }
-            Text(
-                text = stringResource(id = R.string.seasonal_data_source),
-                style = MaterialTheme.typography.caption,
-            )
         }
+        Text(
+            modifier = Modifier
+                .placeholder(
+                    visible = data.loadState.refresh is LoadState.Loading,
+                    highlight = PlaceholderHighlight.shimmer(),
+                    color = MaterialTheme.colors.secondary,
+                    shape = MaterialTheme.shapes.small
+                ),
+            text = stringResource(id = R.string.seasonal_data_source),
+            style = MaterialTheme.typography.caption,
+        )
         CommonVerticalList(
             data = data,
             lazyListState = lazyListState,
+            placeholderType = PlaceholderConstant.ANIME,
             emptyString = stringResource(id = R.string.search_seasonal_empty),
             errorString = stringResource(id = R.string.search_seasonal_error),
         ) { parentNode ->
             CommonAnimeItem(
                 parentNode = parentNode,
                 navigateToAnimeDetails = navigateToAnimeDetails,
-                type = "Anime"
+                type = "Anime",
+                loadState = data.loadState
             )
         }
     }
@@ -300,7 +322,7 @@ fun SeasonalAnimeSheet(
     Column(
         modifier = Modifier
             .padding(8.dp)
-            .navigationBarsWithImePadding()
+            .navigationBarsPadding().imePadding()
     ) {
         OutlinedTextField(
             readOnly = true,

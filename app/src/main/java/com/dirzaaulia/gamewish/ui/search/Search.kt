@@ -2,6 +2,8 @@ package com.dirzaaulia.gamewish.ui.search
 
 import androidx.annotation.StringRes
 import androidx.compose.animation.Crossfade
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.*
@@ -12,7 +14,6 @@ import androidx.compose.material.icons.filled.Tv
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -28,8 +29,6 @@ import com.dirzaaulia.gamewish.ui.home.HomeViewModel
 import com.dirzaaulia.gamewish.ui.search.tab.anime.SearchAnime
 import com.dirzaaulia.gamewish.ui.search.tab.game.SearchGame
 import com.dirzaaulia.gamewish.ui.search.tab.movie.Movie
-import com.google.accompanist.insets.navigationBarsHeight
-import com.google.accompanist.insets.navigationBarsPadding
 
 @Composable
 fun Search(
@@ -46,7 +45,7 @@ fun Search(
     val menu = SearchNavMenu.values()
     val searchMenuId: Int by viewModel.selectedBottomNav.collectAsState()
     val scope = rememberCoroutineScope()
-    val scaffoldStateGame = rememberBackdropScaffoldState(BackdropValue.Revealed)
+    val scaffoldStateGame = rememberScaffoldState()
     val lazyListStateSearchGames = rememberLazyListState()
     val lazyListStateGenre = rememberLazyListState()
     val lazyListStatePublisher = rememberLazyListState()
@@ -91,6 +90,7 @@ fun Search(
     }
 
     Scaffold(
+        modifier = Modifier.navigationBarsPadding().imePadding(),
         backgroundColor = MaterialTheme.colors.primarySurface,
         bottomBar = {
             SearchBottomBar(menu = menu, menuId = searchMenuId, viewModel = viewModel)
@@ -107,7 +107,6 @@ fun Search(
                         modifier = innerModifier,
                         viewModel = viewModel,
                         upPress = upPress,
-                        scope = scope,
                         scaffoldState = scaffoldStateGame,
                         searchGameList = searchGameList,
                         lazyListStateSearchGames = lazyListStateSearchGames,
@@ -163,13 +162,10 @@ fun SearchBottomBar(
     menuId: Int,
     viewModel: SearchViewModel
 ) {
-    BottomNavigation(
-        modifier = Modifier.navigationBarsHeight(56.dp)
-    ) {
+    BottomNavigation {
         menu.forEach { menu ->
             BottomNavigationItem(
                 icon = { Icon(imageVector = menu.icon, contentDescription = null) },
-//                label = { Text(stringResource(menu.title).uppercase(Locale.getDefault())) },
                 selected = menu == SearchNavMenu.getSearchNavMenuFromResource(menuId),
                 onClick = {
                     viewModel.selectBottomNavMenu(menu.title)

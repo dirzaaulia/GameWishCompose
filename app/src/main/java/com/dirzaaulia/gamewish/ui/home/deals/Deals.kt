@@ -36,8 +36,7 @@ import com.dirzaaulia.gamewish.ui.common.CommonVerticalList
 import com.dirzaaulia.gamewish.ui.common.DealsItem
 import com.dirzaaulia.gamewish.ui.common.ErrorConnect
 import com.dirzaaulia.gamewish.ui.home.HomeViewModel
-import com.google.accompanist.insets.navigationBarsWithImePadding
-import com.google.accompanist.insets.statusBarsPadding
+import com.dirzaaulia.gamewish.utils.PlaceholderConstant
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -114,7 +113,7 @@ fun DealsFilter(
 
     Column(
         modifier = Modifier
-            .navigationBarsWithImePadding()
+            .navigationBarsPadding().imePadding()
             .padding(vertical = 8.dp, horizontal = 8.dp)
     ) {
         OutlinedTextField(
@@ -301,10 +300,11 @@ fun DealsList(
         CommonVerticalList(
             data = data,
             lazyListState = lazyListState,
+            placeholderType = PlaceholderConstant.DEALS,
             emptyString = "There is no Deals found! Try again with different search parameters using filter button on top right",
             errorString = stringResource(id = R.string.deals_error),
         ) { deals ->
-            DealsItem(deals = deals)
+            DealsItem(deals = deals, loadStates = data.loadState)
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.dirzaaulia.gamewish.ui.details.game
 
+import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -40,18 +41,18 @@ import com.dirzaaulia.gamewish.data.model.wishlist.GameWishlist
 import com.dirzaaulia.gamewish.extension.isError
 import com.dirzaaulia.gamewish.extension.isSucceeded
 import com.dirzaaulia.gamewish.extension.visible
+import com.dirzaaulia.gamewish.theme.Red700
+import com.dirzaaulia.gamewish.theme.White
 import com.dirzaaulia.gamewish.ui.common.CommonGameCarousel
 import com.dirzaaulia.gamewish.ui.common.CommonLoading
 import com.dirzaaulia.gamewish.ui.common.ErrorConnect
-import com.dirzaaulia.gamewish.theme.Red700
-import com.dirzaaulia.gamewish.theme.White
 import com.dirzaaulia.gamewish.ui.details.DetailsViewModel
 import com.dirzaaulia.gamewish.utils.*
-import com.google.accompanist.insets.statusBarsPadding
 import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun GameDetails(
     gameId: Long,
@@ -94,7 +95,9 @@ fun GameDetails(
                     sheetPeekHeight = 0.dp,
                 ) {
                     LazyColumn(
-                        modifier = Modifier.fillMaxSize()
+                        modifier = Modifier
+                            .navigationBarsPadding()
+                            .fillMaxSize()
                     ) {
                         screenshots?.results?.let {
                             item {
@@ -158,7 +161,10 @@ fun GameDetails(
 
                 viewModel.setLoading(false)
 
-                Scaffold(scaffoldState = errorScaffoldState) {
+                Scaffold(
+                    modifier = Modifier.navigationBarsPadding(),
+                    scaffoldState = errorScaffoldState
+                ) {
                     Box(
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center,
@@ -196,12 +202,12 @@ fun GameDetailsHeader(
             )
         } else if (screenshots.isEmpty()) {
             NetworkImage(
+                url = OtherConstant.NO_IMAGE_URL,
+                contentDescription = null,
                 modifier = Modifier
                     .height(200.dp)
                     .fillMaxWidth()
-                    .visible(!loading),
-                url = OtherConstant.NO_IMAGE_URL,
-                contentDescription = null
+                    .visible(!loading)
             )
         }
         TopAppBar(
@@ -426,7 +432,8 @@ fun GameWishlistSheetContent(
 
     Column(
         modifier = Modifier
-            .padding(16.dp)
+            .navigationBarsPadding()
+            .padding(8.dp)
             .fillMaxWidth()
     ) {
         if (gameWishlist != null) {

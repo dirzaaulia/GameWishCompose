@@ -4,15 +4,15 @@ import androidx.annotation.Keep
 
 @Keep
 data class Deals(
-    val internalName: String?,
-    val title: String?,
-    val dealID: String?,
-    val storeID: String?,
-    var storeName: String?,
-    val gameID: String?,
-    val salePrice: String?,
-    val normalPrice: String?,
-    val savings: String?,
-    val steamAppID: String?,
-    val thumb: String?
+    val internalName: String? = null,
+    val title: String? = null,
+    val dealID: String? = null,
+    val storeID: String? = null,
+    var storeName: String? = null,
+    val gameID: String? = null,
+    val salePrice: String? = null,
+    val normalPrice: String? = null,
+    val savings: String? = null,
+    val steamAppID: String? = null,
+    val thumb: String? = null
 )

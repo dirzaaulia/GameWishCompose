@@ -1,5 +1,6 @@
 package com.dirzaaulia.gamewish.ui.home.wishlist
 
+import android.annotation.SuppressLint
 import androidx.annotation.StringRes
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.Image
@@ -29,10 +30,10 @@ import com.dirzaaulia.gamewish.ui.home.wishlist.game.WishlistGame
 import com.dirzaaulia.gamewish.ui.home.wishlist.manga.WishlistManga
 import com.dirzaaulia.gamewish.ui.home.wishlist.movie.WishlistMovie
 import com.dirzaaulia.gamewish.ui.home.wishlist.tv_show.WishlistTVShow
-import com.google.accompanist.insets.statusBarsPadding
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun Wishlist(
     modifier: Modifier,

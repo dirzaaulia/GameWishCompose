@@ -1,5 +1,6 @@
 package com.dirzaaulia.gamewish.ui.search.tab.movie
 
+import android.annotation.SuppressLint
 import androidx.annotation.StringRes
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.*
@@ -23,12 +24,13 @@ import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import com.dirzaaulia.gamewish.R
 import com.dirzaaulia.gamewish.data.model.tmdb.Movie
+import com.dirzaaulia.gamewish.theme.White
 import com.dirzaaulia.gamewish.ui.common.CommonMovieItem
 import com.dirzaaulia.gamewish.ui.common.CommonVerticalList
 import com.dirzaaulia.gamewish.ui.search.SearchViewModel
-import com.dirzaaulia.gamewish.theme.White
-import com.google.accompanist.insets.statusBarsPadding
+import com.dirzaaulia.gamewish.utils.PlaceholderConstant
 
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun Movie(
     modifier: Modifier = Modifier,
@@ -63,12 +65,12 @@ fun Movie(
             Crossfade(targetState = SearchMovieTab.getTabFromResource(menuId)) { destination ->
                 when (destination) {
                     SearchMovieTab.MOVIE -> {
-                       SearchMovieList(
-                           data = searchMovieList,
-                           lazyListState = lazyListStateMovie,
-                           searchMovieQuery = searchMovieQuery,
-                           navigateToMovieDetails = navigateToMovieDetails
-                       )
+                        SearchMovieList(
+                            data = searchMovieList,
+                            lazyListState = lazyListStateMovie,
+                            searchMovieQuery = searchMovieQuery,
+                            navigateToMovieDetails = navigateToMovieDetails
+                        )
                     }
                     SearchMovieTab.TVSHOW -> {
                         SearchTvList(
@@ -110,6 +112,7 @@ fun SearchTvList(
         CommonVerticalList(
             data = data,
             lazyListState = lazyListState,
+            placeholderType = PlaceholderConstant.MOVIE_WISHLIST,
             emptyString = emptyString,
             errorString = stringResource(id = R.string.search_tv_error),
         ) { movie ->
@@ -149,6 +152,7 @@ fun SearchMovieList(
         CommonVerticalList(
             data = data,
             lazyListState = lazyListState,
+            placeholderType = PlaceholderConstant.MOVIE_WISHLIST,
             emptyString = emptyString,
             errorString = stringResource(id = R.string.search_movie_error),
         ) { movie ->
@@ -195,7 +199,10 @@ fun SearchMovieAppBar(
                     .weight(1f)
                     .fillMaxHeight(),
                 value = query,
-                onValueChange = { query = it },
+                onValueChange = {
+                    query = it
+                    viewModel.setSearchMovieQuery(query)
+                },
                 shape = RectangleShape,
                 placeholder = {
                     Text(

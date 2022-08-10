@@ -8,12 +8,12 @@ import kotlinx.parcelize.Parcelize
 @Keep
 @Parcelize
 data class Genre(
-    val id: Int?,
-    val name: String?,
-    val slug: String?,
+    val id: Int? = null,
+    val name: String? = null,
+    val slug: String? = null,
     @Json(name = "games_count")
-    val gamesCount: Int?,
+    val gamesCount: Int? = null,
     @Json(name = "image_background")
-    val imageBackground: String?,
-    val games: List<Games>?
+    val imageBackground: String? = null,
+    val games: List<Games>? = null
 ) : Parcelable

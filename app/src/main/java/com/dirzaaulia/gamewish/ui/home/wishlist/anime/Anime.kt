@@ -20,9 +20,12 @@ import com.dirzaaulia.gamewish.extension.isSucceeded
 import com.dirzaaulia.gamewish.extension.visible
 import com.dirzaaulia.gamewish.ui.common.AnimeVerticalList
 import com.dirzaaulia.gamewish.ui.common.CommonAnimeItem
-import com.dirzaaulia.gamewish.ui.common.WebViewMyAnimeList
+import com.dirzaaulia.gamewish.ui.common.MyAnimeListWebViewClient
 import com.dirzaaulia.gamewish.ui.home.HomeViewModel
 import com.dirzaaulia.gamewish.utils.capitalizeWords
+import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.material.shimmer
+import com.google.accompanist.placeholder.placeholder
 
 @Composable
 fun WishlistAnime(
@@ -50,6 +53,12 @@ fun WishlistAnime(
                     modifier = Modifier
                         .padding(vertical = 4.dp, horizontal = 8.dp)
                         .align(Alignment.End)
+                        .placeholder(
+                            visible = data.loadState.refresh is LoadState.Loading,
+                            highlight = PlaceholderHighlight.shimmer(),
+                            color = MaterialTheme.colors.secondary,
+                            shape = MaterialTheme.shapes.small
+                        )
                         .visible(data.loadState.refresh is LoadState.NotLoading)
                 )
                 AnimeVerticalList(
@@ -62,16 +71,16 @@ fun WishlistAnime(
                     CommonAnimeItem(
                         parentNode = parentNode,
                         navigateToAnimeDetails = navigateToAnimeDetails,
-                        type = "Anime"
+                        type = "Anime",
+                        loadState = data.loadState
                     )
                 }
             }
         }
         accessTokenResult.isError -> {
-            WebViewMyAnimeList(
+            MyAnimeListWebViewClient(
                 from = 0,
-                viewModel = viewModel,
-                upPress = {}
+                viewModel = viewModel
             )
         }
     }

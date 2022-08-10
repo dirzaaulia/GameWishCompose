@@ -1,5 +1,6 @@
 package com.dirzaaulia.gamewish.ui.details.anime
 
+import android.annotation.SuppressLint
 import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
@@ -31,21 +32,20 @@ import com.dirzaaulia.gamewish.data.model.myanimelist.Details
 import com.dirzaaulia.gamewish.extension.isError
 import com.dirzaaulia.gamewish.extension.isSucceeded
 import com.dirzaaulia.gamewish.extension.visible
+import com.dirzaaulia.gamewish.theme.Grey700
+import com.dirzaaulia.gamewish.theme.Red700
+import com.dirzaaulia.gamewish.theme.White
 import com.dirzaaulia.gamewish.ui.common.CommonAnimeCarousel
 import com.dirzaaulia.gamewish.ui.common.CommonAnimeItem
 import com.dirzaaulia.gamewish.ui.common.CommonLoading
 import com.dirzaaulia.gamewish.ui.common.ErrorConnect
-import com.dirzaaulia.gamewish.theme.Grey700
-import com.dirzaaulia.gamewish.theme.Red700
-import com.dirzaaulia.gamewish.theme.White
 import com.dirzaaulia.gamewish.ui.details.DetailsViewModel
 import com.dirzaaulia.gamewish.utils.*
-import com.google.accompanist.insets.navigationBarsWithImePadding
-import com.google.accompanist.insets.statusBarsPadding
 import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun AnimeDetails(
     viewModel: DetailsViewModel = hiltViewModel(),
@@ -86,7 +86,10 @@ fun AnimeDetails(
 
                 viewModel.setLoading(false)
 
-                Scaffold(scaffoldState = errorScaffoldState) {
+                Scaffold(
+                    modifier = Modifier.navigationBarsPadding(),
+                    scaffoldState = errorScaffoldState
+                ) {
                     Box(
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center,
@@ -99,6 +102,7 @@ fun AnimeDetails(
             }
             dataResult.isSucceeded -> {
                 Scaffold(
+                    modifier = Modifier.navigationBarsPadding()     ,
                     topBar = {
                         data?.title?.let {
                             AnimeDetailsTopBar(
@@ -290,7 +294,7 @@ fun RecommendationTab(
                         CommonAnimeItem(
                             parentNode = value,
                             navigateToAnimeDetails = navigateToAnimeDetails,
-                            type = "Anime"
+                            type = "Anime",
                         )
                     }
                 }
@@ -456,9 +460,9 @@ fun AnimeDescriptionHeader(
                 )
             } else if (data.pictures?.isEmpty() == true) {
                 NetworkImage(
-                    modifier = Modifier.visible(!loading),
                     url = OtherConstant.NO_IMAGE_URL,
-                    contentDescription = null
+                    contentDescription = null,
+                    modifier = Modifier.visible(!loading)
                 )
             }
         }
@@ -790,7 +794,7 @@ fun AnimeDetailsSheetContent(
         modifier = Modifier
             .padding(16.dp)
             .fillMaxWidth()
-            .navigationBarsWithImePadding()
+            .navigationBarsPadding().imePadding()
     ) {
         if (data.listStatus != null) {
             IconButton(
@@ -957,7 +961,7 @@ fun AnimeDetailsSheetContent(
                             statusText
                                 .lowerCaseWords()
                                 .replace("-", " ")
-                                .replace(" ","_"),
+                                .replace(" ", "_"),
                             isRewatchingState.value,
                             scoreIndex + 1,
                             numberWatchedText.toInt()
@@ -968,7 +972,7 @@ fun AnimeDetailsSheetContent(
                             statusText
                                 .lowerCaseWords()
                                 .replace("-", " ")
-                                .replace(" ","_"),
+                                .replace(" ", "_"),
                             isRewatchingState.value,
                             scoreIndex + 1,
                             numberWatchedText.toInt()

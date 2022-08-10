@@ -8,14 +8,14 @@ import kotlinx.parcelize.Parcelize
 @Keep
 @Parcelize
 data class ListStatus(
-    val status: String?,
-    val score: Int?,
+    val status: String? = null,
+    val score: Int? = null,
     @Json(name = "num_episodes_watched")
-    val episodes: Int?,
+    val episodes: Int? = null,
     @Json(name = "is_rewatching")
-    val isRewatching: Boolean?,
+    val isRewatching: Boolean? = null,
     @Json(name = "is_rereading")
-    val isReReading: Boolean?,
+    val isReReading: Boolean? = null,
     @Json(name = "num_chapters_read")
-    val chapters: Int?
+    val chapters: Int? = null
 ) : Parcelable

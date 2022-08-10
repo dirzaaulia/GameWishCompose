@@ -6,7 +6,6 @@
     <string name="deals">Deals</string>
     <string name="about">About</string>
     <string name="search">Search</string>
-    <string name="exit_info">Please click back again to exit</string>
     <string name="game">Game</string>
     <string name="anime">Anime</string>
     <string name="manga">Manga</string>
@@ -21,7 +20,6 @@
     <string name="description">Description</string>
     <string name="genres">Genre</string>
     <string name="publishers">Publishers</string>
-    <string name="developers">Developers</string>
     <string name="platforms">Platforms</string>
     <string name="seasonal_anime">Seasonal Anime</string>
     <string name="related">Related</string>
@@ -109,22 +107,11 @@
         Check your internet connection and try again.
     </string>
     <string name="related_anime_empty">There is no related anime for this Anime.</string>
-    <string name="related_anime_error">Something went wrong went getting related anime.
-        Check your internet connection and try again</string>
     <string name="related_manga_empty">There is no related manga for this Manga.</string>
-    <string name="related_manga_error">Something went wrong went getting related manga.
-        Check your internet connection and try again</string>
     <string name="recommendation_anime_empty">There is no recommendation for this Anime.</string>
-    <string name="recommendation_anime_error">Something went wrong went getting recommendation.
-        Check your internet connection and try again</string>
     <string name="recommendation_manga_empty">There is no recommendation for this Manga.</string>
-    <string name="recommendation_manga_error">Something went wrong went getting recommendation.
-        Check your internet connection and try again</string>
 
     <!-- Movie Details -->
-    <string name="movie_details_error">Something wrong went getting Movie Details.
-        Check your internet connection and try again.
-    </string>
     <string name="tv_show_details_error">Something wrong went getting TV Show Details.
         Check your internet connection and try again.
     </string>
@@ -136,14 +123,11 @@
     <string name="stores_error">Something wrong went getting Stores List.
         Check your internet connection and try again.
     </string>
-    <string name="deals_empty">There is no Deals found!
-        Try again with different search parameters using filter button on top right
-    </string>
 
     <!-- Search -->
-    <string name="search_game">Search Game Name</string>
-    <string name="search_anime">Search Anime or Manga title</string>
-    <string name="search_movie">Search Movie or TV Show title</string>
+    <string name="search_game">Type Game name here</string>
+    <string name="search_anime">Type Anime or Manga title here</string>
+    <string name="search_movie">Type Movie or TV Show title here</string>
     <string name="search_games_empty">There is no Games found!
         Try again with different Games name.
     </string>

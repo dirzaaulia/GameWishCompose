@@ -45,6 +45,16 @@ object FirebaseConstant {
     const val FIREBASE_COLLECTION_NAME = "wishlist"
 }
 
+object PlaceholderConstant {
+    const val DEFAULT = -1
+    const val GAME_WISHLIST = 0
+    const val MOVIE_WISHLIST = 1
+    const val DEALS = 2
+    const val SEARCH_GAME_TAB = 3
+    const val SEARCH_GAME = 4
+    const val ANIME = 5
+}
+
 object OtherConstant {
     const val NO_IMAGE_URL =
         "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/1200px-No-Image-Placeholder.svg.png"

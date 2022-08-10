@@ -1,4 +1,6 @@
-import com.google.protobuf.gradle.*
+import com.google.protobuf.gradle.generateProtoTasks
+import com.google.protobuf.gradle.protobuf
+import com.google.protobuf.gradle.protoc
 
 plugins {
     id("com.android.application")
@@ -41,8 +43,8 @@ android {
 
     buildTypes {
         getByName("debug") {
-            isMinifyEnabled = true
-            isShrinkResources = true
+            isMinifyEnabled = false
+            isShrinkResources = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -70,12 +72,12 @@ android {
 
         // Enable Coroutines and Flow APIs
         freeCompilerArgs =  freeCompilerArgs +
-                "-Xopt-in=kotlinx.coroutines.ExperimentalCoroutinesApi" +
-                "-Xopt-in=kotlinx.coroutines.FlowPreview" +
-                "-Xopt-in=com.google.accompanist.pager.ExperimentalPagerApi" +
-                "-Xopt-in=androidx.compose.foundation.ExperimentalFoundationApi" +
-                "-Xopt-in=androidx.compose.material.ExperimentalMaterialApi" +
-                "-Xopt-in=androidx.compose.animation.ExperimentalAnimationApi"
+                "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi" +
+                "-opt-in=kotlinx.coroutines.FlowPreview" +
+                "-opt-in=com.google.accompanist.pager.ExperimentalPagerApi" +
+                "-opt-in=androidx.compose.foundation.ExperimentalFoundationApi" +
+                "-opt-in=androidx.compose.material.ExperimentalMaterialApi" +
+                "-opt-in=androidx.compose.animation.ExperimentalAnimationApi"
     }
 
     buildFeatures {
@@ -89,7 +91,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = Version.compose
+        kotlinCompilerExtensionVersion = Version.composeCompiler
     }
 
     packagingOptions {
@@ -100,39 +102,43 @@ android {
 }
 
 dependencies {
+    //Implementation
     implementation(Dependencies.Accompanist.implementation)
     implementation(Dependencies.AndroidX.implementation)
     implementation(Dependencies.AndroidX.Compose.implementation)
     implementation(Dependencies.AndroidX.Lifecycle.implementation)
-    implementation(Dependencies.Coil.compose)
+    implementation(Dependencies.Coil.implementation)
     implementation(Dependencies.Coroutines.implementation)
     implementation(Dependencies.DataStore.implementation)
     implementation(platform(Dependencies.Firebase.bom))
     implementation(Dependencies.Firebase.implementation)
     implementation(Dependencies.Firebase.UI.implementation)
-    implementation(Dependencies.GMS.playServiceAuth)
-    implementation(Dependencies.Gson.gson)
+    implementation(Dependencies.GMS.implementation)
+    implementation(Dependencies.Gson.implementation)
     implementation(Dependencies.Hilt.implementation)
     implementation(Dependencies.Kotlin.implementation)
-    implementation(Dependencies.Material.material)
+    implementation(Dependencies.Material.implementation)
     implementation(Dependencies.Other.implementation)
     implementation(Dependencies.Paging.implementation)
-    implementation(Dependencies.Protobuf.javalite)
+    implementation(Dependencies.Protobuf.implementation)
     implementation(Dependencies.Room.implementation)
     implementation(Dependencies.SquareUp.implementation)
 
-    kapt(Dependencies.Hilt.compiler)
-    kapt(Dependencies.Room.compiler)
+    //Kapt
+    kapt(Dependencies.Hilt.kapt)
+    kapt(Dependencies.Room.kapt)
 
-    debugImplementation(Dependencies.AndroidX.Compose.uiTestManifest)
-    debugImplementation(Dependencies.Chucker.debug)
+    //Debug Implementation
+    debugImplementation(Dependencies.AndroidX.Compose.debugImplementation)
+    debugImplementation(Dependencies.Chucker.debugImplementation)
 
-    releaseImplementation(Dependencies.Chucker.release)
+    //Release Implementation
+    releaseImplementation(Dependencies.Chucker.releaseImplementation)
 
-    androidTestImplementation(Dependencies.AndroidX.activityCompose)
-    androidTestImplementation(Dependencies.AndroidX.Compose.uiTest)
-    androidTestImplementation(Dependencies.AndroidX.Test.testImplementation)
-    androidTestImplementation(Dependencies.JUnit.junit)
+    //Android Test Implementation
+    androidTestImplementation(Dependencies.AndroidX.Compose.androidTestImplementation)
+    androidTestImplementation(Dependencies.AndroidX.Test.androidTestImplementation)
+    androidTestImplementation(Dependencies.JUnit.androidTestImplementation)
 }
 
 protobuf {

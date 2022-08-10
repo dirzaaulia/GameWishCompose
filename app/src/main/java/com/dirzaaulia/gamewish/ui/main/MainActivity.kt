@@ -3,9 +3,12 @@ package com.dirzaaulia.gamewish.ui.main
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
 import androidx.navigation.NavHostController
 import com.dirzaaulia.gamewish.theme.GameWishTheme
+import com.dirzaaulia.gamewish.ui.home.HomeViewModel
 import com.dirzaaulia.gamewish.ui.main.navigation.NavGraph
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import dagger.hilt.android.AndroidEntryPoint
@@ -15,17 +18,27 @@ class MainActivity : ComponentActivity() {
 
     private lateinit var navController: NavHostController
 
+    private val homeViewModel: HomeViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        //installSplashScreen()
         // This app draws behind the system bars, so we want to handle fitting system windows
         WindowCompat.setDecorFitsSystemWindows(window, false)
+
+        installSplashScreen().apply {
+            setKeepOnScreenCondition {
+                homeViewModel.userAuthId.value == null
+            }
+        }
 
         setContent {
             navController = rememberAnimatedNavController()
             GameWishTheme {
-                NavGraph(navController = navController)
+                NavGraph(
+                    navController = navController,
+                    homeViewModel = homeViewModel
+                )
             }
         }
     }

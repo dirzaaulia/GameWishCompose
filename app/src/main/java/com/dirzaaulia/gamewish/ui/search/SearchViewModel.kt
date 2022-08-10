@@ -20,7 +20,10 @@ import com.dirzaaulia.gamewish.repository.ProtoRepository
 import com.dirzaaulia.gamewish.repository.RawgRepository
 import com.dirzaaulia.gamewish.repository.TmdbRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.launch
 import java.util.*
 import javax.inject.Inject
@@ -68,9 +71,8 @@ class SearchViewModel @Inject constructor(
     val searchGameRequest = MutableStateFlow(
         SearchGameRequest("", null, null, null)
     )
-    val searchGameList = searchGameRequest
-        .flatMapLatest {
-        Pager(PagingConfig(pageSize = 10)) {
+    val searchGameList = searchGameRequest.flatMapLatest {
+        Pager(PagingConfig(pageSize = 50)) {
             RawgSearchPagingSource(
                 rawgRepository,
                 it.searchQuery,

@@ -1,10 +1,7 @@
 package com.dirzaaulia.gamewish.ui.home.wishlist
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
@@ -19,7 +16,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
 import com.dirzaaulia.gamewish.ui.home.HomeViewModel
 import com.dirzaaulia.gamewish.utils.lowerCaseWords
-import com.google.accompanist.insets.navigationBarsWithImePadding
 
 @Composable
 fun GameFilterDialog(
@@ -44,7 +40,7 @@ fun GameFilterDialog(
 
     Column(
         modifier = Modifier
-            .navigationBarsWithImePadding()
+            .navigationBarsPadding().imePadding()
             .padding(8.dp)
             .fillMaxWidth()
     ) {
@@ -147,7 +143,7 @@ fun AnimeFilterDialog(
 
     Column(
         modifier = Modifier
-            .navigationBarsWithImePadding()
+            .navigationBarsPadding().imePadding()
             .padding(8.dp)
             .fillMaxWidth()
     ) {
@@ -232,7 +228,7 @@ fun MangaFilterDialog(
 
     Column(
         modifier = Modifier
-            .navigationBarsWithImePadding()
+            .navigationBarsPadding().imePadding()
             .padding(8.dp)
             .fillMaxWidth()
     ) {
@@ -320,7 +316,7 @@ fun MovieFilterDialog(
 
     Column(
         modifier = Modifier
-            .navigationBarsWithImePadding()
+            .navigationBarsPadding().imePadding()
             .padding(8.dp)
             .fillMaxWidth()
     ) {

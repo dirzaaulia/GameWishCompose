@@ -16,21 +16,17 @@ fun StartApp(
     navigateToMyAnimeListLogin: () -> Unit,
     navigateToSearch: (Int) -> Unit,
 ) {
-    val userAuthId by viewModel.userAuthId.collectAsState()
-    if (userAuthId == null) {
-        Splash()
+    val userId by viewModel.userAuthId.collectAsState()
+    if (userId?.isBlank() == true) {
+        Login(viewModel)
     } else {
-        if (userAuthId!!.isBlank()) {
-            Login(viewModel)
-        } else {
-            Home(
-                viewModel = viewModel,
-                navigateToGameDetails = navigateToGameDetails,
-                navigateToAnimeDetails = navigateToAnimeDetails,
-                navigateToMovieDetails = navigateToMovieDetails,
-                navigateToMyAnimeListLogin = navigateToMyAnimeListLogin,
-                navigateToSearch = navigateToSearch
-            )
-        }
+        Home(
+            viewModel = viewModel,
+            navigateToGameDetails = navigateToGameDetails,
+            navigateToAnimeDetails = navigateToAnimeDetails,
+            navigateToMovieDetails = navigateToMovieDetails,
+            navigateToMyAnimeListLogin = navigateToMyAnimeListLogin,
+            navigateToSearch = navigateToSearch
+        )
     }
 }

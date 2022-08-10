@@ -2,6 +2,7 @@ package com.dirzaaulia.gamewish.ui.home
 
 import androidx.annotation.StringRes
 import androidx.compose.animation.Crossfade
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.*
@@ -13,7 +14,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -23,8 +23,6 @@ import com.dirzaaulia.gamewish.extension.isError
 import com.dirzaaulia.gamewish.ui.home.about.About
 import com.dirzaaulia.gamewish.ui.home.deals.Deals
 import com.dirzaaulia.gamewish.ui.home.wishlist.Wishlist
-import com.google.accompanist.insets.navigationBarsHeight
-import com.google.accompanist.insets.navigationBarsPadding
 import kotlinx.coroutines.launch
 import java.util.*
 
@@ -51,6 +49,7 @@ fun Home(
     val scaffoldState = rememberScaffoldState()
 
     Scaffold(
+        modifier = Modifier.navigationBarsPadding(),
         backgroundColor = MaterialTheme.colors.primarySurface,
         bottomBar = {
             HomeBottomBar(menu = menu, menuId = menuId, viewModel = viewModel)
@@ -108,7 +107,7 @@ fun HomeBottomBar(
     viewModel: HomeViewModel
 ) {
     BottomNavigation(
-        modifier = Modifier.navigationBarsHeight(56.dp)
+        modifier = Modifier.navigationBarsPadding()
     ) {
         menu.forEach { menu ->
             BottomNavigationItem(

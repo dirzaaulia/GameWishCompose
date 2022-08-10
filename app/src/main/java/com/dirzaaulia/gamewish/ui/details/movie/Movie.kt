@@ -1,5 +1,6 @@
 package com.dirzaaulia.gamewish.ui.details.movie
 
+import android.annotation.SuppressLint
 import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
@@ -27,7 +28,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.dirzaaulia.gamewish.R
-import com.dirzaaulia.gamewish.data.model.tmdb.Genre
 import com.dirzaaulia.gamewish.data.model.tmdb.Image
 import com.dirzaaulia.gamewish.data.model.tmdb.Movie
 import com.dirzaaulia.gamewish.data.model.tmdb.MovieDetail
@@ -41,13 +41,12 @@ import com.dirzaaulia.gamewish.theme.White
 import com.dirzaaulia.gamewish.ui.common.*
 import com.dirzaaulia.gamewish.ui.details.DetailsViewModel
 import com.dirzaaulia.gamewish.utils.*
-import com.google.accompanist.insets.navigationBarsWithImePadding
-import com.google.accompanist.insets.statusBarsPadding
 import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.util.*
 
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun MovieDetails(
     viewModel: DetailsViewModel = hiltViewModel(),
@@ -282,7 +281,11 @@ fun MovieDescriptionTab(
     scope: CoroutineScope,
     scaffoldState: BottomSheetScaffoldState
 ) {
-    LazyColumn(modifier = modifier.padding(8.dp)) {
+    LazyColumn(
+        modifier = modifier
+            .padding(8.dp)
+            .navigationBarsPadding()
+    ) {
         item {
             MovieDescriptionHeader(
                 loading = loading,
@@ -307,7 +310,7 @@ fun MovieDescriptionHeader(
     data: MovieDetail?,
     type: String
 ) {
-    Row(modifier = Modifier.height(IntrinsicSize.Min)) {
+    Row {
         Card(
             modifier = Modifier
                 .fillMaxHeight()
@@ -317,15 +320,15 @@ fun MovieDescriptionHeader(
         ) {
             if (data?.posterPath.isNullOrBlank()) {
                 NetworkImage(
-                    modifier = Modifier.visible(!loading),
                     url = OtherConstant.NO_IMAGE_URL,
-                    contentDescription = null
+                    contentDescription = null,
+                    modifier = Modifier.visible(!loading)
                 )
             } else {
                 NetworkImage(
-                    modifier = Modifier.visible(!loading),
                     url = "${TmdbConstant.TMDB_BASE_IMAGE_URL}${data?.posterPath}",
-                    contentDescription = null
+                    contentDescription = null,
+                    modifier = Modifier.visible(!loading)
                 )
             }
         }
@@ -570,9 +573,9 @@ fun MovieDetailsTopBar(
             )
         } else if (imageList?.isEmpty() == true) {
             NetworkImage(
-                modifier = Modifier.visible(!loading),
                 url = OtherConstant.NO_IMAGE_URL,
-                contentDescription = null
+                contentDescription = null,
+                modifier = Modifier.visible(!loading)
             )
         }
         TopAppBar(
@@ -627,7 +630,7 @@ fun MovieDetailsSheetContent(
         modifier = Modifier
             .padding(16.dp)
             .fillMaxWidth()
-            .navigationBarsWithImePadding()
+            .navigationBarsPadding().imePadding()
     ) {
         if (wishlist != null) {
             IconButton(

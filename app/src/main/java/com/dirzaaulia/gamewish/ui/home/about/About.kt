@@ -1,13 +1,11 @@
 package com.dirzaaulia.gamewish.ui.home.about
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyVerticalGrid
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.ClickableText
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -33,10 +31,10 @@ import com.dirzaaulia.gamewish.utils.FirebaseConstant
 import com.dirzaaulia.gamewish.utils.NetworkImage
 import com.dirzaaulia.gamewish.utils.openLink
 import com.dirzaaulia.gamewish.utils.sendEmail
-import com.google.accompanist.insets.statusBarsPadding
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun About(
     viewModel: HomeViewModel,
@@ -116,9 +114,9 @@ fun GoogleSection(
                     shape = CircleShape
                 ) {
                     NetworkImage(
-                        modifier = Modifier.size(75.dp),
                         url = googleProfileImage,
-                        contentDescription = null
+                        contentDescription = null,
+                        modifier = Modifier.size(75.dp)
                     )
                 }
                 Column(
@@ -179,9 +177,9 @@ fun MyAnimeListSection(
                                 shape = CircleShape
                             ) {
                                 NetworkImage(
-                                    modifier = Modifier.size(75.dp),
                                     url = it,
-                                    contentDescription = null
+                                    contentDescription = null,
+                                    modifier = Modifier.size(75.dp)
                                 )
                             }
                         }

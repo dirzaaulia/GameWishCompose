@@ -7,21 +7,25 @@ object Dependencies {
         private const val flowLayout = "com.google.accompanist:accompanist-flowlayout:${Version.accompanist}"
         private const val insets = "com.google.accompanist:accompanist-insets:${Version.accompanist}"
         private const val pager = "com.google.accompanist:accompanist-pager:${Version.accompanist}"
+        private const val placeholderUI = "com.google.accompanist:accompanist-placeholder-material:${Version.accompanist}"
         private const val swipeRefresh = "com.google.accompanist:accompanist-swiperefresh:${Version.accompanist}"
         private const val systemUiController = "com.google.accompanist:accompanist-systemuicontroller:${Version.accompanist}"
+        private const val web = "com.google.accompanist:accompanist-webview:${Version.accompanist}"
 
         val implementation = arrayListOf<String>().apply {
             add(animation)
             add(flowLayout)
             add(insets)
             add(pager)
+            add(placeholderUI)
             add(swipeRefresh)
             add(systemUiController)
+            add(web)
         }
     }
 
     object AndroidX {
-        const val activityCompose = "androidx.activity:activity-compose:${Version.activityCompose}"
+        private const val activityCompose = "androidx.activity:activity-compose:${Version.activityCompose}"
         private const val constraintLayoutCompose =
             "androidx.constraintlayout:constraintlayout-compose:${Version.constraintLayoutCompose}"
         private const val coreKtx = "androidx.core:core-ktx:${Version.coreKtx}"
@@ -49,7 +53,7 @@ object Dependencies {
             private const val tooling = "androidx.compose.ui:ui-tooling:${Version.compose}"
             private const val ui = "androidx.compose.ui:ui:${Version.compose}"
             private const val uiUtil = "androidx.compose.ui:ui-util:${Version.compose}"
-            const val uiTest = "androidx.compose.ui:ui-test-junit4:${Version.compose}"
+            private const val uiTest = "androidx.compose.ui:ui-test-junit4:${Version.compose}"
             const val uiTestManifest = "androidx.compose.ui:ui-test-manifest:${Version.compose}"
 
             val implementation = arrayListOf<String>().apply {
@@ -63,6 +67,14 @@ object Dependencies {
                 add(tooling)
                 add(ui)
                 add(uiUtil)
+            }
+
+            val androidTestImplementation = arrayListOf<String>().apply {
+                add(uiTest)
+            }
+
+            val debugImplementation = arrayListOf<String>().apply {
+                add(uiTestManifest)
             }
         }
 
@@ -80,7 +92,7 @@ object Dependencies {
             private const val jUnit = "androidx.test.ext:junit-ktx:${Version.extJUnit}"
             private const val espressoCore = "androidx.test.espresso:espresso-core:${Version.espresso}"
 
-            val testImplementation = arrayListOf<String>().apply {
+            val androidTestImplementation = arrayListOf<String>().apply {
                 add(core)
                 add(rules)
                 add(jUnit)
@@ -90,12 +102,24 @@ object Dependencies {
     }
 
     object Chucker {
-        const val debug = "com.github.chuckerteam.chucker:library:${Version.chucker}"
-        const val release = "com.github.chuckerteam.chucker:library-no-op:${Version.chucker}"
+        private const val debug = "com.github.chuckerteam.chucker:library:${Version.chucker}"
+        private const val release = "com.github.chuckerteam.chucker:library-no-op:${Version.chucker}"
+
+        val debugImplementation = arrayListOf<String>().apply {
+            add(debug)
+        }
+
+        val releaseImplementation = arrayListOf<String>().apply {
+            add(release)
+        }
     }
 
     object Coil {
-        const val compose = "io.coil-kt:coil-compose:1.4.0"
+        private const val coil = "io.coil-kt:coil-compose:${Version.coil}"
+
+        val implementation = arrayListOf<String>().apply {
+            add(coil)
+        }
     }
 
     object Coroutines {
@@ -150,32 +174,45 @@ object Dependencies {
     }
 
     object GMS {
-        const val plugin = "com.google.gms:google-services:${Version.gmsGoogleServices}"
-        const val playServiceAuth = "com.google.android.gms:play-services-auth:${Version.gmsPlayServicesAuth}"
+        private const val playServiceAuth = "com.google.android.gms:play-services-auth:${Version.gmsPlayServicesAuth}"
+
+        val implementation = arrayListOf<String>().apply {
+            add(playServiceAuth)
+        }
     }
 
     object Gson {
-        const val gson = "com.google.code.gson:gson:${Version.gson}"
+        private const val gson = "com.google.code.gson:gson:${Version.gson}"
+
+        val implementation = arrayListOf<String>().apply {
+            add(gson)
+        }
     }
 
     object Hilt {
         private const val android = "com.google.dagger:hilt-android:${Version.hilt}"
-        const val compiler = "com.google.dagger:hilt-android-compiler:${Version.hilt}"
-        const val gradle = "com.google.dagger:hilt-android-gradle-plugin:${Version.hilt}"
+        private const val compiler = "com.google.dagger:hilt-android-compiler:${Version.hilt}"
         private const val navigation = "androidx.hilt:hilt-navigation-compose:${Version.hiltCompose}"
 
         val implementation = arrayListOf<String>().apply {
             add(android)
             add(navigation)
         }
+
+        val kapt = arrayListOf<String>().apply {
+            add(compiler)
+        }
     }
 
     object JUnit {
-        const val junit = "junit:junit:${Version.jUnit}"
+        private const val junit = "junit:junit:${Version.jUnit}"
+
+        val androidTestImplementation = arrayListOf<String>().apply {
+            add(junit)
+        }
     }
 
     object Kotlin {
-        const val gradle = "org.jetbrains.kotlin:kotlin-gradle-plugin:${Version.kotlin}"
         private const val reflect = "org.jetbrains.kotlin:kotlin-reflect:${Version.reflect}"
         private const val stdlib = "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${Version.kotlin}"
 
@@ -186,7 +223,11 @@ object Dependencies {
     }
 
     object Material {
-        const val material = "com.google.android.material:material:${Version.material}"
+        private const val material = "com.google.android.material:material:${Version.material}"
+
+        val implementation = arrayListOf<String>().apply {
+            add(material)
+        }
     }
 
     object Other {
@@ -205,7 +246,7 @@ object Dependencies {
 
     object Paging {
         private const val compose = "androidx.paging:paging-compose:${Version.pagingCompose}"
-        private const val runtime = "androidx.paging:paging-runtime:${Version.paging}"
+        private const val runtime = "androidx.paging:paging-runtime-ktx:${Version.paging}"
 
         val implementation = arrayListOf<String>().apply {
             add(compose)
@@ -214,12 +255,16 @@ object Dependencies {
     }
 
     object Protobuf {
-        const val javalite = "com.google.protobuf:protobuf-javalite:${Version.protobuf}"
+        private const val javalite = "com.google.protobuf:protobuf-javalite:${Version.protobuf}"
         const val artifact = "com.google.protobuf:protoc:${Version.protobuf}"
+
+        val implementation = arrayListOf<String>().apply {
+            add(javalite)
+        }
     }
 
     object Room {
-        const val compiler = "androidx.room:room-compiler:${Version.room}"
+        private const val compiler = "androidx.room:room-compiler:${Version.room}"
         private const val ktx = "androidx.room:room-ktx:${Version.room}"
         private const val paging = "androidx.room:room-paging:${Version.room}"
         private const val runtime = "androidx.room:room-runtime:${Version.room}"
@@ -228,6 +273,10 @@ object Dependencies {
             add(ktx)
             add(paging)
             add(runtime)
+        }
+
+        val kapt = arrayListOf<String>().apply {
+            add(compiler)
         }
     }
 

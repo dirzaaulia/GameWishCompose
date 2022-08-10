@@ -4,7 +4,6 @@ import android.os.Parcelable
 import androidx.annotation.Keep
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.google.firebase.firestore.PropertyName
 import kotlinx.parcelize.Parcelize
 
 @Keep

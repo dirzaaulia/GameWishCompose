@@ -1,14 +1,10 @@
 package com.dirzaaulia.gamewish.ui.search.tab.game
 
+import android.annotation.SuppressLint
 import androidx.annotation.StringRes
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
@@ -33,21 +29,22 @@ import com.dirzaaulia.gamewish.data.model.rawg.Platform
 import com.dirzaaulia.gamewish.data.model.rawg.Publisher
 import com.dirzaaulia.gamewish.data.request.myanimelist.SearchGameRequest
 import com.dirzaaulia.gamewish.extension.visible
+import com.dirzaaulia.gamewish.theme.White
 import com.dirzaaulia.gamewish.ui.common.*
 import com.dirzaaulia.gamewish.ui.search.SearchViewModel
-import com.dirzaaulia.gamewish.theme.White
-import com.google.accompanist.insets.statusBarsPadding
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
+import com.dirzaaulia.gamewish.utils.PlaceholderConstant
+import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.material.shimmer
+import com.google.accompanist.placeholder.placeholder
 
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun SearchGame(
     navigateToGameDetails: (Long) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: SearchViewModel,
     upPress: () -> Unit,
-    scope: CoroutineScope,
-    scaffoldState: BackdropScaffoldState,
+    scaffoldState: ScaffoldState,
     lazyListStateSearchGames: LazyListState,
     lazyListStateGenre: LazyListState,
     lazyListStatePublisher: LazyListState,
@@ -62,34 +59,28 @@ fun SearchGame(
     val menu = SearchGameTab.values()
     val menuId: Int by viewModel.selectedSearchGameTab.collectAsState(initial = 0)
 
-    BackdropScaffold(
+    Scaffold(
         modifier = modifier,
-        backLayerBackgroundColor = MaterialTheme.colors.primarySurface,
+        backgroundColor = MaterialTheme.colors.primarySurface,
         scaffoldState = scaffoldState,
-        frontLayerShape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp),
-        frontLayerContent = {
-            SearchGameSheetContent(
-                navigateToGameDetails = navigateToGameDetails,
-                data = searchGameList,
-                lazyListStateSearchGames = lazyListStateSearchGames,
-            )
-        },
-        headerHeight = 0.dp,
-        peekHeight = 80.dp,
-        stickyFrontLayer = false,
-        backLayerContent = {
+        content = {
             Scaffold(
                 topBar = { SearchGameTabMenu(menu = menu, menuId = menuId, viewModel = viewModel) }
             ) {
                 Crossfade(targetState = SearchGameTab.getTabFromResource(menuId)) { destination ->
                     when (destination) {
+                        SearchGameTab.LIST -> {
+                            SearchGameList(
+                                navigateToGameDetails = navigateToGameDetails,
+                                data = searchGameList,
+                                lazyListStateSearchGames = lazyListStateSearchGames,
+                            )
+                        }
                         SearchGameTab.GENRE -> {
                             GenreList(
                                 data = genre,
                                 lazyListState = lazyListStateGenre,
                                 viewModel = viewModel,
-                                scope = scope,
-                                scaffoldState = scaffoldState
                             )
                         }
                         SearchGameTab.PUBLISHER -> {
@@ -97,8 +88,6 @@ fun SearchGame(
                                 data = publisher,
                                 lazyListState = lazyListStatePublisher,
                                 viewModel = viewModel,
-                                scope = scope,
-                                scaffoldState = scaffoldState
                             )
                         }
                         SearchGameTab.PLATFORMS -> {
@@ -106,19 +95,15 @@ fun SearchGame(
                                 data = platform,
                                 lazyListState = lazyListStatePlatform,
                                 viewModel = viewModel,
-                                scope = scope,
-                                scaffoldState = scaffoldState
                             )
                         }
                     }
                 }
             }
         },
-        appBar =  {
+        topBar =  {
             SearchGameAppBar(
                 searchQuery = searchGameRequest.searchQuery,
-                scope = scope,
-                scaffoldState = scaffoldState,
                 viewModel = viewModel,
                 upPress = upPress
             )
@@ -127,42 +112,37 @@ fun SearchGame(
 }
 
 @Composable
-fun SearchGameSheetContent(
+fun SearchGameList(
     navigateToGameDetails: (Long) -> Unit,
     data: LazyPagingItems<Games>,
     lazyListStateSearchGames: LazyListState
 ) {
-    CommonLoading(visibility = data.loadState.refresh is LoadState.Loading)
-    AnimatedVisibility(
-        visible = data.loadState.refresh is LoadState.NotLoading,
-        enter = fadeIn(tween(600)),
-        exit = fadeOut(tween(600))
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            Card(
-                modifier = Modifier
-                    .padding(vertical = 4.dp)
-                    .width(64.dp)
-                    .height(4.dp),
-                backgroundColor = MaterialTheme.colors.onSurface,
-                shape = MaterialTheme.shapes.small,
-                content = {}
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            CommonVerticalList(
-                data = data,
-                lazyListState = lazyListStateSearchGames,
-                emptyString = stringResource(id = R.string.search_games_empty),
-                errorString = stringResource(id = R.string.search_games_error),
-            ) { games ->
-                SearchGamesItem(
-                    navigateToGameDetails = navigateToGameDetails,
-                    games = games,
+    Column {
+        Text(
+            modifier = Modifier
+                .padding(4.dp)
+                .placeholder(
+                    visible = data.loadState.refresh is LoadState.Loading,
+                    highlight = PlaceholderHighlight.shimmer(),
+                    color = MaterialTheme.colors.secondary,
+                    shape = MaterialTheme.shapes.small
                 )
-            }
+                .visible(data.loadState.refresh is LoadState.NotLoading),
+            text = stringResource(id = R.string.games_data_source),
+            style = MaterialTheme.typography.caption,
+        )
+        CommonVerticalList(
+            data = data,
+            lazyListState = lazyListStateSearchGames,
+            placeholderType = PlaceholderConstant.SEARCH_GAME,
+            emptyString = stringResource(id = R.string.search_games_empty),
+            errorString = stringResource(id = R.string.search_games_error),
+        ) { games ->
+            SearchGamesItem(
+                navigateToGameDetails = navigateToGameDetails,
+                games = games,
+                loadStates = data.loadState,
+            )
         }
     }
 }
@@ -172,13 +152,17 @@ fun GenreList(
     data: LazyPagingItems<Genre>,
     lazyListState: LazyListState,
     viewModel: SearchViewModel,
-    scope: CoroutineScope,
-    scaffoldState: BackdropScaffoldState
 ) {
     Column {
         Text(
             modifier = Modifier
                 .padding(4.dp)
+                .placeholder(
+                    visible = data.loadState.refresh is LoadState.Loading,
+                    highlight = PlaceholderHighlight.shimmer(),
+                    color = MaterialTheme.colors.secondary,
+                    shape = MaterialTheme.shapes.small
+                )
                 .visible(data.loadState.refresh is LoadState.NotLoading),
             text = stringResource(id = R.string.genre_data_source),
             style = MaterialTheme.typography.caption,
@@ -186,14 +170,14 @@ fun GenreList(
         CommonVerticalList(
             data = data,
             lazyListState = lazyListState,
+            placeholderType = PlaceholderConstant.SEARCH_GAME_TAB,
             emptyString = stringResource(id = R.string.search_genre_empty),
             errorString = stringResource(id = R.string.search_genre_error),
         ) { genre ->
             SearchGenreItem(
                 genre = genre,
                 viewModel = viewModel,
-                scope = scope,
-                scaffoldState = scaffoldState
+                loadStates = data.loadState,
             )
         }
     }
@@ -204,13 +188,17 @@ fun PublisherList(
     data: LazyPagingItems<Publisher>,
     lazyListState: LazyListState,
     viewModel: SearchViewModel,
-    scope: CoroutineScope,
-    scaffoldState: BackdropScaffoldState
 ) {
     Column {
         Text(
             modifier = Modifier
                 .padding(4.dp)
+                .placeholder(
+                    visible = data.loadState.refresh is LoadState.Loading,
+                    highlight = PlaceholderHighlight.shimmer(),
+                    color = MaterialTheme.colors.secondary,
+                    shape = MaterialTheme.shapes.small
+                )
                 .visible(data.loadState.refresh is LoadState.NotLoading),
             text = stringResource(id = R.string.publisher_data_source),
             style = MaterialTheme.typography.caption,
@@ -218,14 +206,13 @@ fun PublisherList(
         CommonVerticalList(
             data = data,
             lazyListState = lazyListState,
+            placeholderType = PlaceholderConstant.SEARCH_GAME_TAB,
             emptyString = stringResource(id = R.string.search_publisher_empty),
             errorString = stringResource(id = R.string.search_publisher_error),
         ) { publisher ->
             SearchPublisherItem(
                 publisher = publisher,
-                viewModel = viewModel,
-                scope = scope,
-                scaffoldState = scaffoldState
+                viewModel = viewModel
             )
         }
     }
@@ -236,13 +223,17 @@ fun PlatformList(
     data: LazyPagingItems<Platform>,
     lazyListState: LazyListState,
     viewModel: SearchViewModel,
-    scope: CoroutineScope,
-    scaffoldState: BackdropScaffoldState
 ) {
     Column {
         Text(
             modifier = Modifier
                 .padding(4.dp)
+                .placeholder(
+                    visible = data.loadState .refresh is LoadState.Loading,
+                    highlight = PlaceholderHighlight.shimmer(),
+                    color = MaterialTheme.colors.secondary,
+                    shape = MaterialTheme.shapes.small
+                )
                 .visible(data.loadState.refresh is LoadState.NotLoading),
             text = stringResource(id = R.string.platform_data_source),
             style = MaterialTheme.typography.caption,
@@ -250,14 +241,13 @@ fun PlatformList(
         CommonVerticalList(
             data = data,
             lazyListState = lazyListState,
+            placeholderType = PlaceholderConstant.SEARCH_GAME_TAB,
             emptyString = stringResource(id = R.string.search_platform_empty),
             errorString = stringResource(id = R.string.search_platform_error),
         ) { platform ->
             SearchPlatformItem(
                 platform = platform,
                 viewModel = viewModel,
-                scope = scope,
-                scaffoldState = scaffoldState
             )
         }
     }
@@ -266,8 +256,6 @@ fun PlatformList(
 @Composable
 fun SearchGameAppBar(
     searchQuery: String,
-    scope: CoroutineScope,
-    scaffoldState: BackdropScaffoldState,
     viewModel: SearchViewModel,
     upPress: () -> Unit
 ) {
@@ -326,11 +314,11 @@ fun SearchGameAppBar(
                 keyboardActions = KeyboardActions(
                     onDone = {
                         localFocusManager.clearFocus()
-                        viewModel.setSearchGameRequest(
-                            SearchGameRequest(query, null, null, null)
-                        )
-                        scope.launch {
-                            scaffoldState.conceal()
+                        viewModel.apply {
+                            selectSearchGameTab(0)
+                            setSearchGameRequest(
+                                SearchGameRequest(query, null, null, null)
+                            )
                         }
                     }
                 )
@@ -345,7 +333,7 @@ fun SearchGameTabMenu(
     menuId: Int,
     viewModel: SearchViewModel
 ) {
-    TabRow(selectedTabIndex = menuId) {
+    ScrollableTabRow(selectedTabIndex = menuId) {
         menu.forEachIndexed { index, searchGameTab ->
             Tab(
                 selected = menuId == index,
@@ -357,6 +345,7 @@ fun SearchGameTabMenu(
 }
 
 enum class SearchGameTab (@StringRes val title: Int) {
+    LIST(R.string.search),
     GENRE(R.string.genres),
     PUBLISHER(R.string.publishers),
     PLATFORMS(R.string.platforms);
@@ -364,10 +353,11 @@ enum class SearchGameTab (@StringRes val title: Int) {
     companion object {
         fun getTabFromResource(index: Int): SearchGameTab {
             return when (index) {
-                0 -> GENRE
-                1 -> PUBLISHER
-                2 -> PLATFORMS
-                else -> GENRE
+                0 -> LIST
+                1 -> GENRE
+                2 -> PUBLISHER
+                3 -> PLATFORMS
+                else -> LIST
             }
         }
     }
