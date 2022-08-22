@@ -14,6 +14,8 @@ Now you can search for your favorite Anime & Manga. In addition, GameWish suppor
 Movies & TV Shows!
 Now you can search for your favorite Movies & TV Shows. You can also add your favorite Movie & TV Show watchlists and just set them straight from GameWish!
 
+Tech stack : MVVM | Jetpack Compose | Jetpack Navigation for Compose | Kotlin Coroutine | Room | Hilt | Paging 3 | Retrofit with Moshi | Chucker | Glide | Timber | Firebase Authentication | Firebase Firestore | Google Material 2 | Google Accompanist
+
 ![Screenshot_20220118-105130_framed](https://user-images.githubusercontent.com/32137098/185826803-6a1a019b-03ea-478a-b3a8-a0c22faa8f65.png)
 ![Screenshot_20220118-105529_framed](https://user-images.githubusercontent.com/32137098/185826809-e445b627-62b5-4dcc-b206-14571557cc08.png)
 ![Screenshot_20220118-105535_framed](https://user-images.githubusercontent.com/32137098/185826810-23eb64ca-5b2b-4c4d-92ba-84b1fd8cff04.png)
