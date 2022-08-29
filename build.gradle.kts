@@ -11,6 +11,7 @@ buildscript {
         classpath("com.google.dagger:hilt-android-gradle-plugin:${Version.hiltGradle}")
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${Version.kotlinGradle}")
         classpath("com.google.protobuf:protobuf-gradle-plugin:${Version.protobufGradle}")
+        classpath("com.diffplug.spotless:spotless-plugin-gradle:${Version.spotless}")
     }
 }
 

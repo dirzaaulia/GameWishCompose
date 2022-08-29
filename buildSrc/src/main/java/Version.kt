@@ -42,6 +42,7 @@ object Version {
     const val retrofit = "2.9.0"
     const val room = "2.4.1"
     const val reflect = "1.7.0"
+    const val spotless = "6.10.0"
     const val test = "1.4.0"
     const val webkit = "1.4.0"
 }
