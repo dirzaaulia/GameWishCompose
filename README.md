@@ -5,7 +5,7 @@
 ### Wishlist and Game Search!
 #### The Wishlist has been updated so that it is easier for you to create a Wishlist for your favorite games. You simply do a search for your favorite game and then simply press the Wishlist button and the game will automatically be added to your Wishlist list.
 
-###Deals!
+### Deals!
 #### GameWish comes with a new feature, namely Deals!. You can search for great deals on games in your favorite game shops and sales platforms. You can also customize the Deals quest! according to your needs.
 
 ### Anime & Manga!
