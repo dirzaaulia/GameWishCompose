@@ -1,15 +1,15 @@
 object Version {
     //App Level
-    const val toolsBuildGradle = "7.2.1"
+    const val toolsBuildGradle = "7.2.2"
     const val crashlyticsGradle = "2.9.0"
     const val googleMapsSecretGradle = "2.0.1"
     const val googleMapsServices = "4.3.10"
     const val hiltGradle = "2.42"
     const val kotlinGradle = "1.7.10"
-    const val composeCompiler = "1.3.0-rc02"
+    const val composeCompiler = "1.3.0"
 
     //Project Level
-    const val accompanist = "0.26.0-alpha"
+    const val accompanist = "0.26.2-beta"
     const val activityCompose = "1.5.1"
     const val chucker = "3.5.2"
     const val coil = "2.1.0"
@@ -36,7 +36,7 @@ object Version {
     const val navigationCompose = "2.5.1"
     const val okHttp = "4.9.3"
     const val paging = "3.1.1"
-    const val pagingCompose = "1.0.0-alpha15"
+    const val pagingCompose = "1.0.0-alpha16"
     const val protobuf = "3.21.1"
     const val protobufGradle = "0.8.18"
     const val retrofit = "2.9.0"

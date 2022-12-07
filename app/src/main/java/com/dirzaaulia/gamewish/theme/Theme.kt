@@ -5,15 +5,10 @@ import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.unit.dp
-import com.dirzaaulia.gamewish.R
 
 private val LightElevation = Elevations()
 
 private val DarkElevation = Elevations(card = 1.dp)
-
-private val LightImages = Images(lockupLogo = R.drawable.ic_gamewish)
-
-private val DarkImages = Images(lockupLogo = R.drawable.ic_gamewish_dark)
 
 private val DarkColorPalette = darkColors(
     primary = Grey400,
@@ -48,7 +43,7 @@ private val LightColorPalette = lightColors(
 @Composable
 fun GameWishTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    content: @Composable() () -> Unit
+    content: @Composable () -> Unit
 ) {
     val colors = if (darkTheme) {
         DarkColorPalette
@@ -57,11 +52,9 @@ fun GameWishTheme(
     }
 
     val elevation = if (darkTheme) DarkElevation else LightElevation
-    val images = if (darkTheme) DarkImages else LightImages
 
     CompositionLocalProvider(
         LocalElevations provides elevation,
-        LocalImages provides images
     ) {
         MaterialTheme(
             colors = colors,

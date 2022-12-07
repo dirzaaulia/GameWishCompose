@@ -3,19 +3,35 @@ package com.dirzaaulia.gamewish.ui.home.wishlist
 import android.annotation.SuppressLint
 import androidx.annotation.StringRes
 import androidx.compose.animation.Crossfade
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material.BottomSheetScaffold
+import androidx.compose.material.BottomSheetScaffoldState
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Scaffold
+import androidx.compose.material.ScrollableTabRow
+import androidx.compose.material.Tab
+import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Sort
-import androidx.compose.runtime.*
+import androidx.compose.material.primarySurface
+import androidx.compose.material.rememberBottomSheetScaffoldState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.paging.compose.LazyPagingItems
@@ -163,7 +179,7 @@ fun Wishlist(
                             data = lazyListAnime,
                             animeStatus = animeStatus,
                             navigateToAnimeDetails = navigateToAnimeDetails
-                           )
+                        )
                     }
                     WishlistTab.MANGA -> {
                         WishlistManga(
@@ -212,16 +228,6 @@ fun GameAppBar(
             .statusBarsPadding()
             .wrapContentHeight()
     ) {
-        Image(
-            modifier = Modifier
-                .padding(0.dp, 16.dp, 0.dp, 16.dp)
-                .size(100.dp, 0.dp)
-                .align(Alignment.CenterVertically)
-                .aspectRatio(1.0f),
-            painter = painterResource(id = R.drawable.ic_gamewish_dark),
-            contentDescription = null,
-            contentScale = ContentScale.Fit
-        )
         Row(
             horizontalArrangement = Arrangement.End,
             modifier = Modifier
@@ -270,16 +276,6 @@ fun AnimeAppBar(
             .statusBarsPadding()
             .wrapContentHeight()
     ) {
-        Image(
-            modifier = Modifier
-                .padding(0.dp, 16.dp, 0.dp, 16.dp)
-                .size(100.dp, 0.dp)
-                .align(Alignment.CenterVertically)
-                .aspectRatio(1.0f),
-            painter = painterResource(id = R.drawable.ic_gamewish_dark),
-            contentDescription = null,
-            contentScale = ContentScale.Fit
-        )
         Row(
             horizontalArrangement = Arrangement.End,
             modifier = Modifier
@@ -328,16 +324,6 @@ fun MovieAppBar(
             .statusBarsPadding()
             .wrapContentHeight()
     ) {
-        Image(
-            modifier = Modifier
-                .padding(0.dp, 16.dp, 0.dp, 16.dp)
-                .size(100.dp, 0.dp)
-                .align(Alignment.CenterVertically)
-                .aspectRatio(1.0f),
-            painter = painterResource(id = R.drawable.ic_gamewish_dark),
-            contentDescription = null,
-            contentScale = ContentScale.Fit
-        )
         Row(
             horizontalArrangement = Arrangement.End,
             modifier = Modifier

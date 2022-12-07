@@ -1,5 +1,6 @@
 package com.dirzaaulia.gamewish.ui.home.login
 
+import android.annotation.SuppressLint
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -16,6 +17,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.dirzaaulia.gamewish.R
+import com.dirzaaulia.gamewish.theme.LocalImages
 import com.dirzaaulia.gamewish.ui.home.HomeViewModel
 import com.dirzaaulia.gamewish.utils.FirebaseConstant
 import com.dirzaaulia.gamewish.utils.FirebaseState
@@ -26,6 +28,7 @@ import com.google.firebase.auth.GoogleAuthProvider
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun Login(viewModel: HomeViewModel) {
 
@@ -100,7 +103,7 @@ fun Login(viewModel: HomeViewModel) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .aspectRatio(1f),
-                painter = painterResource(id = R.drawable.ic_gamewish_dark),
+                painter = painterResource(id = R.drawable.ic_splash_screen),
                 contentDescription = null,
                 contentScale = ContentScale.Fit,
             )

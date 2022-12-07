@@ -131,7 +131,7 @@ fun <T : Any> CommonVerticalList(
 ) {
     if (data.itemCount != 0) {
         LazyColumn(
-            state = lazyListState,
+//            state = lazyListState,
             modifier = Modifier
                 .fillMaxSize(),
         ) {

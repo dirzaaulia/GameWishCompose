@@ -320,16 +320,6 @@ fun DealsAppBar(
             .statusBarsPadding()
             .wrapContentHeight()
     ) {
-        Image(
-            modifier = Modifier
-                .padding(0.dp, 16.dp, 0.dp, 16.dp)
-                .size(100.dp, 0.dp)
-                .align(Alignment.CenterVertically)
-                .aspectRatio(1.0f),
-            painter = painterResource(id = R.drawable.ic_gamewish_dark),
-            contentDescription = null,
-            contentScale = ContentScale.Fit
-        )
         Row(
             horizontalArrangement = Arrangement.End,
             modifier = Modifier

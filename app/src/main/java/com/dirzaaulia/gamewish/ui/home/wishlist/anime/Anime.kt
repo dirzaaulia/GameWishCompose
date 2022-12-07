@@ -44,38 +44,40 @@ fun WishlistAnime(
         animeStatusFormatted = "All"
     }
 
+    Column(modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)) {
+        Text(
+            text = "Sort by : $animeStatusFormatted",
+            style = MaterialTheme.typography.subtitle1,
+            modifier = Modifier
+                .padding(vertical = 4.dp, horizontal = 8.dp)
+                .align(Alignment.End)
+                .placeholder(
+                    visible = data.loadState.refresh is LoadState.Loading,
+                    highlight = PlaceholderHighlight.shimmer(),
+                    color = MaterialTheme.colors.secondary,
+                    shape = MaterialTheme.shapes.small
+                )
+                .visible(data.loadState.refresh is LoadState.NotLoading)
+        )
+        AnimeVerticalList(
+            data = data,
+            lazyListState = lazyListState,
+            emptyString = "Your Anime list is still empty!",
+            errorString = stringResource(id = R.string.anime_list_error),
+            viewModel = viewModel
+        ) { parentNode ->
+            CommonAnimeItem(
+                parentNode = parentNode,
+                navigateToAnimeDetails = navigateToAnimeDetails,
+                type = "Anime",
+                loadState = data.loadState
+            )
+        }
+    }
+
     when {
         accessTokenResult.isSucceeded -> {
-            Column(modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)) {
-                Text(
-                    text = "Sort by : $animeStatusFormatted",
-                    style = MaterialTheme.typography.subtitle1,
-                    modifier = Modifier
-                        .padding(vertical = 4.dp, horizontal = 8.dp)
-                        .align(Alignment.End)
-                        .placeholder(
-                            visible = data.loadState.refresh is LoadState.Loading,
-                            highlight = PlaceholderHighlight.shimmer(),
-                            color = MaterialTheme.colors.secondary,
-                            shape = MaterialTheme.shapes.small
-                        )
-                        .visible(data.loadState.refresh is LoadState.NotLoading)
-                )
-                AnimeVerticalList(
-                    data = data,
-                    lazyListState = lazyListState,
-                    emptyString = "Your Anime list is still empty!",
-                    errorString = stringResource(id = R.string.anime_list_error),
-                    viewModel = viewModel
-                ) { parentNode ->
-                    CommonAnimeItem(
-                        parentNode = parentNode,
-                        navigateToAnimeDetails = navigateToAnimeDetails,
-                        type = "Anime",
-                        loadState = data.loadState
-                    )
-                }
-            }
+
         }
         accessTokenResult.isError -> {
             MyAnimeListWebViewClient(

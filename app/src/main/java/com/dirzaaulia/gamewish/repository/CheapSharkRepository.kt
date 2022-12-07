@@ -32,15 +32,23 @@ class CheapSharkRepository @Inject constructor(
     }
 
     @WorkerThread
+//    fun getStoreList() = flow {
+//        try {
+//            service.getStoresList().body()?.let {
+//                emit(ResponseResult.Success(it))
+//            } ?: run {
+//                throw  NotFoundException()
+//            }
+//        } catch (e: Exception) {
+//            emit(ResponseResult.Error(e))
+//        }
+//    }
     fun getStoreList() = flow {
-        try {
-            service.getStoresList().body()?.let {
-                emit(ResponseResult.Success(it))
-            } ?: run {
-                throw  NotFoundException()
+        val result =  executeWithResponse {
+            service.getStoresList().body() ?: run {
+                throw NotFoundException()
             }
-        } catch (e: Exception) {
-            emit(ResponseResult.Error(e))
         }
+        emit(result)
     }
 }
