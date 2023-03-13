@@ -9,7 +9,7 @@ import androidx.core.view.WindowCompat
 import androidx.navigation.NavHostController
 import com.dirzaaulia.gamewish.theme.GameWishTheme
 import com.dirzaaulia.gamewish.ui.home.HomeViewModel
-import com.dirzaaulia.gamewish.ui.main.navigation.NavGraph
+import com.dirzaaulia.gamewish.ui.navigation.NavGraph
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import dagger.hilt.android.AndroidEntryPoint
 

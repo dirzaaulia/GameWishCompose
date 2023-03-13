@@ -1,13 +1,11 @@
-import com.google.protobuf.gradle.generateProtoTasks
-import com.google.protobuf.gradle.protobuf
-import com.google.protobuf.gradle.protoc
+import com.google.protobuf.gradle.*
 
 plugins {
     id("com.android.application")
     kotlin("android")
     kotlin("kapt")
     id("kotlin-parcelize")
-    id("dagger.hilt.android.plugin")
+    id("com.google.dagger.hilt.android")
     id("com.google.protobuf")
     id("com.google.gms.google-services")
     id("com.google.firebase.crashlytics")
@@ -17,23 +15,24 @@ plugins {
 android {
     signingConfigs {
         getByName("debug") {
-            storeFile = file("D:\\AndroidStudio\\Keystore\\keystore.jks")
-            storePassword = AppConfig.KeyStore.password
-            keyAlias = AppConfig.KeyStore.alias
-            keyPassword = AppConfig.KeyStore.password
+//            storeFile = file("D:\\AndroidStudio\\Keystore\\keystore.jks")
+//            storePassword = AppConfig.KeyStore.password
+//            keyAlias = AppConfig.KeyStore.alias
+//            keyPassword = AppConfig.KeyStore.password
         }
         create("release") {
-            storeFile = file("D:\\AndroidStudio\\Keystore\\keystore.jks")
-            storePassword = AppConfig.KeyStore.password
-            keyAlias = AppConfig.KeyStore.alias
-            keyPassword = AppConfig.KeyStore.password
+//            storeFile = file("D:\\AndroidStudio\\Keystore\\keystore.jks")
+//            storePassword = AppConfig.KeyStore.password
+//            keyAlias = AppConfig.KeyStore.alias
+//            keyPassword = AppConfig.KeyStore.password
         }
     }
 
+    namespace = AppConfig.namespace
     compileSdk = AppConfig.compileSdk
 
     defaultConfig {
-        applicationId = "com.dirzaaulia.gamewish"
+        applicationId = AppConfig.namespace
         minSdk = AppConfig.minSdk
         targetSdk = AppConfig.targetSdk
         versionCode = AppConfig.versionCode
@@ -68,6 +67,12 @@ android {
         targetCompatibility = JavaVersion.VERSION_11
     }
 
+    kotlin {
+        jvmToolchain {
+            this.languageVersion.set(JavaLanguageVersion.of(11))
+        }
+    }
+
     kotlinOptions {
         jvmTarget = "11"
 
@@ -100,6 +105,10 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+
+    kapt {
+        correctErrorTypes = true
+    }
 }
 
 dependencies {
@@ -115,7 +124,6 @@ dependencies {
     implementation(Dependencies.Firebase.implementation)
     implementation(Dependencies.Firebase.UI.implementation)
     implementation(Dependencies.GMS.implementation)
-    implementation(Dependencies.Gson.implementation)
     implementation(Dependencies.Hilt.implementation)
     implementation(Dependencies.Kotlin.implementation)
     implementation(Dependencies.Material.implementation)
@@ -130,14 +138,12 @@ dependencies {
     kapt(Dependencies.Room.kapt)
 
     // Debug Implementation
-    debugImplementation(Dependencies.AndroidX.Compose.debugImplementation)
     debugImplementation(Dependencies.Chucker.debugImplementation)
 
     // Release Implementation
     releaseImplementation(Dependencies.Chucker.releaseImplementation)
 
     // Android Test Implementation
-    androidTestImplementation(Dependencies.AndroidX.Compose.androidTestImplementation)
     androidTestImplementation(Dependencies.AndroidX.Test.androidTestImplementation)
     androidTestImplementation(Dependencies.JUnit.androidTestImplementation)
 }

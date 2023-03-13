@@ -1,30 +1,20 @@
-buildscript {
-    repositories {
-        google()
-        mavenCentral()
-    }
+plugins {
+    id("com.android.application") version Version.toolsBuildGradle apply false
+    id("org.jetbrains.kotlin.android") version Version.kotlinGradle apply false
+    id("org.jetbrains.kotlin.kapt") version Version.kotlinGradle apply false
+    id("org.jetbrains.kotlin.plugin.parcelize") version Version.kotlinGradle apply false
+    id("com.google.dagger.hilt.android") version Version.hilt apply false
+    id("com.google.protobuf") version Version.protobufGradle apply false
+    id("com.diffplug.spotless") version Version.spotless apply false
+}
 
+buildscript {
     dependencies {
-        classpath("com.android.tools.build:gradle:${Version.toolsBuildGradle}")
         classpath("com.google.firebase:firebase-crashlytics-gradle:${Version.crashlyticsGradle}")
-        classpath("com.google.gms:google-services:${Version.googleMapsServices}")
-        classpath("com.google.dagger:hilt-android-gradle-plugin:${Version.hiltGradle}")
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${Version.kotlinGradle}")
-        classpath("com.google.protobuf:protobuf-gradle-plugin:${Version.protobufGradle}")
-        classpath("com.diffplug.spotless:spotless-plugin-gradle:${Version.spotless}")
+        classpath("com.google.gms:google-services:${Version.gmsGradle}")
     }
 }
 
-subprojects {
-    repositories {
-        google()
-        mavenCentral()
-        maven { url = uri("https://www.jitpack.io") }
-        maven {
-            url = uri("https://jitpack.io")
-            credentials {
-                username = "jp_uvj8t2utirothfevp7gb6l9udn"
-            }
-        }
-    }
+tasks.register("clean",Delete::class){
+    delete(rootProject.buildDir)
 }

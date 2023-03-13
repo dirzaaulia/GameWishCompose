@@ -43,38 +43,22 @@ object Dependencies {
         }
 
         object Compose {
-            private const val animation = "androidx.compose.animation:animation:${Version.compose}"
-            private const val foundation = "androidx.compose.foundation:foundation:${Version.compose}"
-            private const val iconsExtended = "androidx.compose.material:material-icons-extended:${Version.compose}"
-            private const val layout = "androidx.compose.foundation:foundation-layout:${Version.compose}"
-            private const val livedata = "androidx.compose.runtime:runtime-livedata:${Version.compose}"
-            private const val material = "androidx.compose.material:material:${Version.compose}"
-            private const val runtime = "androidx.compose.runtime:runtime:${Version.compose}"
-            private const val tooling = "androidx.compose.ui:ui-tooling:${Version.compose}"
-            private const val ui = "androidx.compose.ui:ui:${Version.compose}"
-            private const val uiUtil = "androidx.compose.ui:ui-util:${Version.compose}"
-            private const val uiTest = "androidx.compose.ui:ui-test-junit4:${Version.compose}"
-            const val uiTestManifest = "androidx.compose.ui:ui-test-manifest:${Version.compose}"
+            private const val animation = "androidx.compose.animation:animation:${Version.composeAnimation}"
+            private const val foundation = "androidx.compose.foundation:foundation:${Version.composeFoundation}"
+            private const val materialIcons = "androidx.compose.material:material-icons-extended:${Version.composeMaterial}"
+            private const val material = "androidx.compose.material:material:${Version.composeMaterial}"
+            private const val runtime = "androidx.compose.runtime:runtime:${Version.composeRuntime}"
+            private const val ui = "androidx.compose.ui:ui:${Version.composeUi}"
+            private const val uiTooling = "androidx.compose.ui:ui-tooling:${Version.composeUi}"
 
             val implementation = arrayListOf<String>().apply {
                 add(animation)
                 add(foundation)
-                add(iconsExtended)
-                add(layout)
-                add(livedata)
+                add(materialIcons)
                 add(material)
                 add(runtime)
-                add(tooling)
                 add(ui)
-                add(uiUtil)
-            }
-
-            val androidTestImplementation = arrayListOf<String>().apply {
-                add(uiTest)
-            }
-
-            val debugImplementation = arrayListOf<String>().apply {
-                add(uiTestManifest)
+                add(uiTooling)
             }
         }
 
@@ -181,14 +165,6 @@ object Dependencies {
         }
     }
 
-    object Gson {
-        private const val gson = "com.google.code.gson:gson:${Version.gson}"
-
-        val implementation = arrayListOf<String>().apply {
-            add(gson)
-        }
-    }
-
     object Hilt {
         private const val android = "com.google.dagger:hilt-android:${Version.hilt}"
         private const val compiler = "com.google.dagger:hilt-android-compiler:${Version.hilt}"
@@ -213,12 +189,10 @@ object Dependencies {
     }
 
     object Kotlin {
-        private const val reflect = "org.jetbrains.kotlin:kotlin-reflect:${Version.reflect}"
-        private const val stdlib = "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${Version.kotlin}"
+        private const val reflect = "org.jetbrains.kotlin:kotlin-reflect:${Version.kotlinGradle}"
 
         val implementation = arrayListOf<String>().apply {
             add(reflect)
-            add(stdlib)
         }
     }
 

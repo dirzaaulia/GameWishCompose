@@ -1,4 +1,4 @@
-package com.dirzaaulia.gamewish.ui.main.navigation
+package com.dirzaaulia.gamewish.ui.navigation
 
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandIn

@@ -1,4 +1,4 @@
-package com.dirzaaulia.gamewish.ui.main.navigation
+package com.dirzaaulia.gamewish.ui.navigation
 
 import androidx.navigation.NavHostController
 
