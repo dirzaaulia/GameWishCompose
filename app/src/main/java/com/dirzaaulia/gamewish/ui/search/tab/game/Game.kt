@@ -28,9 +28,13 @@ import com.dirzaaulia.gamewish.data.model.rawg.Genre
 import com.dirzaaulia.gamewish.data.model.rawg.Platform
 import com.dirzaaulia.gamewish.data.model.rawg.Publisher
 import com.dirzaaulia.gamewish.data.request.myanimelist.SearchGameRequest
-import com.dirzaaulia.gamewish.extension.visible
+import com.dirzaaulia.gamewish.utils.visible
 import com.dirzaaulia.gamewish.theme.White
 import com.dirzaaulia.gamewish.ui.common.*
+import com.dirzaaulia.gamewish.ui.common.item.SearchGamesItem
+import com.dirzaaulia.gamewish.ui.common.item.SearchGenreItem
+import com.dirzaaulia.gamewish.ui.common.item.SearchPlatformItem
+import com.dirzaaulia.gamewish.ui.common.item.SearchPublisherItem
 import com.dirzaaulia.gamewish.ui.search.SearchViewModel
 import com.dirzaaulia.gamewish.utils.PlaceholderConstant
 import com.google.accompanist.placeholder.PlaceholderHighlight
@@ -67,7 +71,10 @@ fun SearchGame(
             Scaffold(
                 topBar = { SearchGameTabMenu(menu = menu, menuId = menuId, viewModel = viewModel) }
             ) {
-                Crossfade(targetState = SearchGameTab.getTabFromResource(menuId)) { destination ->
+                Crossfade(
+                    targetState = SearchGameTab.getTabFromResource(menuId),
+                    label = ""
+                ) { destination ->
                     when (destination) {
                         SearchGameTab.LIST -> {
                             SearchGameList(

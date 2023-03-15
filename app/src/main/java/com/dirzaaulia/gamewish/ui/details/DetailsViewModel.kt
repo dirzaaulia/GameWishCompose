@@ -18,13 +18,26 @@ import com.dirzaaulia.gamewish.data.model.tmdb.MovieDetail
 import com.dirzaaulia.gamewish.data.model.wishlist.GameWishlist
 import com.dirzaaulia.gamewish.data.model.wishlist.MovieWishlist
 import com.dirzaaulia.gamewish.data.response.rawg.ScreenshotsResponse
-import com.dirzaaulia.gamewish.extension.isSucceeded
-import com.dirzaaulia.gamewish.extension.success
 import com.dirzaaulia.gamewish.network.tmdb.paging.TmdbPagingSource
-import com.dirzaaulia.gamewish.repository.*
+import com.dirzaaulia.gamewish.repository.DatabaseRepository
+import com.dirzaaulia.gamewish.repository.FirebaseRepository
+import com.dirzaaulia.gamewish.repository.MyAnimeListRepository
+import com.dirzaaulia.gamewish.repository.ProtoRepository
+import com.dirzaaulia.gamewish.repository.RawgRepository
+import com.dirzaaulia.gamewish.repository.TmdbRepository
+import com.dirzaaulia.gamewish.utils.OtherConstant
+import com.dirzaaulia.gamewish.utils.TmdbConstant
+import com.dirzaaulia.gamewish.utils.getTmdbRecomendations
+import com.dirzaaulia.gamewish.utils.isSucceeded
+import com.dirzaaulia.gamewish.utils.success
 import com.google.android.gms.tasks.Task
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -45,9 +58,9 @@ class DetailsViewModel @Inject constructor(
     val gameWishlistedData = mutableStateOf<GameWishlist?>(null)
     val movieWishlistedData = mutableStateOf<MovieWishlist?>(null)
 
-    private var _token: MutableStateFlow<String> = MutableStateFlow("")
+    private var _token: MutableStateFlow<String> = MutableStateFlow(OtherConstant.EMPTY_STRING)
 
-    private var _userAuthId: MutableStateFlow<String> = MutableStateFlow("")
+    private var _userAuthId: MutableStateFlow<String> = MutableStateFlow(OtherConstant.EMPTY_STRING)
 
     private val _gameDetailsResult: MutableStateFlow<ResponseResult<GameDetails>?> =
         MutableStateFlow(null)
@@ -55,10 +68,6 @@ class DetailsViewModel @Inject constructor(
 
     private val _gameDetails: MutableStateFlow<GameDetails?> = MutableStateFlow(null)
     val gameDetails = _gameDetails.asStateFlow()
-
-    private val _gameDetailsScreenshotsResult:
-            MutableStateFlow<ResponseResult<ScreenshotsResponse>?> = MutableStateFlow(null)
-    val gameDetailsScreenshotsResult = _gameDetailsScreenshotsResult.asStateFlow()
 
     private val _gameDetailsScreenshots: MutableStateFlow<ScreenshotsResponse?> =
         MutableStateFlow(null)
@@ -91,7 +100,7 @@ class DetailsViewModel @Inject constructor(
             = MutableStateFlow(null)
     val updateMyAnimeListResult = _updateMyAnimeListResult.asStateFlow()
 
-    private val _deleteMyAnimeListResult: MutableStateFlow<ResponseResult<String>?>
+    private val _deleteMyAnimeListResult: MutableStateFlow<ResponseResult<Unit>?>
             = MutableStateFlow(null)
     val deleteMyAnimeListResult = _deleteMyAnimeListResult.asStateFlow()
 
@@ -105,15 +114,15 @@ class DetailsViewModel @Inject constructor(
     private val _movieImages: MutableStateFlow<List<Image>?> = MutableStateFlow(null)
     val movieImages = _movieImages.asStateFlow()
 
-    private val _selectedAnimeTab: MutableStateFlow<Int> = MutableStateFlow(0)
+    private val _selectedAnimeTab: MutableStateFlow<Int> = MutableStateFlow(OtherConstant.ZERO)
     val selectedAnimeTab = _selectedAnimeTab.asStateFlow()
 
-    private val _selectedMovieTab: MutableStateFlow<Int> = MutableStateFlow(0)
+    private val _selectedMovieTab: MutableStateFlow<Int> = MutableStateFlow(OtherConstant.ZERO)
     val selectedMovieTab = _selectedMovieTab.asStateFlow()
 
-    private val movieType = MutableStateFlow("")
+    private val movieType = MutableStateFlow(OtherConstant.EMPTY_STRING)
 
-    private val movieId = MutableStateFlow(0L)
+    private val movieId = MutableStateFlow(OtherConstant.ZERO_LONG)
     var movieRecommendations: Flow<PagingData<Movie>>? = null
 
     init {
@@ -157,18 +166,16 @@ class DetailsViewModel @Inject constructor(
 
     private fun getUserAuthData() {
         viewModelScope.launch {
-            userPreferencesFlow.collect {
-                if (it.accessToken.isNullOrBlank()) {
-                    _token.value = ""
-                } else {
-                    _token.value = it.accessToken
-                }
+            userPreferencesFlow.collect { user ->
+                if (user.accessToken.isNullOrBlank())
+                    _token.value = OtherConstant.EMPTY_STRING
+                else
+                    _token.value = user.accessToken
 
-                if (it.userAuthId.isNullOrBlank()) {
-                    _userAuthId.value = ""
-                } else {
-                    _userAuthId.value = it.userAuthId
-                }
+                if (user.userAuthId.isNullOrBlank())
+                    _userAuthId.value = OtherConstant.EMPTY_STRING
+                else
+                    _userAuthId.value = user.userAuthId
             }
         }
     }
@@ -236,6 +243,50 @@ class DetailsViewModel @Inject constructor(
         }
     }
 
+    private fun getTv(movieId: Long) {
+        tmdbRepository.getTVDetails(movieId)
+            .onEach {
+                it.success { data ->
+                    _movieDetails.value = data
+                }
+                _movieDetailsResult.value = it
+                loading.value = false
+            }
+            .launchIn(viewModelScope)
+    }
+
+    private fun getMovie(movieId: Long) {
+        tmdbRepository.getMovieDetails(movieId)
+            .onEach {
+                it.success { data ->
+                    _movieDetails.value = data
+                }
+                _movieDetailsResult.value = it
+                loading.value = false
+            }
+            .launchIn(viewModelScope)
+    }
+
+    private fun getImagesTv(movieId: Long) {
+        tmdbRepository.getTVImages(movieId)
+            .onEach {
+                it.success { data ->
+                    _movieImages.value = data.imageList
+                }
+            }
+            .launchIn(viewModelScope)
+    }
+
+    private fun getImagesMovie(movieId: Long) {
+        tmdbRepository.getMovieImages(movieId)
+            .onEach {
+                it.success { data ->
+                    _movieImages.value = data.imageList
+                }
+            }
+            .launchIn(viewModelScope)
+    }
+
     fun getGameDetails(gameId: Long) {
         rawgRepository.getGameDetails(gameId)
             .onEach {
@@ -254,7 +305,6 @@ class DetailsViewModel @Inject constructor(
                 it.success { data ->
                     _gameDetailsScreenshots.value = data
                 }
-                _gameDetailsScreenshotsResult.value = it
             }
             .launchIn(viewModelScope)
     }
@@ -284,46 +334,15 @@ class DetailsViewModel @Inject constructor(
     }
 
     fun getMovieDetails(movieId: Long) {
-        if (movieType.value.equals("Movie", true)) {
-            tmdbRepository.getMovieDetails(movieId)
-                .onEach {
-                    it.success { data ->
-                        _movieDetails.value = data
-                    }
-                    _movieDetailsResult.value = it
-                    loading.value = false
-                }
-                .launchIn(viewModelScope)
-        } else {
-            tmdbRepository.getTVDetails(movieId)
-                .onEach {
-                    it.success { data ->
-                        _movieDetails.value = data
-                    }
-                    _movieDetailsResult.value = it
-                    loading.value = false
-                }
-                .launchIn(viewModelScope)
-        }
+        if (movieType.value.equals(TmdbConstant.TMDB_TYPE_MOVIE, true)) 
+            getMovie(movieId) else getTv(movieId)
     }
 
     fun getMovieImages(movieId: Long) {
-        if (movieType.value.equals("Movie", true)) {
-            tmdbRepository.getMovieImages(movieId)
-                .onEach {
-                    it.success { data ->
-                        _movieImages.value = data.imageList
-                    }
-                }
-                .launchIn(viewModelScope)
+        if (movieType.value.equals(TmdbConstant.TMDB_TYPE_MOVIE, true)) {
+            getImagesMovie(movieId)
         } else {
-            tmdbRepository.getTVImages(movieId)
-                .onEach {
-                    it.success { data ->
-                        _movieImages.value = data.imageList
-                    }
-                }
-                .launchIn(viewModelScope)
+            getImagesTv(movieId)
         }
     }
 
@@ -337,7 +356,7 @@ class DetailsViewModel @Inject constructor(
 
     fun checkIfMovieWishlisted(id: Long) {
         viewModelScope.launch {
-            if (movieType.value.equals("Movie", true)) {
+            if (movieType.value.equals(TmdbConstant.TMDB_TYPE_MOVIE, true)) {
                 databaseRepository.getMovieWishlist(id).collect {
                     movieWishlistedData.value = it
                 }
@@ -381,12 +400,12 @@ class DetailsViewModel @Inject constructor(
         numberWatched: Int
     ) {
         myAnimeListRepository.updateMyAnimeListAnimeList(
-            _token.value,
-            animeId,
-            status,
-            isRewatching,
-            score,
-            numberWatched
+            accessToken = _token.value,
+            animeId = animeId,
+            status = status,
+            isRewatching = isRewatching,
+            score = score,
+            numberWatched = numberWatched
         ).onEach {
             _updateMyAnimeListResult.value = it
         }.launchIn(viewModelScope)
@@ -394,9 +413,7 @@ class DetailsViewModel @Inject constructor(
 
     fun deleteMyAnimeListAnimeList(animeId: Long) {
         myAnimeListRepository.deleteMyAnimeListAnimeList(_token.value, animeId)
-            .onEach {
-                _deleteMyAnimeListResult.value = it
-            }
+            .onEach { result -> _deleteMyAnimeListResult.value = result }
             .launchIn(viewModelScope)
     }
 
@@ -421,35 +438,21 @@ class DetailsViewModel @Inject constructor(
 
     fun deleteMyAnimeListMangaList(mangaId: Long) {
         myAnimeListRepository.deleteMyAnimeListMangaList(_token.value, mangaId)
-            .onEach {
-                _deleteMyAnimeListResult.value = it
-            }
+            .onEach { response -> _deleteMyAnimeListResult.value = response }
             .launchIn(viewModelScope)
     }
 
     fun getMovieRecommendations() {
-        if (movieType.value.equals("Movie", true)) {
-            movieRecommendations = movieId.flatMapLatest {
-                Pager(PagingConfig(pageSize = 10)) {
-                    TmdbPagingSource(
-                        tmdbRepository,
-                        "",
-                        it,
-                        3
-                    )
-                }.flow.cachedIn(viewModelScope)
-            }
-        } else {
-            movieRecommendations = movieId.flatMapLatest {
-                Pager(PagingConfig(pageSize = 10)) {
-                    TmdbPagingSource(
-                        tmdbRepository,
-                        "",
-                        it,
-                        4
-                    )
-                }.flow.cachedIn(viewModelScope)
-            }
+        val serviceCode = movieType.value.getTmdbRecomendations()
+        movieRecommendations = movieId.flatMapLatest { movieId ->
+            Pager(PagingConfig(pageSize = TmdbConstant.TMDB_PAGE_SIZE_TEN)) {
+                TmdbPagingSource(
+                    repository = tmdbRepository,
+                    searchQuery = OtherConstant.EMPTY_STRING,
+                    movieId = movieId,
+                    serviceCode = serviceCode
+                )
+            }.flow.cachedIn(viewModelScope)
         }
     }
 }

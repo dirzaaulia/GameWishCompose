@@ -1,11 +1,12 @@
 package com.dirzaaulia.gamewish.repository
 
 import androidx.annotation.WorkerThread
-import com.dirzaaulia.gamewish.base.NotFoundException
 import com.dirzaaulia.gamewish.base.ResponseResult
+import com.dirzaaulia.gamewish.base.executeWithData
 import com.dirzaaulia.gamewish.base.executeWithResponse
 import com.dirzaaulia.gamewish.data.model.tmdb.Movie
 import com.dirzaaulia.gamewish.network.tmdb.TmdbService
+import com.dirzaaulia.gamewish.utils.replaceIfNull
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
@@ -17,18 +18,18 @@ class TmdbRepository @Inject constructor(
 
     suspend fun searchMovie(searchQuery: String, page: Int) : ResponseResult<List<Movie>> {
         return withContext(Dispatchers.IO) {
-            executeWithResponse {
+            executeWithData {
                 service.searchMovie(searchQuery = searchQuery, page = page)
-                    .body()?.results ?: emptyList()
+                    .body()?.results.replaceIfNull()
             }
         }
     }
 
     suspend fun searchTv(searchQuery: String, page: Int) : ResponseResult<List<Movie>> {
         return withContext(Dispatchers.IO) {
-            executeWithResponse {
+            executeWithData {
                 service.searchTv(searchQuery = searchQuery, page = page)
-                    .body()?.results ?: emptyList()
+                    .body()?.results.replaceIfNull()
             }
         }
     }
@@ -38,9 +39,9 @@ class TmdbRepository @Inject constructor(
         page: Int
     ): ResponseResult<List<Movie>> {
         return withContext(Dispatchers.IO) {
-            executeWithResponse {
+            executeWithData {
                 service.getMovieRecommendations(movieId = movieId, page = page)
-                    .body()?.results ?: emptyList()
+                    .body()?.results.replaceIfNull()
             }
         }
     }
@@ -50,62 +51,50 @@ class TmdbRepository @Inject constructor(
         page: Int
     ): ResponseResult<List<Movie>> {
         return withContext(Dispatchers.IO) {
-            executeWithResponse {
+            executeWithData {
                 service.getTVRecommendations(tvId = tvId, page = page)
-                    .body()?.results ?: emptyList()
+                    .body()?.results.replaceIfNull()
             }
         }
     }
 
     @WorkerThread
     fun getMovieDetails(movieId: Long) = flow {
-        try {
-            service.getMovieDetail(movieId = movieId).body()?.let {
-                emit(ResponseResult.Success(it))
-            } ?: run {
-                throw NotFoundException()
+        emit(ResponseResult.Loading)
+        emit(
+            executeWithResponse {
+                service.getMovieDetail(movieId = movieId)
             }
-        } catch (e: Exception) {
-            emit(ResponseResult.Error(e))
-        }
+        )
     }
 
     @WorkerThread
     fun getTVDetails(tvId: Long) = flow {
-        try {
-            service.getTVDetail(tvId = tvId).body()?.let {
-                emit(ResponseResult.Success(it))
-            } ?: run {
-                throw NotFoundException()
+        emit(ResponseResult.Loading)
+        emit(
+            executeWithResponse {
+                service.getTVDetail(tvId = tvId)
             }
-        } catch (e: Exception) {
-            emit(ResponseResult.Error(e))
-        }
+        )
     }
 
     @WorkerThread
     fun getMovieImages(movieId: Long) = flow {
-        try {
-            service.getMovieImages(movieId = movieId).body()?.let {
-                emit(ResponseResult.Success(it))
-            } ?: run {
-                throw NotFoundException()
+        emit(ResponseResult.Loading)
+        emit(
+            executeWithResponse {
+                service.getMovieImages(movieId = movieId)
             }
-        } catch (e: Exception) {
-            emit(ResponseResult.Error(e))
-        }
+        )
     }
 
     @WorkerThread
     fun getTVImages(tvId: Long) = flow {
-        try {
-            service.getTVImages(tvId = tvId).body()?.let {
-                emit(ResponseResult.Success(it))
-            } ?: run {
-                throw NotFoundException()
+        emit(ResponseResult.Loading)
+        emit(
+            executeWithResponse {
+                service.getTVImages(tvId = tvId)
             }
-        } catch (e: Exception) {
-            emit(ResponseResult.Error(e))
-        }
+        )
     }
 }

@@ -2,7 +2,6 @@ package com.dirzaaulia.gamewish.ui.details.movie
 
 import android.annotation.SuppressLint
 import androidx.annotation.StringRes
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
@@ -32,13 +31,11 @@ import com.dirzaaulia.gamewish.data.model.tmdb.Image
 import com.dirzaaulia.gamewish.data.model.tmdb.Movie
 import com.dirzaaulia.gamewish.data.model.tmdb.MovieDetail
 import com.dirzaaulia.gamewish.data.model.wishlist.MovieWishlist
-import com.dirzaaulia.gamewish.extension.isError
-import com.dirzaaulia.gamewish.extension.isSucceeded
-import com.dirzaaulia.gamewish.extension.visible
 import com.dirzaaulia.gamewish.theme.Grey700
 import com.dirzaaulia.gamewish.theme.Red700
 import com.dirzaaulia.gamewish.theme.White
 import com.dirzaaulia.gamewish.ui.common.*
+import com.dirzaaulia.gamewish.ui.common.item.CommonMovieItem
 import com.dirzaaulia.gamewish.ui.details.DetailsViewModel
 import com.dirzaaulia.gamewish.utils.*
 import com.google.accompanist.pager.rememberPagerState
@@ -55,8 +52,8 @@ fun MovieDetails(
     type: String,
     navigateToMovieDetails: (Long, String) -> Unit,
 ) {
-    val menu  = MovieDetailsTab.values()
-    val menuId: Int by viewModel.selectedMovieTab.collectAsState(0)
+    val menu = MovieDetailsTab.values()
+    val menuId: Int by viewModel.selectedMovieTab.collectAsState(OtherConstant.ZERO)
     val scope = rememberCoroutineScope()
     val scaffoldState = rememberBottomSheetScaffoldState()
     val data by viewModel.movieDetails.collectAsState(null)
@@ -67,7 +64,6 @@ fun MovieDetails(
         viewModel.movieRecommendations?.collectAsLazyPagingItems()
     val updateMovieResult by viewModel.updateMovieResult.collectAsState()
     val deleteMovieResult by viewModel.deleteMovieResult.collectAsState()
-    val loading = viewModel.loading.value
     val errorMessage =
         stringResource(id = R.string.tv_show_details_error)
 
@@ -84,141 +80,136 @@ fun MovieDetails(
         updateMovieResult.isSucceeded -> {
             LaunchedEffect(updateMovieResult) {
                 if (wishlistData != null) {
-                    val text = if (type.equals("Movie", true)) {
-                        "This Movie has been updated on your Watchlist"
-                    } else {
-                        "This TV Show has been updated on your Watchlist"
-                    }
+                    val text = type.setStringBasedOnTmdbStatus(
+                        setIfMovie = TmdbConstant.TMDB_MOVIE_LIST_UPDATED,
+                        setIfTv = TmdbConstant.TMDB_TV_LIST_UPDATED
+                    )
                     scaffoldState.snackbarHostState.showSnackbar(text)
                 } else {
-                    val text = if (type.equals("Movie", true)) {
-                        "This Movie has been added to your Watchlist"
-                    } else {
-                        "This TV Show has been added to your Watchlist"
-                    }
+                    val text = type.setStringBasedOnTmdbStatus(
+                        setIfMovie = TmdbConstant.TMDB_MOVIE_LIST_ADDED,
+                        setIfTv = TmdbConstant.TMDB_TV_LIST_ADDED
+                    )
                     scaffoldState.snackbarHostState.showSnackbar(text)
                 }
             }
         }
+
         updateMovieResult.isError -> {
             LaunchedEffect(updateMovieResult) {
                 if (wishlistData != null) {
-                    val text = if (type.equals("Movie", true)) {
-                        "Something wrong happen went updating Movie on your Watchlist"
-                    } else {
-                        "Something wrong happen went updating TV Show on your Watchlist"
-                    }
+                    val text = type.setStringBasedOnTmdbStatus(
+                        setIfMovie = TmdbConstant.TMDB_MOVIE_LIST_UPDATE_ERROR,
+                        setIfTv = TmdbConstant.TMDB_TV_LIST_UPDATE_ERROR
+                    )
                     scaffoldState.snackbarHostState.showSnackbar(text)
                 } else {
-                    val text = if (type.equals("Movie", true)) {
-                        "Something wrong happen went adding Movie into your Watchlist"
-                    } else {
-                        "Something wrong happen went updating TV Show on your Watchlist"
-                    }
+                    val text = type.setStringBasedOnTmdbStatus(
+                        setIfMovie = TmdbConstant.TMDB_MOVIE_LIST_UPDATE_ERROR,
+                        setIfTv = TmdbConstant.TMDB_MOVIE_LIST_ADD_ERROR
+                    )
                     scaffoldState.snackbarHostState.showSnackbar(text)
                 }
             }
         }
+
         deleteMovieResult.isSucceeded -> {
             LaunchedEffect(deleteMovieResult) {
-                val text = if (type.equals("Movie", true)) {
-                    "This Movie has been deleted from your Watchlist"
-                } else {
-                    "This TV Show has been deleted from your Watchlist"
-                }
+                val text = type.setStringBasedOnTmdbStatus(
+                    setIfMovie = TmdbConstant.TMDB_MOVIE_LIST_DELETED,
+                    setIfTv = TmdbConstant.TMDB_TV_LIST_DELETED
+                )
                 scaffoldState.snackbarHostState.showSnackbar(text)
             }
         }
+
         deleteMovieResult.isError -> {
             LaunchedEffect(deleteMovieResult) {
-                val text = if (type.equals("Movie", true)) {
-                    "Something wrong happen when deleting Movie from your Watchlist"
-                } else {
-                    "Something wrong happen when deleting TV Show from your Watchlist"
-                }
+                val text = type.setStringBasedOnTmdbStatus(
+                    setIfMovie = TmdbConstant.TMDB_MOVIE_LIST_DELETE_ERROR,
+                    setIfTv = TmdbConstant.TMDB_TV_LIST_DELETE_ERROR
+                )
                 scaffoldState.snackbarHostState.showSnackbar(text)
             }
         }
     }
 
-    CommonLoading(visibility = loading)
-    AnimatedVisibility(visible = !loading) {
-        when {
-            dataResult.isError -> {
-                val errorScaffoldState = rememberScaffoldState()
-
-                viewModel.setLoading(false)
-
-                Scaffold(scaffoldState = errorScaffoldState) {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        ErrorConnect(text = errorMessage) {
-                            viewModel.getMovieDetails(movieId)
-                        }
-                    }
+    when {
+        dataResult.isLoading -> CommonLoading(visibility = true)
+        dataResult.isSucceeded -> {
+            Scaffold(
+                topBar = {
+                    MovieDetailsTopBar(
+                        upPress = upPress,
+                        imageList = images,
+                    )
                 }
-            }
-            dataResult.isSucceeded -> {
-                Scaffold(
+            ) {
+                BottomSheetScaffold(
+                    scaffoldState = scaffoldState,
                     topBar = {
-                        MovieDetailsTopBar(
-                            upPress = upPress,
-                            loading = loading,
-                            imageList = images,
+                        MovieDetailsTabMenu(
+                            menu = menu,
+                            menuId = menuId,
+                            viewModel = viewModel
                         )
-                    }
-                ) {
-                    BottomSheetScaffold(
-                        scaffoldState = scaffoldState,
-                        topBar = {
-                            MovieDetailsTabMenu(
-                                menu = menu,
-                                menuId = menuId,
-                                viewModel = viewModel
+                    },
+                    sheetContent = {
+                        data?.let { value ->
+                            MovieDetailsSheetContent(
+                                data = value,
+                                type = type,
+                                wishlist = wishlistData,
+                                viewModel = viewModel,
+                                scope = scope,
+                                scaffoldState = scaffoldState
                             )
-                        },
-                        sheetContent = {
-                            data?.let { value ->
-                                MovieDetailsSheetContent(
-                                    data = value,
+                        }
+                    },
+                    sheetPeekHeight = 0.dp
+                ) { innerPadding ->
+                    val innerModifier = Modifier.padding(innerPadding)
+                    Crossfade(
+                        targetState = MovieDetailsTab.getTabFromResource(menuId),
+                        label = OtherConstant.EMPTY_STRING
+                    ) { destination ->
+                        when (destination) {
+                            MovieDetailsTab.DESCRIPTION -> {
+                                MovieDescriptionTab(
+                                    modifier = innerModifier,
+                                    data = data,
                                     type = type,
-                                    wishlist = wishlistData,
-                                    viewModel = viewModel,
                                     scope = scope,
                                     scaffoldState = scaffoldState
                                 )
                             }
-                        },
-                        sheetPeekHeight = 0.dp
-                    ) { innerPadding ->
-                        val innerModifier = Modifier.padding(innerPadding)
-                        Crossfade(
-                            targetState = MovieDetailsTab.getTabFromResource(menuId)
-                        ) { destination ->
-                            when (destination) {
-                                MovieDetailsTab.DESCRIPTION -> {
-                                    MovieDescriptionTab(
-                                        modifier = innerModifier,
-                                        loading = loading,
-                                        data = data,
+
+                            MovieDetailsTab.RECOMMENDATION -> {
+                                movieRecommendations?.let { item ->
+                                    MovieRecommendationsTab(
+                                        data = item,
                                         type = type,
-                                        scope = scope,
-                                        scaffoldState = scaffoldState
+                                        navigateToMovieDetails = navigateToMovieDetails
                                     )
-                                }
-                                MovieDetailsTab.RECOMMENDATION -> {
-                                    movieRecommendations?.let { item ->
-                                        MovieRecommendationsTab(
-                                            data = item,
-                                            type = type,
-                                            navigateToMovieDetails = navigateToMovieDetails
-                                        )
-                                    }
                                 }
                             }
                         }
+                    }
+                }
+            }
+        }
+        dataResult.isError -> {
+            val errorScaffoldState = rememberScaffoldState()
+
+            viewModel.setLoading(false)
+
+            Scaffold(scaffoldState = errorScaffoldState) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    ErrorConnect(text = errorMessage) {
+                        viewModel.getMovieDetails(movieId)
                     }
                 }
             }
@@ -275,7 +266,6 @@ fun MovieRecommendationsTab(
 @Composable
 fun MovieDescriptionTab(
     modifier: Modifier = Modifier,
-    loading: Boolean,
     data: MovieDetail?,
     type: String,
     scope: CoroutineScope,
@@ -288,7 +278,6 @@ fun MovieDescriptionTab(
     ) {
         item {
             MovieDescriptionHeader(
-                loading = loading,
                 data = data,
                 type = type
             )
@@ -306,7 +295,6 @@ fun MovieDescriptionTab(
 
 @Composable
 fun MovieDescriptionHeader(
-    loading: Boolean,
     data: MovieDetail?,
     type: String
 ) {
@@ -321,20 +309,21 @@ fun MovieDescriptionHeader(
             if (data?.posterPath.isNullOrBlank()) {
                 NetworkImage(
                     url = OtherConstant.NO_IMAGE_URL,
-                    contentDescription = null,
-                    modifier = Modifier.visible(!loading)
+                    contentDescription = OtherConstant.EMPTY_STRING
                 )
             } else {
                 NetworkImage(
-                    url = "${TmdbConstant.TMDB_BASE_IMAGE_URL}${data?.posterPath}",
-                    contentDescription = null,
-                    modifier = Modifier.visible(!loading)
+                    url = String.format(
+                        OtherConstant.STRING_FORMAT_S_S,
+                        TmdbConstant.TMDB_BASE_IMAGE_URL,
+                        data?.posterPath
+                    ),
+                    contentDescription = OtherConstant.EMPTY_STRING,
                 )
             }
         }
         Card(
-            modifier = Modifier
-                .weight(1f),
+            modifier = Modifier.weight(1f),
             shape = MaterialTheme.shapes.small
         ) {
             Column(
@@ -351,7 +340,12 @@ fun MovieDescriptionHeader(
                 ) {
                     data?.status?.let { status ->
                         Text(
-                            text = status.replace("_", " ").capitalizeWords(),
+                            text = status
+                                .replace(
+                                    OtherConstant.UNDERSCORE,
+                                    OtherConstant.BLANK_SPACE
+                                )
+                                .capitalizeWords(),
                             color = White,
                             style = MaterialTheme.typography.caption,
                             modifier = Modifier.padding(4.dp),
@@ -363,39 +357,39 @@ fun MovieDescriptionHeader(
                     text = stringResource(R.string.runtime),
                     style = MaterialTheme.typography.subtitle2,
                 )
-                if (type.equals("Movie", true)) {
+                if (type.equals(TmdbConstant.TMDB_TYPE_MOVIE, true)) {
                     Text(
-                        text = "${data?.runtime}",
+                        text = data?.runtime.toString(),
                         color = Color.Gray,
                         style = MaterialTheme.typography.caption,
                     )
                 } else {
                     Text(
-                        text = "${data?.episodeRunTime?.get(0) ?: stringResource(R.string.unknown)}",
+                        text = (data?.episodeRunTime?.get(0) ?: stringResource(R.string.unknown)).toString(),
                         color = Color.Gray,
                         style = MaterialTheme.typography.caption,
                     )
                 }
                 Text(
-                    text = "Score",
+                    text = TmdbConstant.TMDB_SCORE,
                     style = MaterialTheme.typography.subtitle2,
                 )
                 Text(
-                    text = "${data?.voteAverage}",
+                    text = data?.voteAverage.toString(),
                     color = Color.Gray,
                     style = MaterialTheme.typography.caption,
                 )
                 Text(
-                    text = "Popularity",
+                    text = TmdbConstant.TMDB_POPULARITY,
                     style = MaterialTheme.typography.subtitle2,
                 )
                 Text(
-                    text = "${data?.popularity}",
+                    text = data?.popularity.toString(),
                     color = Color.Gray,
                     style = MaterialTheme.typography.caption,
                 )
                 Text(
-                    text = "Production Companies",
+                    text = TmdbConstant.TMDB_PRODUCTION_COMAPNIES,
                     style = MaterialTheme.typography.subtitle2,
                 )
                 Text(
@@ -418,7 +412,7 @@ fun MovieDescriptionFooter(
 ) {
     Column(modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)) {
         data?.id?.let {
-            if (type.equals("Movie", true)) {
+            if (type.equals(TmdbConstant.TMDB_TYPE_MOVIE, true)) {
                 Text(
                     text = stringResource(id = R.string.movie_data_source),
                     style = MaterialTheme.typography.caption,
@@ -433,19 +427,19 @@ fun MovieDescriptionFooter(
         Row(
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            if (type.equals("Movie", true)) {
-                data?.title?.let {
+            if (type.equals(TmdbConstant.TMDB_TYPE_MOVIE, true)) {
+                data?.title?.let { title ->
                     Text(
                         modifier = Modifier.weight(1f),
-                        text = it,
+                        text = title,
                         style = MaterialTheme.typography.h4,
                     )
                 }
             } else {
-                data?.name?.let {
+                data?.name?.let { name ->
                     Text(
                         modifier = Modifier.weight(1f),
-                        text = it,
+                        text = name,
                         style = MaterialTheme.typography.h4,
                     )
                 }
@@ -468,21 +462,21 @@ fun MovieDescriptionFooter(
             ) {
                 Icon(
                     imageVector = Icons.Filled.Favorite,
-                    contentDescription = null,
+                    contentDescription = OtherConstant.EMPTY_STRING,
                     tint = MaterialTheme.colors.onSurface
                 )
             }
         }
-        data?.tagline?.let {
+        data?.tagline?.let { tagline ->
             Text(
-                text = it,
+                text = tagline,
                 style = MaterialTheme.typography.subtitle1,
                 modifier = Modifier.padding(top = 4.dp)
             )
         }
         data?.releaseDate?.let {
             val releaseDate = if (it.isNotBlank()) {
-                it.changeDateFormat("yyyy-MM-dd")
+                it.changeDateFormat(OtherConstant.DATE_FORMAT_STRIP_yyyy_MM_dd)
             } else {
                 stringResource(R.string.no_release_date)
             }
@@ -492,38 +486,74 @@ fun MovieDescriptionFooter(
                 modifier = Modifier.padding(top = 8.dp)
             )
         }
-        if (type.equals("Movie", true)) {
+        if (type.equals(TmdbConstant.TMDB_TYPE_MOVIE, true)) {
             Row {
-                data?.budget?.let {
+                data?.budget?.let { budget ->
                     Text(
                         modifier = Modifier.weight(1f),
-                        text = "Budget : ${String.format(Locale.ITALIAN, "%,d", it)}",
+                        text = String.format(
+                            OtherConstant.STRING_FORMAT_S_SPACE_S_SPACE_S,
+                            TmdbConstant.TMDB_BUDGET,
+                            OtherConstant.COLON,
+                            String.format(
+                                Locale.ITALIAN,
+                                OtherConstant.NOMINAL_FORMAT,
+                                budget
+                            )
+                        ),
                         style = MaterialTheme.typography.caption,
                     )
                 }
-                data?.revenue?.let {
+                data?.revenue?.let { revenue ->
                     Text(
                         modifier = Modifier.weight(1f),
                         textAlign = TextAlign.End,
-                        text = "Revenue : ${String.format(Locale.ITALIAN, "%,d", it)}",
+                        text = String.format(
+                            OtherConstant.STRING_FORMAT_S_SPACE_S_SPACE_S,
+                            TmdbConstant.TMDB_REVENUE,
+                            OtherConstant.COLON,
+                            String.format(
+                                Locale.ITALIAN,
+                                OtherConstant.NOMINAL_FORMAT,
+                                revenue
+                            )
+                        ),
                         style = MaterialTheme.typography.caption,
                     )
                 }
             }
         } else {
             Row {
-                data?.numberOfSeasons?.let {
+                data?.numberOfSeasons?.let { numberOfSeason ->
                     Text(
                         modifier = Modifier.weight(1f),
-                        text = "Seasons : ${String.format(Locale.ITALIAN, "%,d", it)}",
+                        text = String.format(
+                            OtherConstant.STRING_FORMAT_S_SPACE_S_SPACE_S,
+                            TmdbConstant.TMDB_SEASONS,
+                            OtherConstant.COLON,
+                            String.format(
+                                Locale.ITALIAN,
+                                OtherConstant.NOMINAL_FORMAT,
+                                numberOfSeason
+                            )
+                        ),
                         style = MaterialTheme.typography.caption,
                     )
                 }
-                data?.numberOfEpisodes?.let {
+                data?.numberOfEpisodes?.let { numberOfEpisode ->
                     Text(
                         modifier = Modifier.weight(1f),
                         textAlign = TextAlign.End,
-                        text = "Episodes : ${String.format(Locale.ITALIAN, "%,d", it)}",
+                        text = String.format(
+                            OtherConstant.STRING_FORMAT_S_SPACE_S_SPACE_S,
+                            TmdbConstant.TMDB_EPISODES,
+                            OtherConstant.COLON,
+                            String.format(
+                                Locale.ITALIAN,
+                                OtherConstant.NOMINAL_FORMAT,
+                                numberOfEpisode
+                            )
+                        ),
                         style = MaterialTheme.typography.caption,
                     )
                 }
@@ -557,12 +587,12 @@ fun MovieDescriptionFooter(
 @Composable
 fun MovieDetailsTopBar(
     upPress: () -> Unit,
-    loading: Boolean,
     imageList: List<Image>?
 ) {
-    Box(modifier = Modifier
-        .height(300.dp)
-        .fillMaxWidth()
+    Box(
+        modifier = Modifier
+            .height(300.dp)
+            .fillMaxWidth()
     ) {
         if (!imageList.isNullOrEmpty()) {
             val pagerState = rememberPagerState()
@@ -574,8 +604,7 @@ fun MovieDetailsTopBar(
         } else if (imageList?.isEmpty() == true) {
             NetworkImage(
                 url = OtherConstant.NO_IMAGE_URL,
-                contentDescription = null,
-                modifier = Modifier.visible(!loading)
+                contentDescription = OtherConstant.EMPTY_STRING,
             )
         }
         TopAppBar(
@@ -611,8 +640,14 @@ fun MovieDetailsSheetContent(
 ) {
 
     var statusExpanded by remember { mutableStateOf(false) }
-    val status = wishlist?.status ?: "Plan To Watch"
-    val statusList = listOf("Watching", "Completed", "On-Hold", "Dropped", "Plan To Watch")
+    val status = wishlist?.status.replaceIfNull(TmdbConstant.TMDB_STATUS_PLAN_TO_WATCH)
+    val statusList = listOf(
+        TmdbConstant.TMDB_STATUS_WATCHING,
+        TmdbConstant.TMDB_STATUS_COMPLETED,
+        TmdbConstant.TMDB_STATUS_ON_HOLD,
+        TmdbConstant.TMDB_STATUS_DROPPED,
+        TmdbConstant.TMDB_STATUS_PLAN_TO_WATCH
+    )
     var statusText by remember { mutableStateOf(status) }
 
     var textfieldSize by remember { mutableStateOf(Size.Zero) }
@@ -621,6 +656,7 @@ fun MovieDetailsSheetContent(
         statusExpanded -> {
             Icons.Filled.ArrowDropUp //it requires androidx.compose.material:material-icons-extended
         }
+
         else -> {
             Icons.Filled.ArrowDropDown
         }
@@ -630,7 +666,8 @@ fun MovieDetailsSheetContent(
         modifier = Modifier
             .padding(16.dp)
             .fillMaxWidth()
-            .navigationBarsPadding().imePadding()
+            .navigationBarsPadding()
+            .imePadding()
     ) {
         if (wishlist != null) {
             IconButton(
@@ -651,9 +688,9 @@ fun MovieDetailsSheetContent(
                 )
             }
         }
-        data.title?.let {
+        data.title?.let { title ->
             Text(
-                text = it,
+                text = title,
                 style = MaterialTheme.typography.h6
             )
         }
@@ -667,11 +704,11 @@ fun MovieDetailsSheetContent(
                     //This value is used to assign to the DropDown the same width
                     textfieldSize = coordinates.size.toSize()
                 },
-            label = { Text("Status") },
+            label = { Text(text = TmdbConstant.TMDB_STATUS) },
             trailingIcon = {
                 Icon(
                     imageVector = icon,
-                    contentDescription = null,
+                    contentDescription = OtherConstant.EMPTY_STRING,
                     modifier = Modifier.clickable { statusExpanded = !statusExpanded }
                 )
             }
@@ -698,7 +735,7 @@ fun MovieDetailsSheetContent(
                 .padding(top = 4.dp, bottom = 16.dp)
                 .fillMaxWidth(),
             onClick = {
-                if (type.equals("Movie", true)) {
+                if (type.equals(TmdbConstant.TMDB_TYPE_MOVIE, true)) {
                     val item = data.let {
                         MovieWishlist(it.id, it.title, it.posterPath, statusText, type)
                     }
@@ -717,17 +754,15 @@ fun MovieDetailsSheetContent(
             }
         ) {
             val text = if (wishlist?.status != null) {
-                if (type.equals("Movie", true)) {
-                    "Update Movie in your Watchlist"
-                } else {
-                    "Update TV Show in your Watchlist"
-                }
+                type.setStringBasedOnTmdbStatus(
+                    setIfMovie = TmdbConstant.TMDB_UPDATE_MOVIE,
+                    setIfTv = TmdbConstant.TMDB_UPDATE_TV
+                )
             } else {
-                if (type.equals("Movie", true)) {
-                    "Add Movie into your Watchlist"
-                } else {
-                    "Add TV Show into your Watchlist"
-                }
+                type.setStringBasedOnTmdbStatus(
+                    setIfMovie = TmdbConstant.TMDB_ADD_MOVIE,
+                    setIfTv = TmdbConstant.TMDB_ADD_TV
+                )
             }
             Text(text = text)
         }
@@ -758,8 +793,8 @@ enum class MovieDetailsTab(@StringRes val title: Int) {
     companion object {
         fun getTabFromResource(index: Int): MovieDetailsTab {
             return when (index) {
-                0 -> DESCRIPTION
-                1 -> RECOMMENDATION
+                OtherConstant.ZERO -> DESCRIPTION
+                OtherConstant.ONE -> RECOMMENDATION
                 else -> DESCRIPTION
             }
         }

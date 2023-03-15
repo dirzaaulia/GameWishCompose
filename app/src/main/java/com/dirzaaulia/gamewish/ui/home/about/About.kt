@@ -32,11 +32,13 @@ import androidx.compose.ui.unit.dp
 import com.dirzaaulia.gamewish.R
 import com.dirzaaulia.gamewish.base.ResponseResult
 import com.dirzaaulia.gamewish.data.model.myanimelist.User
-import com.dirzaaulia.gamewish.extension.isError
-import com.dirzaaulia.gamewish.extension.isSucceeded
+import com.dirzaaulia.gamewish.utils.isError
+import com.dirzaaulia.gamewish.utils.isSucceeded
 import com.dirzaaulia.gamewish.ui.home.HomeViewModel
 import com.dirzaaulia.gamewish.utils.FirebaseConstant
+import com.dirzaaulia.gamewish.utils.MyAnimeListConstant
 import com.dirzaaulia.gamewish.utils.NetworkImage
+import com.dirzaaulia.gamewish.utils.OtherConstant
 import com.dirzaaulia.gamewish.utils.openLink
 import com.dirzaaulia.gamewish.utils.sendEmail
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -110,7 +112,7 @@ fun GoogleSection(
         shape = MaterialTheme.shapes.large
     ) {
         Column(modifier = Modifier.padding(8.dp)) {
-            Text(text = "Google Account")
+            Text(text = OtherConstant.GOOGLE_ACCOUNT)
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center,
@@ -121,7 +123,7 @@ fun GoogleSection(
                 ) {
                     NetworkImage(
                         url = googleProfileImage,
-                        contentDescription = null,
+                        contentDescription = OtherConstant.EMPTY_STRING,
                         modifier = Modifier.size(75.dp)
                     )
                 }
@@ -147,7 +149,7 @@ fun GoogleSection(
                         Text(
                             style = MaterialTheme.typography.button,
                             color = MaterialTheme.colors.onSurface,
-                            text = "Logout Account"
+                            text = OtherConstant.LOGOUT_ACCOUNT
                         )
                     }
                 }
@@ -170,7 +172,7 @@ fun MyAnimeListSection(
         shape = MaterialTheme.shapes.large
     ) {
         Column(modifier = Modifier.padding(8.dp)) {
-            Text(text = "MyAnimeList Account")
+            Text(text = MyAnimeListConstant.MYANIMELIST_ACCOUNT)
             when {
                 myAnimeListUserResult.isSucceeded -> {
                     Row(
@@ -184,17 +186,17 @@ fun MyAnimeListSection(
                             ) {
                                 NetworkImage(
                                     url = it,
-                                    contentDescription = null,
+                                    contentDescription = OtherConstant.EMPTY_STRING,
                                     modifier = Modifier.size(75.dp)
                                 )
                             }
                         }
                         Column{
-                            myAnimeListUser.name?.let {
+                            myAnimeListUser.name?.let { username ->
                                 Text(
                                     textAlign = TextAlign.Center,
                                     modifier = Modifier.fillMaxWidth(),
-                                    text = it,
+                                    text = username,
                                     style = MaterialTheme.typography.h6
                                 )
                             }
@@ -203,14 +205,14 @@ fun MyAnimeListSection(
                                     .padding(top = 4.dp)
                                     .fillMaxWidth(),
                                 onClick = {
-                                    viewModel.setAccessToken("")
+                                    viewModel.setAccessToken(OtherConstant.EMPTY_STRING)
                                     viewModel.getAccessToken()
                                 },
                             ) {
                                 Text(
                                     style = MaterialTheme.typography.button,
                                     color = MaterialTheme.colors.onSurface,
-                                    text = "Unlink Account"
+                                    text = OtherConstant.UNLINK_ACOCUNT
                                 )
                             }
                         }
@@ -227,7 +229,7 @@ fun MyAnimeListSection(
                             Text(
                                 style = MaterialTheme.typography.button,
                                 color = MaterialTheme.colors.onSurface,
-                                text = "Link Account"
+                                text = OtherConstant.LINK_ACCOUNT
                             )
                         }
                     } else {
@@ -251,7 +253,7 @@ fun GameWishAboutSection() {
         shape = MaterialTheme.shapes.large
     ) {
         Column(modifier = Modifier.padding(8.dp)) {
-            Text(text = "About GameWish")
+            Text(text = OtherConstant.ABOUT_GAMEWISH)
             ClickableText(
                 style = MaterialTheme.typography.caption,
                 modifier = Modifier.fillMaxWidth(),
@@ -262,7 +264,7 @@ fun GameWishAboutSection() {
                         textDecoration = TextDecoration.Underline
                     ),
                 ),
-                onClick = { openLink(context, "https://linktr.ee/DirzaAulia") }
+                onClick = { openLink(context, OtherConstant.WEBSITE) }
             )
             ClickableText(
                 style = MaterialTheme.typography.caption,
@@ -274,7 +276,7 @@ fun GameWishAboutSection() {
                         textDecoration = TextDecoration.Underline
                     ),
                 ),
-                onClick = { openLink(context, "https://play.google.com/store/apps/dev?id=4806849608818858118") }
+                onClick = { openLink(context, OtherConstant.PLAY_STORE_LINK) }
             )
         }
     }
@@ -288,7 +290,7 @@ fun DataSourceSection() {
         shape = MaterialTheme.shapes.large
     ) {
         Column(modifier = Modifier.padding(8.dp)) {
-            Text(text = "Data Source")
+            Text(text = OtherConstant.DATA_SOURCE)
             ClickableText(
                 style = MaterialTheme.typography.caption,
                 modifier = Modifier.fillMaxWidth(),
@@ -299,7 +301,7 @@ fun DataSourceSection() {
                         textDecoration = TextDecoration.Underline
                     ),
                 ),
-                onClick = { openLink(context, "https://www.rawg.io") }
+                onClick = { openLink(context, OtherConstant.RAWG_LINK) }
             )
             ClickableText(
                 style = MaterialTheme.typography.caption,
@@ -311,7 +313,7 @@ fun DataSourceSection() {
                         textDecoration = TextDecoration.Underline
                     ),
                 ),
-                onClick = { openLink(context, "https://www.cheapshark.com/") }
+                onClick = { openLink(context, OtherConstant.CHEAPSHARK_LINK) }
             )
             ClickableText(
                 style = MaterialTheme.typography.caption,
@@ -323,7 +325,7 @@ fun DataSourceSection() {
                         textDecoration = TextDecoration.Underline
                     ),
                 ),
-                onClick = { openLink(context, "https://wwww.myanimelist.net/") }
+                onClick = { openLink(context, OtherConstant.MYANIMELIST_LINK) }
             )
             ClickableText(
                 style = MaterialTheme.typography.caption,
@@ -335,7 +337,7 @@ fun DataSourceSection() {
                         textDecoration = TextDecoration.Underline
                     ),
                 ),
-                onClick = { openLink(context, "https://wwww.themoviedb.org/") }
+                onClick = { openLink(context, OtherConstant.TMDB_LINK) }
             )
         }
     }
@@ -349,7 +351,7 @@ fun ContactMeSection() {
         shape = MaterialTheme.shapes.large
     ) {
         Column(modifier = Modifier.padding(8.dp)) {
-            Text(text = "Contact")
+            Text(text = stringResource(R.string.contact))
             Text(
                 modifier = Modifier.fillMaxWidth(),
                 text = stringResource(id = R.string.about_contact),
@@ -366,7 +368,7 @@ fun ContactMeSection() {
                 Text(
                     style = MaterialTheme.typography.button,
                     color = MaterialTheme.colors.onSurface,
-                    text = "Send E-Mail"
+                    text = stringResource(R.string.send_e_mail)
                 )
             }
         }

@@ -14,9 +14,9 @@ import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import com.dirzaaulia.gamewish.R
 import com.dirzaaulia.gamewish.data.model.wishlist.MovieWishlist
-import com.dirzaaulia.gamewish.extension.visible
+import com.dirzaaulia.gamewish.utils.visible
 import com.dirzaaulia.gamewish.ui.common.CommonVerticalList
-import com.dirzaaulia.gamewish.ui.common.WishlistMovieItem
+import com.dirzaaulia.gamewish.ui.common.item.WishlistMovieItem
 import com.dirzaaulia.gamewish.utils.PlaceholderConstant
 import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material.shimmer
@@ -27,17 +27,14 @@ fun WishlistMovie(
     data: LazyPagingItems<MovieWishlist>,
     navigateToMovieDetail: (Long, String) -> Unit,
     lazyListState: LazyListState,
-    movieStatus: String,
+    emptyString: String,
+    errorString: String,
+    movieStatusFormatted: String,
 ) {
-    var movieStatusFormatted = movieStatus
-
-    if (movieStatusFormatted.isBlank()) {
-        movieStatusFormatted = "All"
-    }
 
     Column {
         Text(
-            text = "Sort by : $movieStatusFormatted",
+            text = stringResource(R.string.sort_by, movieStatusFormatted),
             style = MaterialTheme.typography.subtitle1,
             modifier = Modifier
                 .padding(vertical = 4.dp, horizontal = 8.dp)
@@ -54,8 +51,8 @@ fun WishlistMovie(
             data = data,
             lazyListState = lazyListState,
             placeholderType = PlaceholderConstant.MOVIE_WISHLIST,
-            emptyString = "Your Movie watchlist is still empty!",
-            errorString = stringResource(id = R.string.movie_list_error)
+            emptyString = emptyString,
+            errorString = errorString
         ) { wishlist ->
             WishlistMovieItem(
                 movieWishlist = wishlist,

@@ -33,6 +33,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -43,9 +44,13 @@ import com.dirzaaulia.gamewish.data.model.wishlist.MovieWishlist
 import com.dirzaaulia.gamewish.ui.home.HomeViewModel
 import com.dirzaaulia.gamewish.ui.home.wishlist.anime.WishlistAnime
 import com.dirzaaulia.gamewish.ui.home.wishlist.game.WishlistGame
-import com.dirzaaulia.gamewish.ui.home.wishlist.manga.WishlistManga
 import com.dirzaaulia.gamewish.ui.home.wishlist.movie.WishlistMovie
-import com.dirzaaulia.gamewish.ui.home.wishlist.tv_show.WishlistTVShow
+import com.dirzaaulia.gamewish.utils.MyAnimeListConstant
+import com.dirzaaulia.gamewish.utils.OtherConstant
+import com.dirzaaulia.gamewish.utils.TmdbConstant
+import com.dirzaaulia.gamewish.utils.movieStatusFormatted
+import com.dirzaaulia.gamewish.utils.myAnimeListStatusFormatted
+import com.dirzaaulia.gamewish.utils.replaceIfNull
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -60,7 +65,7 @@ fun Wishlist(
     navigateToSearch: (Int) -> Unit
 ) {
     val menu = WishlistTab.values()
-    val menuId: Int by viewModel.selectedWishlistTab.collectAsState(initial = 0)
+    val menuId: Int by viewModel.selectedWishlistTab.collectAsState(initial = OtherConstant.ZERO)
     val gameQuery by viewModel.gameQuery.collectAsState()
     val movieQuery by viewModel.movieQuery.collectAsState()
     val tvShowQuery by viewModel.tvShowQuery.collectAsState()
@@ -94,32 +99,39 @@ fun Wishlist(
         scaffoldState = scaffoldState,
         sheetShape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp),
         sheetContent = {
-            Crossfade(targetState = WishlistTab.getTabFromResource(menuId)) { destination ->
+            Crossfade(
+                targetState = WishlistTab.getTabFromResource(menuId),
+                label = OtherConstant.EMPTY_STRING
+            ) { destination ->
                 when (destination) {
                     WishlistTab.GAME -> GameFilterDialog(
                         viewModel = viewModel,
                         gameStatus = gameStatus,
                         searchQuery = gameQuery
                     )
+
                     WishlistTab.ANIME -> AnimeFilterDialog(
                         viewModel = viewModel,
                         animeStatus = animeStatus
                     )
+
                     WishlistTab.MANGA -> MangaFilterDialog(
                         viewModel = viewModel,
                         mangaStatus = mangaStatus
                     )
+
                     WishlistTab.MOVIE -> MovieFilterDialog(
                         viewModel = viewModel,
                         movieStatus = movieStatus,
-                        searchQuery =  movieQuery,
-                        type = "Movie"
+                        searchQuery = movieQuery,
+                        type = TmdbConstant.TMDB_TYPE_MOVIE
                     )
+
                     WishlistTab.TVSHOW -> MovieFilterDialog(
                         viewModel = viewModel,
                         movieStatus = tvShowStatus,
-                        searchQuery =  tvShowQuery,
-                        type = "TV Show"
+                        searchQuery = tvShowQuery,
+                        type = TmdbConstant.TMDB_TYPE_TVSHOW
                     )
                 }
             }
@@ -127,28 +139,35 @@ fun Wishlist(
         },
         sheetPeekHeight = 0.dp,
         topBar = {
-            Crossfade(targetState = WishlistTab.getTabFromResource(menuId)) { destination ->
+            Crossfade(
+                targetState = WishlistTab.getTabFromResource(menuId),
+                label = OtherConstant.EMPTY_STRING,
+            ) { destination ->
                 when (destination) {
                     WishlistTab.GAME -> GameAppBar(
                         scope = scope,
                         scaffoldState = scaffoldState,
                         navigateToSearch = navigateToSearch
                     )
+
                     WishlistTab.ANIME -> AnimeAppBar(
                         scope = scope,
                         scaffoldState = scaffoldState,
                         navigateToSearch = navigateToSearch
                     )
+
                     WishlistTab.MANGA -> AnimeAppBar(
                         scope = scope,
                         scaffoldState = scaffoldState,
                         navigateToSearch = navigateToSearch
                     )
+
                     WishlistTab.MOVIE -> MovieAppBar(
                         scope = scope,
                         scaffoldState = scaffoldState,
                         navigateToSearch = navigateToSearch
                     )
+
                     WishlistTab.TVSHOW -> MovieAppBar(
                         scope = scope,
                         scaffoldState = scaffoldState,
@@ -161,7 +180,10 @@ fun Wishlist(
         Scaffold(
             topBar = { WishlistTabMenu(menu = menu, menuId = menuId, viewModel = viewModel) }
         ) {
-            Crossfade(targetState = WishlistTab.getTabFromResource(menuId)) { destination ->
+            Crossfade(
+                targetState = WishlistTab.getTabFromResource(menuId),
+                label = OtherConstant.EMPTY_STRING
+            ) { destination ->
                 when (destination) {
                     WishlistTab.GAME -> {
                         WishlistGame(
@@ -171,40 +193,58 @@ fun Wishlist(
                             gameStatus = gameStatus
                         )
                     }
+
                     WishlistTab.ANIME -> {
                         WishlistAnime(
                             accessTokenResult = accessTokenResult,
                             viewModel = viewModel,
                             lazyListState = lazyListStateAnime,
                             data = lazyListAnime,
-                            animeStatus = animeStatus,
+                            animeType = MyAnimeListConstant.MYANIMELIST_TYPE_MANGA,
+                            emptyString = stringResource(R.string.myanimelist_anime_list_empty),
+                            errorString = stringResource(R.string.anime_list_error),
+                            animeStatusFormatted = animeStatus.myAnimeListStatusFormatted(
+                                MyAnimeListConstant.MYANIMELIST_STATUS_ALL
+                            ),
                             navigateToAnimeDetails = navigateToAnimeDetails
                         )
                     }
+
                     WishlistTab.MANGA -> {
-                        WishlistManga(
+                        WishlistAnime(
                             accessTokenResult = accessTokenResult,
                             viewModel = viewModel,
                             lazyListState = lazyListStateManga,
                             data = lazyListManga,
-                            animeStatus = mangaStatus,
+                            animeType = MyAnimeListConstant.MYANIMELIST_TYPE_MANGA,
+                            emptyString = stringResource(R.string.myanimelist_manga_list_empty),
+                            errorString = stringResource(R.string.manga_list_error),
+                            animeStatusFormatted = mangaStatus.myAnimeListStatusFormatted(
+                                MyAnimeListConstant.MYANIMELIST_STATUS_ALL
+                            ),
                             navigateToAnimeDetails = navigateToAnimeDetails
                         )
                     }
+
                     WishlistTab.MOVIE -> {
                         WishlistMovie(
                             data = lazyListMovie,
                             navigateToMovieDetail = navigateToMovieDetails,
                             lazyListState = lazyListStateMovie,
-                            movieStatus = movieStatus
+                            emptyString = stringResource(id = R.string.movie_list_empty),
+                            errorString = stringResource(id = R.string.movie_list_error),
+                            movieStatusFormatted = movieStatus.movieStatusFormatted()
                         )
                     }
+
                     WishlistTab.TVSHOW -> {
-                        WishlistTVShow(
+                        WishlistMovie(
                             data = lazyListTVShow,
                             navigateToMovieDetail = navigateToMovieDetails,
                             lazyListState = lazyListStateTVShow,
-                            tvShowStatus = tvShowStatus
+                            emptyString = stringResource(id = R.string.movie_list_empty),
+                            errorString = stringResource(id = R.string.movie_list_error),
+                            movieStatusFormatted = tvShowStatus.movieStatusFormatted()
                         )
                     }
                 }
@@ -248,7 +288,7 @@ fun GameAppBar(
             ) {
                 Icon(
                     imageVector = Icons.Filled.Sort,
-                    contentDescription = null,
+                    contentDescription = OtherConstant.EMPTY_STRING,
                 )
             }
             IconButton(
@@ -257,7 +297,7 @@ fun GameAppBar(
             ) {
                 Icon(
                     imageVector = Icons.Filled.Search,
-                    contentDescription = null,
+                    contentDescription = OtherConstant.EMPTY_STRING,
                 )
             }
         }
@@ -296,7 +336,7 @@ fun AnimeAppBar(
             ) {
                 Icon(
                     imageVector = Icons.Filled.Sort,
-                    contentDescription = null,
+                    contentDescription = OtherConstant.EMPTY_STRING,
                 )
             }
             IconButton(
@@ -305,7 +345,7 @@ fun AnimeAppBar(
             ) {
                 Icon(
                     imageVector = Icons.Filled.Search,
-                    contentDescription = null,
+                    contentDescription = OtherConstant.EMPTY_STRING,
                 )
             }
         }
@@ -344,7 +384,7 @@ fun MovieAppBar(
             ) {
                 Icon(
                     imageVector = Icons.Filled.Sort,
-                    contentDescription = null,
+                    contentDescription = OtherConstant.EMPTY_STRING,
                 )
             }
             IconButton(
@@ -353,7 +393,7 @@ fun MovieAppBar(
             ) {
                 Icon(
                     imageVector = Icons.Filled.Search,
-                    contentDescription = null,
+                    contentDescription = OtherConstant.EMPTY_STRING,
                 )
             }
         }
@@ -388,11 +428,11 @@ enum class WishlistTab(@StringRes val title: Int) {
     companion object {
         fun getTabFromResource(index: Int): WishlistTab {
             return when (index) {
-                0 -> GAME
-                1 -> ANIME
-                2 -> MANGA
-                3 -> MOVIE
-                4 -> TVSHOW
+                OtherConstant.ZERO -> GAME
+                OtherConstant.ONE -> ANIME
+                OtherConstant.TWO -> MANGA
+                OtherConstant.THREE -> MOVIE
+                OtherConstant.FOUR -> TVSHOW
                 else -> GAME
             }
         }

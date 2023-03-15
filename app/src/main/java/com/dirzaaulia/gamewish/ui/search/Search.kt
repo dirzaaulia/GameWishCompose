@@ -24,7 +24,7 @@ import com.dirzaaulia.gamewish.data.model.rawg.Genre
 import com.dirzaaulia.gamewish.data.model.rawg.Platform
 import com.dirzaaulia.gamewish.data.model.rawg.Publisher
 import com.dirzaaulia.gamewish.data.model.tmdb.Movie
-import com.dirzaaulia.gamewish.extension.isSucceeded
+import com.dirzaaulia.gamewish.utils.isSucceeded
 import com.dirzaaulia.gamewish.ui.home.HomeViewModel
 import com.dirzaaulia.gamewish.ui.search.tab.anime.SearchAnime
 import com.dirzaaulia.gamewish.ui.search.tab.game.SearchGame

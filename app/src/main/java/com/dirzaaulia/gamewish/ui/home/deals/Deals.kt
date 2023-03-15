@@ -1,25 +1,49 @@
 package com.dirzaaulia.gamewish.ui.home.deals
 
-import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.*
+import androidx.compose.material.BottomSheetScaffold
+import androidx.compose.material.BottomSheetScaffoldState
+import androidx.compose.material.DropdownMenu
+import androidx.compose.material.DropdownMenuItem
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.Switch
+import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.material.icons.filled.FilterList
-import androidx.compose.runtime.*
+import androidx.compose.material.primarySurface
+import androidx.compose.material.rememberBottomSheetScaffoldState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
@@ -30,12 +54,14 @@ import com.dirzaaulia.gamewish.R
 import com.dirzaaulia.gamewish.data.model.cheapshark.Deals
 import com.dirzaaulia.gamewish.data.model.rawg.Stores
 import com.dirzaaulia.gamewish.data.request.cheapshark.DealsRequest
-import com.dirzaaulia.gamewish.extension.isError
-import com.dirzaaulia.gamewish.extension.isSucceeded
+import com.dirzaaulia.gamewish.utils.isError
+import com.dirzaaulia.gamewish.utils.isSucceeded
 import com.dirzaaulia.gamewish.ui.common.CommonVerticalList
-import com.dirzaaulia.gamewish.ui.common.DealsItem
 import com.dirzaaulia.gamewish.ui.common.ErrorConnect
+import com.dirzaaulia.gamewish.ui.common.item.DealItem
 import com.dirzaaulia.gamewish.ui.home.HomeViewModel
+import com.dirzaaulia.gamewish.utils.CheapSharkConstant
+import com.dirzaaulia.gamewish.utils.OtherConstant
 import com.dirzaaulia.gamewish.utils.PlaceholderConstant
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -56,25 +82,30 @@ fun Deals(
     when {
         storesResult.isSucceeded -> {
             BottomSheetScaffold(
+                modifier = modifier,
+                backgroundColor = MaterialTheme.colors.primarySurface,
                 scaffoldState = scaffoldState,
-                topBar = { DealsAppBar(scope, scaffoldState) },
+                topBar = {
+                    dealsRequest.storeID?.let {
+                        stores?.get(it.toInt() - 1)?.storeName?.let { storeName ->
+                            DealsAppBar(
+                                storeName = storeName,
+                                scope = scope,
+                                scaffoldState = scaffoldState
+                            )
+                        }
+                    }
+
+                         },
                 sheetShape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp),
                 sheetPeekHeight = 0.dp,
                 sheetContent = {
-                    DealsFilter(viewModel, stores)
+                    DealsFilter(
+                        viewModel = viewModel,
+                        stores = stores
+                    )
                 },
-                backgroundColor = MaterialTheme.colors.background,
-                modifier = modifier
             ) {
-                dealsRequest.storeID?.let {
-                    stores?.get(it.toInt() - 1)?.storeName?.let { storeName ->
-                        Text(
-                            text = storeName,
-                            style = MaterialTheme.typography.h6,
-                            modifier = Modifier.padding(horizontal = 8.dp)
-                        )
-                    }
-                }
                 DealsList(
                     data = data,
                     lazyListState = lazyListState,
@@ -95,26 +126,25 @@ fun Deals(
 
 @Composable
 fun DealsFilter(
+    modifier: Modifier = Modifier,
     viewModel: HomeViewModel,
     stores: List<Stores>?,
 ) {
-    var storeIndex by rememberSaveable { mutableStateOf(1) }
-    var storeQuery by rememberSaveable { mutableStateOf("Steam") }
+    var storeIndex by rememberSaveable { mutableStateOf(OtherConstant.ONE) }
+    var storeQuery by rememberSaveable { mutableStateOf(CheapSharkConstant.CHEAPSHARK_DEFAULT_STORE_NAME) }
     var storeExpanded by remember { mutableStateOf(false) }
     var storeFieldSize by remember { mutableStateOf(Size.Zero) }
-    var lowPrice by rememberSaveable { mutableStateOf<Long>(0) }
-    var upperPrice by rememberSaveable { mutableStateOf<Long>(1000) }
-    var titleQuery by rememberSaveable { mutableStateOf("") }
+    var lowPrice by rememberSaveable { mutableStateOf(CheapSharkConstant.CHEAPSHARK_DEFAULT_LOWER_PRICE) }
+    var upperPrice by rememberSaveable { mutableStateOf(CheapSharkConstant.CHEAPSHARK_DEFAULT_UPPER_PRICE) }
+    var titleQuery by rememberSaveable { mutableStateOf(OtherConstant.EMPTY_STRING) }
     val aaaState = remember { mutableStateOf(false) }
     val icon = if (storeExpanded)
-        Icons.Filled.ArrowDropUp //it requires androidx.compose.material:material-icons-extended
+        Icons.Filled.ArrowDropUp
     else
         Icons.Filled.ArrowDropDown
 
     Column(
-        modifier = Modifier
-            .navigationBarsPadding().imePadding()
-            .padding(vertical = 8.dp, horizontal = 8.dp)
+        modifier = modifier.padding(8.dp)
     ) {
         OutlinedTextField(
             value = storeQuery,
@@ -129,14 +159,14 @@ fun DealsFilter(
             textStyle = TextStyle(color = MaterialTheme.colors.onSurface),
             label = {
                 Text(
-                    text = "Store",
+                    text = CheapSharkConstant.CHEAPSHARK_STORE,
                     color = MaterialTheme.colors.onSurface
                 )
             },
             trailingIcon = {
                 Icon(
                     imageVector = icon,
-                    contentDescription = null,
+                    contentDescription = OtherConstant.EMPTY_STRING,
                     modifier = Modifier.clickable { storeExpanded = !storeExpanded }
                 )
             },
@@ -151,12 +181,12 @@ fun DealsFilter(
             stores?.forEachIndexed { index, item ->
                 DropdownMenuItem(
                     onClick = {
-                        storeIndex = index + 1
+                        storeIndex = index + OtherConstant.ONE
                         storeQuery = item.storeName.toString()
                         storeExpanded = false
                         viewModel.setDealsRequest(
                             DealsRequest(
-                                (index + 1).toString(),
+                                (index + OtherConstant.ONE).toString(),
                                 lowPrice,
                                 upperPrice,
                                 titleQuery,
@@ -188,13 +218,12 @@ fun DealsFilter(
                     )
                 )
             },
-            modifier = Modifier
-                .fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
             textStyle = TextStyle(color = MaterialTheme.colors.onSurface),
-            leadingIcon = { Text(text = "$") },
+            leadingIcon = { Text(text = stringResource(R.string.dollar_sign)) },
             label = {
                 Text(
-                    text = "Minimum Price",
+                    text = stringResource(R.string.minimum_price),
                     color = MaterialTheme.colors.onSurface
                 )
             },
@@ -219,13 +248,12 @@ fun DealsFilter(
                     )
                 )
             },
-            modifier = Modifier
-                .fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
             textStyle = TextStyle(color = MaterialTheme.colors.onSurface),
-            leadingIcon = { Text(text = "$") },
+            leadingIcon = { Text(text = stringResource(id = R.string.dollar_sign)) },
             label = {
                 Text(
-                    text = "Maximum Price",
+                    text = stringResource(R.string.maximum_price),
                     color = MaterialTheme.colors.onSurface
                 )
             },
@@ -246,12 +274,11 @@ fun DealsFilter(
                     )
                 )
             },
-            modifier = Modifier
-                .fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
             textStyle = TextStyle(color = MaterialTheme.colors.onSurface),
             label = {
                 Text(
-                    text = "Game Title",
+                    text = stringResource(R.string.game_title),
                     color = MaterialTheme.colors.onSurface
                 )
             },
@@ -262,7 +289,7 @@ fun DealsFilter(
                 .padding(top = 8.dp, bottom = 4.dp),
         ) {
             Text(
-                text = "AAA Games",
+                text = stringResource(R.string.aaa_games),
                 style = MaterialTheme.typography.subtitle1
             )
             Row(
@@ -295,22 +322,24 @@ fun DealsList(
     lazyListState: LazyListState,
 ) {
     Box(
-        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+        modifier = Modifier
+            .background(MaterialTheme.colors.background)
     ) {
         CommonVerticalList(
             data = data,
             lazyListState = lazyListState,
             placeholderType = PlaceholderConstant.DEALS,
-            emptyString = "There is no Deals found! Try again with different search parameters using filter button on top right",
+            emptyString = stringResource(R.string.deals_empty),
             errorString = stringResource(id = R.string.deals_error),
         ) { deals ->
-            DealsItem(deals = deals, loadStates = data.loadState)
+            DealItem(deals = deals)
         }
     }
 }
 
 @Composable
 fun DealsAppBar(
+    storeName: String,
     scope: CoroutineScope,
     scaffoldState: BottomSheetScaffoldState
 ) {
@@ -320,6 +349,11 @@ fun DealsAppBar(
             .statusBarsPadding()
             .wrapContentHeight()
     ) {
+        Text(
+            text = storeName,
+            style = MaterialTheme.typography.h6,
+            modifier = Modifier.padding(horizontal = 8.dp)
+        )
         Row(
             horizontalArrangement = Arrangement.End,
             modifier = Modifier
@@ -340,7 +374,7 @@ fun DealsAppBar(
             ) {
                 Icon(
                     imageVector = Icons.Filled.FilterList,
-                    contentDescription = null,
+                    contentDescription = OtherConstant.EMPTY_STRING,
                 )
             }
         }

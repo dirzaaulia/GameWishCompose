@@ -1,4 +1,4 @@
-package com.dirzaaulia.gamewish.ui.details.game
+package com.dirzaaulia.gamewish.ui.common.list
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Card

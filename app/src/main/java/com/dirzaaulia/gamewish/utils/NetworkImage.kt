@@ -20,7 +20,7 @@ import com.dirzaaulia.gamewish.ui.common.CommonLoading
  */
 @Composable
 fun NetworkImage(
-    url: String,
+    url: String?,
     contentDescription: String?,
     modifier: Modifier = Modifier,
     contentScale: ContentScale = ContentScale.FillBounds
@@ -43,11 +43,11 @@ fun NetworkImage(
                 Box(contentAlignment = Alignment.Center) {
                     Image(
                         imageVector = Icons.Filled.BrokenImage,
-                        contentDescription = null
+                        contentDescription = OtherConstant.EMPTY_STRING
                     )
                 }
             }
-            else -> {}
+            AsyncImagePainter.State.Empty -> Unit
         }
     }
 }

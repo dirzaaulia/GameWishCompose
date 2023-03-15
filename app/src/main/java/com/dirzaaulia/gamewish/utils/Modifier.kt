@@ -1,4 +1,4 @@
-package com.dirzaaulia.gamewish.extension
+package com.dirzaaulia.gamewish.utils
 
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha

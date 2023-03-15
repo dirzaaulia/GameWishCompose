@@ -11,25 +11,37 @@ import androidx.paging.cachedIn
 import com.dirzaaulia.gamewish.base.ResponseResult
 import com.dirzaaulia.gamewish.data.model.cheapshark.Deals
 import com.dirzaaulia.gamewish.data.model.myanimelist.ParentNode
+import com.dirzaaulia.gamewish.data.model.myanimelist.ServiceCode
 import com.dirzaaulia.gamewish.data.model.myanimelist.User
 import com.dirzaaulia.gamewish.data.model.rawg.Stores
 import com.dirzaaulia.gamewish.data.model.wishlist.GameWishlist
 import com.dirzaaulia.gamewish.data.model.wishlist.MovieWishlist
 import com.dirzaaulia.gamewish.data.request.cheapshark.DealsRequest
 import com.dirzaaulia.gamewish.data.response.myanimelist.MyAnimeListTokenResponse
-import com.dirzaaulia.gamewish.extension.error
-import com.dirzaaulia.gamewish.extension.success
 import com.dirzaaulia.gamewish.network.cheapshark.paging.CheapSharkPagingSource
 import com.dirzaaulia.gamewish.network.myanimelist.paging.MyAnimeListPagingSource
-import com.dirzaaulia.gamewish.repository.*
+import com.dirzaaulia.gamewish.repository.CheapSharkRepository
+import com.dirzaaulia.gamewish.repository.DatabaseRepository
+import com.dirzaaulia.gamewish.repository.FirebaseRepository
+import com.dirzaaulia.gamewish.repository.MyAnimeListRepository
+import com.dirzaaulia.gamewish.repository.ProtoRepository
+import com.dirzaaulia.gamewish.utils.CheapSharkConstant
 import com.dirzaaulia.gamewish.utils.FirebaseState
+import com.dirzaaulia.gamewish.utils.MyAnimeListConstant
+import com.dirzaaulia.gamewish.utils.OtherConstant
+import com.dirzaaulia.gamewish.utils.checkContain
+import com.dirzaaulia.gamewish.utils.error
+import com.dirzaaulia.gamewish.utils.success
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -45,11 +57,11 @@ class HomeViewModel @Inject constructor(
 
     private val userPreferencesFlow = protoRepository.userPreferencesFlow
 
-    private val _selectedBottomNav: MutableStateFlow<Int> = MutableStateFlow(0)
-    val selectedBottomNav: StateFlow<Int> get() = _selectedBottomNav.asStateFlow()
+    private val _selectedBottomNav: MutableStateFlow<Int> = MutableStateFlow(OtherConstant.ZERO)
+    val selectedBottomNav = _selectedBottomNav.asStateFlow()
 
-    private val _selectedWishlistTab: MutableStateFlow<Int> = MutableStateFlow(0)
-    val selectedWishlistTab: StateFlow<Int> get() = _selectedWishlistTab.asStateFlow()
+    private val _selectedWishlistTab: MutableStateFlow<Int> = MutableStateFlow(OtherConstant.ZERO)
+    val selectedWishlistTab = _selectedWishlistTab.asStateFlow()
 
     private var _storesResult: MutableStateFlow<ResponseResult<List<Stores>>?> =
         MutableStateFlow(null)
@@ -64,101 +76,96 @@ class HomeViewModel @Inject constructor(
     private var _tokenResult: MutableStateFlow<ResponseResult<String>?> = MutableStateFlow(null)
     val tokenResult = _tokenResult.asStateFlow()
 
-    private var _token: MutableStateFlow<String> = MutableStateFlow("")
+    private var _token: MutableStateFlow<String> = MutableStateFlow(OtherConstant.EMPTY_STRING)
     val token = _token.asStateFlow()
 
-    private val _refreshToken: MutableStateFlow<String> = MutableStateFlow("")
+    private val _refreshToken: MutableStateFlow<String> = MutableStateFlow(OtherConstant.EMPTY_STRING)
 
-    private val _myAnimeListUser: MutableStateFlow<User> = MutableStateFlow(
-        User(null, null, null, null, null, null, null)
-    )
+    private val _myAnimeListUser: MutableStateFlow<User> = MutableStateFlow(User.default())
     val myAnimeListUser = _myAnimeListUser.asStateFlow()
 
-    private val _googleProfileImage: MutableStateFlow<String> = MutableStateFlow("")
+    private val _googleProfileImage: MutableStateFlow<String> = MutableStateFlow(OtherConstant.EMPTY_STRING)
     val googleProfileImage = _googleProfileImage.asStateFlow()
 
-    private val _googleUsername: MutableStateFlow<String> = MutableStateFlow("")
+    private val _googleUsername: MutableStateFlow<String> = MutableStateFlow(OtherConstant.EMPTY_STRING)
     val googleUsername = _googleUsername.asStateFlow()
 
     private val _myAnimeListTokenResult: MutableStateFlow<ResponseResult<MyAnimeListTokenResponse>?>
         = MutableStateFlow(null)
     val myAnimeListTokenResult = _myAnimeListTokenResult.asStateFlow()
 
-    private val _errorMessage: MutableStateFlow<String> = MutableStateFlow("")
+    private val _errorMessage: MutableStateFlow<String> = MutableStateFlow(OtherConstant.EMPTY_STRING)
     val errorMessage = _errorMessage.asStateFlow()
 
-    val gameQuery = MutableStateFlow("")
-    val gameStatus = MutableStateFlow("")
+    val gameQuery = MutableStateFlow(OtherConstant.EMPTY_STRING)
+    val gameStatus = MutableStateFlow(OtherConstant.ALL)
     val listWishlist = gameQuery
         .flatMapLatest { query ->
-            gameStatus.flatMapLatest {
-                databaseRepository.getGameFilteredWishlist(query, it)
+            gameStatus.flatMapLatest { status ->
+                databaseRepository.getGameFilteredWishlist(query, status)
             }
         }.cachedIn(viewModelScope)
 
-    val dealsRequest = MutableStateFlow(
-        DealsRequest("1", 0, 1000, "", false)
-    )
+    val dealsRequest = MutableStateFlow(DealsRequest.default())
     val deals: Flow<PagingData<Deals>> = dealsRequest
-        .flatMapLatest {
-            delay(5000)
-            Pager(PagingConfig(pageSize = 10)) {
+        .flatMapLatest { request ->
+            Pager(PagingConfig(pageSize = CheapSharkConstant.CHEAPSHARK_PAGE_SIZE_TEN)) {
                 CheapSharkPagingSource(
                     cheapSharkRepository,
-                    it
+                    request
                 )
             }.flow.cachedIn(viewModelScope)
         }
 
-    val animeStatus = MutableStateFlow("")
+    val animeStatus = MutableStateFlow(OtherConstant.ALL)
     val animeList: Flow<PagingData<ParentNode>> = _token
         .flatMapLatest { accessToken ->
-            animeStatus.flatMapLatest {
-                Pager(PagingConfig(pageSize = 10)) {
+            animeStatus.flatMapLatest { status ->
+                Pager(PagingConfig(pageSize = MyAnimeListConstant.MYANIMELIST_PAGE_SIZE_TEN)) {
                     MyAnimeListPagingSource(
-                        myAnimeListRepository,
-                        1,
-                        accessToken,
-                        it,
-                        "",
-                        ""
+                        repository = myAnimeListRepository,
+                        serviceCode = ServiceCode.USER_ANIME_LIST,
+                        accessToken = accessToken,
+                        listStatus = status,
+                        seasonalQuery = OtherConstant.EMPTY_STRING,
+                        searchQuery = OtherConstant.EMPTY_STRING
                     )
                 }.flow.cachedIn(viewModelScope)
             }
         }
 
-    val mangaStatus = MutableStateFlow("")
+    val mangaStatus = MutableStateFlow(OtherConstant.ALL)
     val mangaList: Flow<PagingData<ParentNode>> = _token
         .flatMapLatest { accessToken ->
-            mangaStatus.flatMapLatest {
-                Pager(PagingConfig(pageSize = 10)) {
+            mangaStatus.flatMapLatest { status ->
+                Pager(PagingConfig(pageSize = MyAnimeListConstant.MYANIMELIST_PAGE_SIZE_TEN)) {
                     MyAnimeListPagingSource(
-                        myAnimeListRepository,
-                        5,
-                        accessToken,
-                        it,
-                        "",
-                        ""
+                        repository = myAnimeListRepository,
+                        serviceCode = ServiceCode.USER_MANGA_LIST,
+                        accessToken = accessToken,
+                        listStatus = status,
+                        seasonalQuery = OtherConstant.EMPTY_STRING,
+                        searchQuery = OtherConstant.EMPTY_STRING
                     )
                 }.flow.cachedIn(viewModelScope)
             }
         }
 
-    val movieQuery = MutableStateFlow("")
-    val movieStatus = MutableStateFlow("")
+    val movieQuery = MutableStateFlow(OtherConstant.EMPTY_STRING)
+    val movieStatus = MutableStateFlow(OtherConstant.ALL)
     val movieWishlist = movieQuery
         .flatMapLatest { query ->
-            movieStatus.flatMapLatest {
-                databaseRepository.getMovieFilteredWishlist(query, it)
+            movieStatus.flatMapLatest { status ->
+                databaseRepository.getMovieFilteredWishlist(query, status)
             }
         }.cachedIn(viewModelScope)
 
-    val tvShowQuery = MutableStateFlow("")
-    val tvShowStatus = MutableStateFlow("")
+    val tvShowQuery = MutableStateFlow(OtherConstant.EMPTY_STRING)
+    val tvShowStatus = MutableStateFlow(OtherConstant.ALL)
     val tvShowWishlist = tvShowQuery
         .flatMapLatest { query ->
-            tvShowStatus.flatMapLatest {
-                databaseRepository.getTVShowFilteredWishlist(query, it)
+            tvShowStatus.flatMapLatest { status ->
+                databaseRepository.getTVShowFilteredWishlist(query, status)
             }
         }.cachedIn(viewModelScope)
 
@@ -170,8 +177,8 @@ class HomeViewModel @Inject constructor(
                         _myAnimeListUser.value = data
                     }
                     it.error { exception ->
-                        if ((exception.message?.contains("Data Not Found", true)
-                                    == true) && _refreshToken.value.isNotBlank()) {
+                        if (exception.message.checkContain(MyAnimeListConstant.MYANIMELIST_DATA_NOT_FOUND)
+                            && _refreshToken.value.isNotBlank()) {
                             getMyAnimeListRefreshToken()
                         }
                     }
@@ -275,7 +282,7 @@ class HomeViewModel @Inject constructor(
     fun logoutGoogle() {
         val auth = getFirebaseAuth()
         auth.signOut()
-        setUserAuthId("")
+        setUserAuthId(OtherConstant.EMPTY_STRING)
     }
 
     fun setUserAuthId(uid: String) {
@@ -292,11 +299,11 @@ class HomeViewModel @Inject constructor(
 
     fun getStores() {
         cheapSharkRepository.getStoreList()
-            .onEach {
-                it.success { data ->
+            .onEach { result ->
+                result.success { data ->
                     _stores.value = data
                 }
-                _storesResult.value = it
+                _storesResult.value = result
             }
             .launchIn(viewModelScope)
     }
@@ -320,13 +327,11 @@ class HomeViewModel @Inject constructor(
                         protoRepository.updateMyAnimeListExpresIn(expiresIn)
                     }
                     getAccessToken()
-                    setAnimeStatus("")
+                    setAnimeStatus(OtherConstant.EMPTY_STRING)
                 }
-                it.error { e ->
-                    val message = e.message.toString()
-                    if (message.contains("HTTP 401", true)) {
+                it.error { error ->
+                    if (error.message.checkContain(OtherConstant.HTTP_ERROR_401))
                         getMyAnimeListRefreshToken()
-                    }
                 }
             }
             .launchIn(viewModelScope)
@@ -334,9 +339,8 @@ class HomeViewModel @Inject constructor(
 
     fun getMyAnimeListRefreshToken() {
         myAnimeListRepository.getMyAnimeListRefreshToken(_refreshToken.value)
-            .onEach {
-                it.success { data ->
-                    Timber.i("Access Token : ${data.accessToken}")
+            .onEach { result ->
+                result.success { data ->
                     data.accessToken?.let { accessToken ->
                         protoRepository.updateMyAnimeListAccessToken(accessToken)
                     }
@@ -347,13 +351,12 @@ class HomeViewModel @Inject constructor(
                         protoRepository.updateMyAnimeListExpresIn(expiresIn)
                     }
                     getAccessToken()
-                    setAnimeStatus("")
-                    _myAnimeListTokenResult.value = it
+                    setAnimeStatus(OtherConstant.EMPTY_STRING)
+                    _myAnimeListTokenResult.value = result
                 }
-                it.error { exception ->
-                    Timber.e(exception)
-                    _errorMessage.value = "Something went wrong when getting data from MyAnimeList. Please try it again later!"
-                    _myAnimeListTokenResult.value = it
+                result.error {
+                    _errorMessage.value = MyAnimeListConstant.MYANIMELIST_GENERAL_ERROR
+                    _myAnimeListTokenResult.value = result
                 }
             }
             .launchIn(viewModelScope)
@@ -362,11 +365,10 @@ class HomeViewModel @Inject constructor(
     fun getUserAuthStatus() {
         viewModelScope.launch {
             userPreferencesFlow.collect {
-                if (it.userAuthId.isNullOrBlank()) {
-                    _userAuthId.value = ""
-                } else {
+                if (it.userAuthId.isNullOrBlank())
+                    _userAuthId.value = OtherConstant.EMPTY_STRING
+                else
                     _userAuthId.value = it.userAuthId
-                }
             }
         }
     }
@@ -376,8 +378,8 @@ class HomeViewModel @Inject constructor(
             userPreferencesFlow.collect {
                 if (it.accessToken.isNullOrBlank()) {
                     _tokenResult.value = ResponseResult.Error(Exception())
-                    _token.value = ""
-                    _refreshToken.value = ""
+                    _token.value = OtherConstant.EMPTY_STRING
+                    _refreshToken.value = OtherConstant.EMPTY_STRING
                 } else {
                     _tokenResult.value = ResponseResult.Success(it.accessToken)
                     _token.value = it.accessToken
@@ -389,7 +391,6 @@ class HomeViewModel @Inject constructor(
 
     fun syncGameWishlist(uid: String) {
         viewModelScope.launch {
-            Timber.i(uid)
             val data = firebaseRepository.getAllGameWishlist(uid)?.toObjects(GameWishlist::class.java)
             data?.forEach {
                 addToGameWishlist(it)

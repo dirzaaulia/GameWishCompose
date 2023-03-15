@@ -9,7 +9,6 @@ import com.dirzaaulia.gamewish.utils.ProtoSerializer
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
-import timber.log.Timber
 import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -24,13 +23,10 @@ class ProtoRepository @Inject constructor(
         serializer = ProtoSerializer
     )
 
-//    private var userAuthId: String = ""
-
     val userPreferencesFlow: Flow<UserPreferences> = context.userPreferencesStore.data
         .catch { exception ->
             // dataStore.data throws an IOException when an error is encountered when reading data
             if (exception is IOException) {
-                Timber.e("Error reading sort order preferences : %s", exception.toString())
                 emit(UserPreferences.getDefaultInstance())
             } else {
                 throw exception
@@ -54,12 +50,6 @@ class ProtoRepository @Inject constructor(
             preference.toBuilder().setExpiresIn(expiresIn).build()
         }
     }
-
-//    suspend fun updateLocalDataStatus(status: Boolean) {
-//        context.userPreferencesStore.updateData { preference ->
-//            preference.toBuilder().setIsLocalData(status).build()
-//        }
-//    }
 
     suspend fun updateUserAuthId(uid: String) {
         context.userPreferencesStore.updateData { preference ->

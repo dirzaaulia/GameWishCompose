@@ -206,4 +206,27 @@
     <string name="runtime">Runtime</string>
     <string name="synopsis">Synopsis</string>
     <string name="unknown">Unknown</string>
+    <string name="sort_by">Sort by : %1$s</string>
+    <string name="myanimelist_manga_list_empty">Your Manga list is still empty!</string>
+    <string name="myanimelist_anime_list_empty">Your Anime list is still empty!</string>
+    <string name="movie_list_empty">Your Movie watchlist is still empty!</string>
+    <string name="contact">Contact</string>
+    <string name="send_e_mail">Send E-Mail</string>
+    <string name="dollar_sign">$</string>
+    <string name="minimum_price">Minimum Price</string>
+    <string name="maximum_price">Maximum Price</string>
+    <string name="game_title">Game Title</string>
+    <string name="aaa_games">AAA Games</string>
+    <string name="deals_empty">There is no Deals found! Try again with different search parameters using filter button on top right</string>
+    <string name="wishlist_game_empty">Your Game Wishlist is still empty!</string>
+    <string name="filter_game">Filter Game</string>
+    <string name="game_name">Game Name</string>
+    <string name="sort_game">Sort Game</string>
+    <string name="status">Status</string>
+    <string name="all">All</string>
+    <string name="sort_anime">Sort Anime</string>
+    <string name="sort_manga">Sort Manga</string>
+    <string name="filter_movie">Filter Movie</string>
+    <string name="movie_name">Movie Name</string>
+    <string name="sort_movie">Sort Movie</string>
 </resources>

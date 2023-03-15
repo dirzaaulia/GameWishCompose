@@ -3,20 +3,17 @@ package com.dirzaaulia.gamewish.utils
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.icu.text.SimpleDateFormat
 import android.net.Uri
 import android.os.Build
 import android.text.Html
-import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
-import com.dirzaaulia.gamewish.data.model.myanimelist.Genre
+import com.dirzaaulia.gamewish.data.model.myanimelist.Genre as MyAnimelistGenre
 import com.dirzaaulia.gamewish.data.model.rawg.Developer
 import com.dirzaaulia.gamewish.data.model.rawg.Publisher
 import com.dirzaaulia.gamewish.data.model.tmdb.ProductionCompany
+import com.dirzaaulia.gamewish.data.model.tmdb.ServiceCode
+import com.dirzaaulia.gamewish.data.model.tmdb.Genre as TmdbGenre
 import java.text.NumberFormat
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-import java.time.format.DateTimeParseException
 import java.util.*
 
 /**
@@ -79,6 +76,13 @@ fun Int?.toAnimeScoreFormat(): String {
 /**
  * List
  */
+fun <T> List<T>?.replaceIfNull(replacementValue: List<T> = emptyList()): List<T> {
+    if (this == null) {
+        return replacementValue
+    }
+    return this
+}
+
 fun List<Developer>?.toDeveloper(): String {
     var value = ""
     this?.forEachIndexed { index, developer ->
@@ -103,7 +107,7 @@ fun List<Publisher>?.toPublisher(): String {
     return value
 }
 
-fun List<Genre>?.toAnimeGenre(): String {
+fun List<MyAnimelistGenre>?.toAnimeGenre(): String {
     var genre = ""
     this?.forEach {
         genre += "${it.name} "
@@ -123,7 +127,7 @@ fun List<ProductionCompany>?.toProductionCompany(): String {
     return genre
 }
 
-fun List<com.dirzaaulia.gamewish.data.model.tmdb.Genre>?.toMovieGenre(): String {
+fun List<TmdbGenre>?.toMovieGenre(): String {
     var genre = ""
     this?.forEach {
         genre += "${it.name} "
@@ -134,7 +138,7 @@ fun List<com.dirzaaulia.gamewish.data.model.tmdb.Genre>?.toMovieGenre(): String 
 /**
  * String
  */
-fun String?.replaceIfNull(replacementValue: String = ""): String {
+fun String?.replaceIfNull(replacementValue: String = OtherConstant.EMPTY_STRING): String {
     if (this == null)
         return replacementValue
     return this
@@ -195,42 +199,77 @@ fun String?.fromHtml(): String {
 }
 
 fun String.changeDateFormat(fromFormat: String): String {
-    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        newDateFormatter(this, fromFormat)
-    } else {
-        oldDateFormatter(this, fromFormat)
-    }
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) newDateFormatter(this, fromFormat) else oldDateFormatter(this, fromFormat)
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
-fun newDateFormatter(
-    value: String,
-    fromFormat: String
-): String {
-    val date: LocalDate
-    return try {
-        val inputFormat: DateTimeFormatter = DateTimeFormatter.ofPattern(fromFormat, Locale.US)
-        date = LocalDate.parse(value, inputFormat)
-        val outputFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy", Locale.US)
-        date.format(outputFormat)
-    } catch (exception: DateTimeParseException) {
-        exception.printStackTrace()
-        ""
-    }
+fun String?.myAnimeListStatusFormatted(ifBlank: String): String {
+    return this
+        .replaceIfNull()
+        .replace(OtherConstant.UNDERSCORE, OtherConstant.BLANK_SPACE)
+        .capitalizeWords()
+        .ifBlank { ifBlank }
 }
 
-fun oldDateFormatter(
-    value: String,
-    fromFormat: String
+fun String.movieStatusFormatted(): String {
+    return this.ifBlank { TmdbConstant.TMBD_STATUS_ALL }
+}
+
+fun String.getTmdbRecomendations(): ServiceCode {
+    return if (this.equals(TmdbConstant.TMDB_TYPE_MOVIE, true))
+        ServiceCode.MOVIE_RECOMMENDATIONS else ServiceCode.TV_RECOMMENDATIONS
+}
+
+fun String?.checkContain(contain: String): Boolean {
+    return this.replaceIfNull()
+        .contains(contain, true)
+}
+
+fun String?.toMyAnimeListSource(): String {
+    return String.format(
+        OtherConstant.STRING_FORMAT_S_SPACE_S_SPACE_S,
+        MyAnimeListConstant.MYANIMELIST_SOURCE,
+        OtherConstant.COLON,
+        this.replaceIfNull()
+            .replace(OtherConstant.UNDERSCORE, OtherConstant.BLANK_SPACE)
+            .capitalizeWords()
+    )
+}
+
+fun String.myAnimeListStatusApiFormat(): String {
+    return this
+        .lowerCaseWords()
+        .replace(OtherConstant.STRIP, OtherConstant.BLANK_SPACE)
+        .replace(OtherConstant.BLANK_SPACE, OtherConstant.UNDERSCORE)
+}
+
+fun String.setStringBasedOnMyAnimeListType(
+    setIfAnime: String,
+    setIfManga: String
 ): String {
-    val date: Date
-    return try {
-        val dateParser = SimpleDateFormat(fromFormat, Locale.US)
-        date = dateParser.parse(value)
-        val dateFormatter = SimpleDateFormat("dd-MM-yyyy", Locale.US)
-        dateFormatter.format(date)
-    } catch (exception: Exception) {
-        exception.printStackTrace()
-        ""
-    }
+    return if (this.equals(MyAnimeListConstant.MYANIMELIST_TYPE_ANIME, true))
+        setIfAnime else setIfManga
+}
+
+fun String.setListBasedOnMyAnimeListType(
+    setIfAnime: List<String>,
+    setIfManga: List<String>
+): List<String> {
+    return if (this.equals(MyAnimeListConstant.MYANIMELIST_TYPE_ANIME, true))
+        setIfAnime else setIfManga
+}
+
+fun String.doBasedOnMyAnimeListType(
+    doIfAnime: () -> Unit,
+    doIfManga: () -> Unit
+) {
+    if (this.equals(MyAnimeListConstant.MYANIMELIST_TYPE_ANIME, true))
+        doIfAnime.invoke() else doIfManga.invoke()
+}
+
+fun String.setStringBasedOnTmdbStatus(
+    setIfMovie: String,
+    setIfTv: String
+): String {
+    return if (this.equals(TmdbConstant.TMDB_TYPE_MOVIE, true))
+        setIfMovie else setIfTv
 }

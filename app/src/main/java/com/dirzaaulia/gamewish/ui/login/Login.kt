@@ -1,4 +1,4 @@
-package com.dirzaaulia.gamewish.ui.home.login
+package com.dirzaaulia.gamewish.ui.login
 
 import android.annotation.SuppressLint
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -48,11 +48,7 @@ fun Login(viewModel: HomeViewModel) {
             } catch (e: ApiException) {
                 Timber.w("Google sign in failed: ${e.message}")
                 scope.launch {
-                    e.message?.let { message ->
-                        scaffoldState.snackbarHostState.showSnackbar(
-                            message
-                        )
-                    }
+                    scaffoldState.snackbarHostState.showSnackbar(e.message.toString())
                 }
             }
         }

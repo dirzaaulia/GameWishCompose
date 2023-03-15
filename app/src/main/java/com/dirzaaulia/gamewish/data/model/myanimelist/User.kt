@@ -14,4 +14,16 @@ data class User(
     val picture: String?,
     @Json(name = "anime_statistics")
     val animeStatistics: AnimeStatistic?
-)
+) {
+    companion object {
+        fun default() = User(
+            id = null,
+            name = null,
+            birthday = null,
+            location = null,
+            joinedAt = null,
+            picture = null,
+            animeStatistics = null
+        )
+    }
+}

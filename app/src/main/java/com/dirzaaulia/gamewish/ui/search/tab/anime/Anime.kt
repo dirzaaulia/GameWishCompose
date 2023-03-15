@@ -34,12 +34,12 @@ import com.dirzaaulia.gamewish.R
 import com.dirzaaulia.gamewish.base.ResponseResult
 import com.dirzaaulia.gamewish.data.model.myanimelist.ParentNode
 import com.dirzaaulia.gamewish.data.request.myanimelist.SearchGameRequest
-import com.dirzaaulia.gamewish.extension.isError
-import com.dirzaaulia.gamewish.extension.isSucceeded
+import com.dirzaaulia.gamewish.utils.isError
+import com.dirzaaulia.gamewish.utils.isSucceeded
 import com.dirzaaulia.gamewish.theme.White
-import com.dirzaaulia.gamewish.ui.common.CommonAnimeItem
 import com.dirzaaulia.gamewish.ui.common.CommonVerticalList
 import com.dirzaaulia.gamewish.ui.common.MyAnimeListWebViewClient
+import com.dirzaaulia.gamewish.ui.common.item.CommonAnimeItem
 import com.dirzaaulia.gamewish.ui.home.HomeViewModel
 import com.dirzaaulia.gamewish.ui.search.SearchViewModel
 import com.dirzaaulia.gamewish.utils.PlaceholderConstant
@@ -102,7 +102,10 @@ fun SearchAnime(
                         SearchAnimeTabMenu(menu = menu, menuId = menuId, viewModel = viewModel)
                     }
                 ) {
-                    Crossfade(targetState = SearchAnimeTab.getTabFromResource(menuId)) { destination ->
+                    Crossfade(
+                        targetState = SearchAnimeTab.getTabFromResource(menuId),
+                        label = ""
+                    ) { destination ->
                         when (destination) {
                             SearchAnimeTab.SEASONAL -> {
                                 SeasonalAnime(

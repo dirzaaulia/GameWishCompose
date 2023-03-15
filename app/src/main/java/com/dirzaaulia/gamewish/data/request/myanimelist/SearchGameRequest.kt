@@ -1,6 +1,7 @@
 package com.dirzaaulia.gamewish.data.request.myanimelist
 
 import android.os.Parcelable
+import com.dirzaaulia.gamewish.utils.OtherConstant
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
@@ -9,4 +10,13 @@ data class SearchGameRequest(
     val genreId: Int?,
     val publisherId: Int?,
     val platformId: Int?
-) : Parcelable
+) : Parcelable {
+    companion object {
+        fun default() = SearchGameRequest(
+            searchQuery = OtherConstant.EMPTY_STRING,
+            genreId = null,
+            publisherId = null,
+            platformId = null
+        )
+    }
+}

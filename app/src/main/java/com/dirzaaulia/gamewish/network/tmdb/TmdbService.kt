@@ -75,35 +75,4 @@ interface TmdbService {
         @Query("page") page : Int,
         @Query("include_adult") includeAdult : Boolean = false
     ): Response<SearchMovieResponse>
-
-    companion object {
-        fun create(context: Context): TmdbService {
-            val logger =
-                HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY }
-
-            val chuckerLogger = ChuckerInterceptor.Builder(context)
-                .collector(ChuckerCollector(context))
-                .maxContentLength(250000L)
-                .redactHeaders(emptySet())
-                .alwaysReadResponseBody(false)
-                .build()
-
-            val client = OkHttpClient.Builder()
-                .addInterceptor(logger)
-                .addInterceptor(chuckerLogger)
-                .retryOnConnectionFailure(false)
-                .build()
-
-            val moshi = Moshi.Builder()
-                .add(KotlinJsonAdapterFactory())
-                .build()
-
-            return Retrofit.Builder()
-                .baseUrl(TmdbConstant.TMDB_BASE_URL)
-                .client(client)
-                .addConverterFactory(MoshiConverterFactory.create(moshi))
-                .build()
-                .create(TmdbService::class.java)
-        }
-    }
 }

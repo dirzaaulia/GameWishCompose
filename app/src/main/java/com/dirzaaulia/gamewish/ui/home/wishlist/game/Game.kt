@@ -14,9 +14,9 @@ import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import com.dirzaaulia.gamewish.R
 import com.dirzaaulia.gamewish.data.model.wishlist.GameWishlist
-import com.dirzaaulia.gamewish.extension.visible
+import com.dirzaaulia.gamewish.utils.visible
 import com.dirzaaulia.gamewish.ui.common.CommonVerticalList
-import com.dirzaaulia.gamewish.ui.common.WishlistGameItem
+import com.dirzaaulia.gamewish.ui.common.item.WishlistGameItem
 import com.dirzaaulia.gamewish.utils.PlaceholderConstant
 import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material.shimmer
@@ -29,15 +29,9 @@ fun WishlistGame(
     lazyListState: LazyListState,
     gameStatus: String,
 ) {
-    var gameStatusFormatted = gameStatus
-
-    if (gameStatusFormatted.isBlank()) {
-        gameStatusFormatted = "All"
-    }
-
     Column {
         Text(
-            text = "Sort by : $gameStatusFormatted",
+            text = stringResource(R.string.sort_by, gameStatus),
             style = MaterialTheme.typography.subtitle1,
             modifier = Modifier
                 .padding(vertical = 4.dp, horizontal = 8.dp)
@@ -54,7 +48,7 @@ fun WishlistGame(
             data = data,
             lazyListState = lazyListState,
             placeholderType = PlaceholderConstant.GAME_WISHLIST,
-            emptyString = "Your Game Wishlist is still empty!",
+            emptyString = stringResource(R.string.wishlist_game_empty),
             errorString = stringResource(id = R.string.game_list_error)
         ) { wishlist ->
             WishlistGameItem(

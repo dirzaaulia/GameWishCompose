@@ -1,13 +1,15 @@
 package com.dirzaaulia.gamewish.repository
 
 import androidx.annotation.WorkerThread
-import com.dirzaaulia.gamewish.base.NotFoundException
 import com.dirzaaulia.gamewish.base.ResponseResult
+import com.dirzaaulia.gamewish.base.executeWithData
 import com.dirzaaulia.gamewish.base.executeWithResponse
 import com.dirzaaulia.gamewish.data.model.myanimelist.ParentNode
 import com.dirzaaulia.gamewish.network.myanimelist.MyAnimeListApiUrlService
 import com.dirzaaulia.gamewish.network.myanimelist.MyAnimeListBaseUrlService
 import com.dirzaaulia.gamewish.utils.MyAnimeListConstant
+import com.dirzaaulia.gamewish.utils.OtherConstant
+import com.dirzaaulia.gamewish.utils.replaceIfNull
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
@@ -25,48 +27,43 @@ class MyAnimeListRepository @Inject constructor(
         codeVerifier: String,
         grantType: String
     ) = flow {
-        try {
-            baseUrlService.getMyAnimeListToken(
-                clientId, code, codeVerifier, grantType
-            ).body()?.let {
-                emit(ResponseResult.Success(it))
-            } ?: run {
-                throw  NotFoundException()
+        emit(ResponseResult.Loading)
+        emit(
+            executeWithResponse {
+                baseUrlService.getMyAnimeListToken(
+                    clientId = clientId,
+                    code = code,
+                    codeVerifier = codeVerifier,
+                    grantType = grantType
+                )
             }
-        } catch (e: Exception) {
-            emit(ResponseResult.Error(e))
-        }
+        )
     }
 
     @WorkerThread
     fun getMyAnimeListRefreshToken(refreshToken: String) = flow {
-        try {
-            baseUrlService.getMyAnimeListRefreshToken(
-                MyAnimeListConstant.MYANIMELIST_CLIENT_ID,
-                "refresh_token",
-                refreshToken
-            ).body()?.let {
-                emit(ResponseResult.Success(it))
-            } ?: run {
-                throw NotFoundException()
+        emit(ResponseResult.Loading)
+        emit(
+            executeWithResponse {
+                baseUrlService.getMyAnimeListRefreshToken(
+                    MyAnimeListConstant.MYANIMELIST_CLIENT_ID,
+                    MyAnimeListConstant.MYANIMELIST_GRANT_TYPE_REFRESH_TOKEN,
+                    refreshToken
+                )
             }
-        } catch (e: Exception) {
-            emit(ResponseResult.Error(e))
-        }
+        )
     }
 
     @WorkerThread
     fun getMyAnimeListUser(accessToken: String) = flow {
-        try {
-            val bearerAccessToken = "Bearer $accessToken"
-            apiUrlService.getMyAnimeListUser(bearerAccessToken).body()?.let {
-                emit(ResponseResult.Success(it))
-            } ?: run {
-                throw NotFoundException()
+        val bearerAccessToken =
+            String.format(MyAnimeListConstant.MYANIMELIST_BEARER_FORMAT, accessToken)
+        emit(ResponseResult.Loading)
+        emit(
+            executeWithResponse {
+                apiUrlService.getMyAnimeListUser(bearerAccessToken)
             }
-        } catch (e: Exception) {
-            emit(ResponseResult.Error(e))
-        }
+        )
     }
 
     @WorkerThread
@@ -74,19 +71,17 @@ class MyAnimeListRepository @Inject constructor(
         accessToken: String,
         animeId: Long
     ) = flow {
-        try {
-            val bearerAccessToken = "Bearer $accessToken"
-            apiUrlService.getMyAnimeListAnimeDetails(
-                bearerAccessToken,
-                animeId = animeId
-            ).body()?.let {
-                emit(ResponseResult.Success(it))
-            } ?: run {
-                throw NotFoundException()
+        val bearerAccessToken =
+            String.format(MyAnimeListConstant.MYANIMELIST_BEARER_FORMAT, accessToken)
+        emit(ResponseResult.Loading)
+        emit(
+            executeWithResponse {
+                apiUrlService.getMyAnimeListAnimeDetails(
+                    authorization = bearerAccessToken,
+                    animeId = animeId
+                )
             }
-        } catch (e: Exception) {
-            emit(ResponseResult.Error(e))
-        }
+        )
     }
 
     @WorkerThread
@@ -94,19 +89,17 @@ class MyAnimeListRepository @Inject constructor(
         accessToken: String,
         mangaId: Long
     ) = flow {
-        try {
-            val bearerAccessToken = "Bearer $accessToken"
-            apiUrlService.getMyAnimeListMangaDetails(
-                bearerAccessToken,
-                mangaId
-            ).body()?.let {
-                emit(ResponseResult.Success(it))
-            } ?: run {
-                throw NotFoundException()
+        val bearerAccessToken =
+            String.format(MyAnimeListConstant.MYANIMELIST_BEARER_FORMAT, accessToken)
+        emit(ResponseResult.Loading)
+        emit(
+            executeWithResponse {
+                apiUrlService.getMyAnimeListMangaDetails(
+                    authorization = bearerAccessToken,
+                    mangaId = mangaId
+                )
             }
-        } catch (e: Exception) {
-            emit(ResponseResult.Error(e))
-        }
+        )
     }
 
     @WorkerThread
@@ -118,23 +111,21 @@ class MyAnimeListRepository @Inject constructor(
         score: Int,
         numberWatched: Int
     ) = flow {
-        try {
-            val bearerAccessToken = "Bearer $accessToken"
-            apiUrlService.updateMyAnimeListAnimeList(
-                bearerAccessToken,
-                animeId,
-                status,
-                isRewatching,
-                score,
-                numberWatched
-            ).body()?.let {
-                emit(ResponseResult.Success(it))
-            } ?: run {
-                throw NotFoundException()
+        val bearerAccessToken =
+            String.format(MyAnimeListConstant.MYANIMELIST_BEARER_FORMAT, accessToken)
+        emit(ResponseResult.Loading)
+        emit(
+            executeWithResponse {
+                apiUrlService.updateMyAnimeListAnimeList(
+                    authorization = bearerAccessToken,
+                    id = animeId,
+                    status = status,
+                    isRewatching = isRewatching,
+                    score = score,
+                    episode = numberWatched
+                )
             }
-        } catch (e: Exception) {
-            emit(ResponseResult.Error(e))
-        }
+        )
     }
 
     @WorkerThread
@@ -142,17 +133,17 @@ class MyAnimeListRepository @Inject constructor(
         accessToken: String,
         animeId: Long
     ) = flow {
-        try {
-            val bearerAccessToken = "Bearer $accessToken"
-            apiUrlService.deleteMyAnimeListAnimeList(
-                bearerAccessToken,
-                animeId,
-            ).let {
-                emit(ResponseResult.Success("Success"))
+        val bearerAccessToken =
+            String.format(MyAnimeListConstant.MYANIMELIST_BEARER_FORMAT, accessToken)
+        emit(ResponseResult.Loading)
+        emit(
+            executeWithResponse {
+                apiUrlService.deleteMyAnimeListAnimeList(
+                    authorization = bearerAccessToken,
+                    id = animeId,
+                )
             }
-        } catch (e: Exception) {
-            emit(ResponseResult.Error(e))
-        }
+        )
     }
 
     @WorkerThread
@@ -164,23 +155,21 @@ class MyAnimeListRepository @Inject constructor(
         score: Int,
         numberRead: Int
     ) = flow {
-        try {
-            val bearerAccessToken = "Bearer $accessToken"
-            apiUrlService.updateMyAnimeListMangaList(
-                bearerAccessToken,
-                mangaId,
-                status,
-                isRereading,
-                score,
-                numberRead
-            ).body()?.let {
-                emit(ResponseResult.Success(it))
-            } ?: run {
-                throw NotFoundException()
+        val bearerAccessToken =
+            String.format(MyAnimeListConstant.MYANIMELIST_BEARER_FORMAT, accessToken)
+        emit(ResponseResult.Loading)
+        emit(
+            executeWithResponse {
+                apiUrlService.updateMyAnimeListMangaList(
+                    authorization = bearerAccessToken,
+                    id = mangaId,
+                    status = status,
+                    isRereading = isRereading,
+                    score = score,
+                    episode = numberRead
+                )
             }
-        } catch (e: Exception) {
-            emit(ResponseResult.Error(e))
-        }
+        )
     }
 
     @WorkerThread
@@ -188,17 +177,16 @@ class MyAnimeListRepository @Inject constructor(
         accessToken: String,
         mangaId: Long
     ) = flow {
-        try {
-            val bearerAccessToken = "Bearer $accessToken"
-            apiUrlService.deleteMyAnimeListMangaList(
-                bearerAccessToken,
-                mangaId,
-            ).let {
-                emit(ResponseResult.Success("Success"))
+        val bearerAccessToken = String.format(MyAnimeListConstant.MYANIMELIST_BEARER_FORMAT, accessToken)
+        emit(ResponseResult.Loading)
+        emit(
+            executeWithResponse {
+                apiUrlService.deleteMyAnimeListMangaList(
+                    authorization = bearerAccessToken,
+                    id = mangaId,
+                )
             }
-        } catch (e: Exception) {
-            emit(ResponseResult.Error(e))
-        }
+        )
     }
 
     suspend fun getUserAnimeList(
@@ -206,14 +194,15 @@ class MyAnimeListRepository @Inject constructor(
         listStatus: String,
         offset: Int
     ): ResponseResult<List<ParentNode>> {
-        val bearerAccessToken = "Bearer $accessToken"
+        val bearerAccessToken =
+            String.format(MyAnimeListConstant.MYANIMELIST_BEARER_FORMAT, accessToken)
         return withContext(Dispatchers.IO) {
-            executeWithResponse {
+            executeWithData {
                 apiUrlService.getMyAnimeListAnimeList(
                     bearerAccessToken,
                     status = listStatus,
                     offset = offset
-                ).body()?.data ?: emptyList()
+                ).body()?.data.replaceIfNull()
             }
         }
     }
@@ -223,14 +212,14 @@ class MyAnimeListRepository @Inject constructor(
         listStatus: String,
         offset: Int
     ): ResponseResult<List<ParentNode>> {
-        val bearerAccessToken = "Bearer $accessToken"
+        val bearerAccessToken = String.format(MyAnimeListConstant.MYANIMELIST_BEARER_FORMAT, accessToken)
         return withContext(Dispatchers.IO) {
-            executeWithResponse {
+            executeWithData {
                 apiUrlService.getMyAnimeListMangaList(
                     bearerAccessToken,
                     status = listStatus,
                     offset = offset
-                ).body()?.data ?: emptyList()
+                ).body()?.data.replaceIfNull()
             }
         }
     }
@@ -239,19 +228,19 @@ class MyAnimeListRepository @Inject constructor(
         accessToken: String,
         offset: Int,
         seasonalQuery: String
-    ) : ResponseResult<List<ParentNode>> {
-        val bearerAccessToken = "Bearer $accessToken"
-        val seasonal = seasonalQuery.split(" ")
+    ): ResponseResult<List<ParentNode>> {
+        val bearerAccessToken = String.format(MyAnimeListConstant.MYANIMELIST_BEARER_FORMAT, accessToken)
+        val seasonal = seasonalQuery.split(OtherConstant.BLANK_SPACE)
         val season = seasonal[0]
         val year = seasonal[1]
         return withContext(Dispatchers.IO) {
-            executeWithResponse {
+            executeWithData {
                 apiUrlService.getMyAnimeListSeasonalAnime(
                     bearerAccessToken,
                     season = season,
                     year = year,
                     offset = offset
-                ).body()?.data ?: emptyList()
+                ).body()?.data.replaceIfNull()
             }
         }
     }
@@ -260,15 +249,15 @@ class MyAnimeListRepository @Inject constructor(
         accessToken: String,
         offset: Int,
         searchQuery: String
-    ) : ResponseResult<List<ParentNode>> {
-        val bearerAccessToken = "Bearer $accessToken"
+    ): ResponseResult<List<ParentNode>> {
+        val bearerAccessToken = String.format(MyAnimeListConstant.MYANIMELIST_BEARER_FORMAT, accessToken)
         return withContext(Dispatchers.IO) {
-            executeWithResponse {
+            executeWithData {
                 apiUrlService.searchMyAnimeListAnime(
                     bearerAccessToken,
                     searchQuery,
                     offset
-                ).body()?.data ?: emptyList()
+                ).body()?.data.replaceIfNull()
             }
         }
     }
@@ -277,15 +266,15 @@ class MyAnimeListRepository @Inject constructor(
         accessToken: String,
         offset: Int,
         searchQuery: String
-    ) : ResponseResult<List<ParentNode>> {
-        val bearerAccessToken = "Bearer $accessToken"
+    ): ResponseResult<List<ParentNode>> {
+        val bearerAccessToken = String.format(MyAnimeListConstant.MYANIMELIST_BEARER_FORMAT, accessToken)
         return withContext(Dispatchers.IO) {
-            executeWithResponse {
+            executeWithData {
                 apiUrlService.searchMyAnimeListManga(
                     bearerAccessToken,
                     searchQuery,
                     offset
-                ).body()?.data ?: emptyList()
+                ).body()?.data.replaceIfNull()
             }
         }
     }

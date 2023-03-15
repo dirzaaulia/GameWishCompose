@@ -19,10 +19,11 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.dirzaaulia.gamewish.R
 import com.dirzaaulia.gamewish.data.model.cheapshark.Deals
-import com.dirzaaulia.gamewish.extension.isError
+import com.dirzaaulia.gamewish.utils.isError
 import com.dirzaaulia.gamewish.ui.home.about.About
 import com.dirzaaulia.gamewish.ui.home.deals.Deals
 import com.dirzaaulia.gamewish.ui.home.wishlist.Wishlist
+import com.dirzaaulia.gamewish.utils.OtherConstant
 import kotlinx.coroutines.launch
 import java.util.*
 
@@ -36,7 +37,7 @@ fun Home(
     navigateToSearch: (Int) -> Unit
 ) {
     val menu = HomeBottomNavMenu.values()
-    val menuId: Int by viewModel.selectedBottomNav.collectAsState(initial = 0)
+    val menuId: Int by viewModel.selectedBottomNav.collectAsState(initial = OtherConstant.ZERO)
     val lazyListStateDeals = rememberLazyListState()
     val lazyDeals: LazyPagingItems<Deals> = viewModel.deals.collectAsLazyPagingItems()
     val googleProfileImage by viewModel.googleProfileImage.collectAsState()
@@ -56,7 +57,8 @@ fun Home(
         },
     ) { innerPadding ->
         Crossfade(
-            targetState = HomeBottomNavMenu.getHomeBottomNavMenuFromResource(menuId)
+            targetState = HomeBottomNavMenu.getHomeBottomNavMenuFromResource(menuId),
+            label = OtherConstant.EMPTY_STRING
         ) { destination ->
             when {
                 myAnimeListTokenResponse.isError -> {
@@ -111,7 +113,7 @@ fun HomeBottomBar(
     ) {
         menu.forEach { menu ->
             BottomNavigationItem(
-                icon = { Icon(imageVector = menu.icon, contentDescription = null) },
+                icon = { Icon(imageVector = menu.icon, contentDescription = OtherConstant.EMPTY_STRING) },
                 label = { Text(stringResource(menu.title).uppercase(Locale.getDefault())) },
                 selected = menu == HomeBottomNavMenu.getHomeBottomNavMenuFromResource(menuId),
                 onClick = {

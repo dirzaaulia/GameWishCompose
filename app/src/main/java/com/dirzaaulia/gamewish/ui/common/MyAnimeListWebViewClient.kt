@@ -18,7 +18,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.dirzaaulia.gamewish.R
-import com.dirzaaulia.gamewish.extension.visible
+import com.dirzaaulia.gamewish.utils.visible
 import com.dirzaaulia.gamewish.ui.home.HomeViewModel
 import com.dirzaaulia.gamewish.utils.MyAnimeListConstant
 import com.google.accompanist.web.AccompanistWebViewClient

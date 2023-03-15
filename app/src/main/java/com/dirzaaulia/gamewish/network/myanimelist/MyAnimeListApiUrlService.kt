@@ -1,22 +1,11 @@
 package com.dirzaaulia.gamewish.network.myanimelist
 
-import android.content.Context
-import com.chuckerteam.chucker.api.ChuckerCollector
-import com.chuckerteam.chucker.api.ChuckerInterceptor
 import com.dirzaaulia.gamewish.data.model.myanimelist.Details
 import com.dirzaaulia.gamewish.data.model.myanimelist.ListStatus
 import com.dirzaaulia.gamewish.data.model.myanimelist.User
 import com.dirzaaulia.gamewish.data.response.myanimelist.MyAnimeListSearchResponse
-import com.dirzaaulia.gamewish.utils.MyAnimeListConstant
-import com.squareup.moshi.Moshi
-import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
-import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.http.*
-import java.util.concurrent.TimeUnit
 
 interface MyAnimeListApiUrlService {
 
@@ -106,7 +95,7 @@ interface MyAnimeListApiUrlService {
     suspend fun deleteMyAnimeListAnimeList(
         @Header("Authorization") authorization: String,
         @Path("anime_id") id: Long
-    )
+    ): Response<Unit>
 
     @FormUrlEncoded
     @PUT("v2/manga/{manga_id}/my_list_status")
@@ -123,38 +112,5 @@ interface MyAnimeListApiUrlService {
     suspend fun deleteMyAnimeListMangaList(
         @Header("Authorization") authorization: String,
         @Path("manga_id") id: Long
-    )
-
-    companion object {
-        fun create(context: Context): MyAnimeListApiUrlService {
-            val logger =
-                HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY }
-
-            val chuckerLogger = ChuckerInterceptor.Builder(context)
-                .collector(ChuckerCollector(context))
-                .maxContentLength(250000L)
-                .redactHeaders(emptySet())
-                .alwaysReadResponseBody(false)
-                .build()
-
-            val client = OkHttpClient.Builder()
-                .addInterceptor(logger)
-                .addInterceptor(chuckerLogger)
-                .connectTimeout(10, TimeUnit.SECONDS)
-                .readTimeout(10, TimeUnit.SECONDS)
-                .writeTimeout(10, TimeUnit.SECONDS)
-                .build()
-
-            val moshi = Moshi.Builder()
-                .add(KotlinJsonAdapterFactory())
-                .build()
-
-            return Retrofit.Builder()
-                .baseUrl(MyAnimeListConstant.MYANIMELIST_API_URL)
-                .client(client)
-                .addConverterFactory(MoshiConverterFactory.create(moshi))
-                .build()
-                .create(MyAnimeListApiUrlService::class.java)
-        }
-    }
+    ): Response<Unit>
 }

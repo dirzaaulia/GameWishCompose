@@ -12,9 +12,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
+import com.dirzaaulia.gamewish.R
 import com.dirzaaulia.gamewish.ui.home.HomeViewModel
+import com.dirzaaulia.gamewish.utils.MyAnimeListConstant
+import com.dirzaaulia.gamewish.utils.OtherConstant
+import com.dirzaaulia.gamewish.utils.RawgConstant
+import com.dirzaaulia.gamewish.utils.TmdbConstant
 import com.dirzaaulia.gamewish.utils.lowerCaseWords
 
 @Composable
@@ -25,27 +31,31 @@ fun GameFilterDialog(
 ) {
 
     var query by rememberSaveable { mutableStateOf(searchQuery) }
-    val statusList = listOf("All", "Playing", "Completed", "On Hold", "Dropped", "Plan To Buy")
+    val statusList = listOf(
+        OtherConstant.ALL,
+        RawgConstant.RAWG_STATUS_PLAYING,
+        RawgConstant.RAWG_STATUS_PLAYING,
+        RawgConstant.RAWG_STATUS_ON_HOLD,
+        RawgConstant.RAWG_STATUS_DROPPED,
+        RawgConstant.RAWG_STATUS_PLAN_TO_BUY
+    )
     var status by rememberSaveable { mutableStateOf(gameStatus) }
     var textfieldSize by remember { mutableStateOf(Size.Zero) }
     var expanded by remember { mutableStateOf(false) }
     val icon = if (expanded)
-        Icons.Filled.ArrowDropUp //it requires androidx.compose.material:material-icons-extended
+        Icons.Filled.ArrowDropUp
     else
         Icons.Filled.ArrowDropDown
 
-    if (status.isBlank()) {
-        status = "All"
-    }
-
     Column(
         modifier = Modifier
-            .navigationBarsPadding().imePadding()
+            .navigationBarsPadding()
+            .imePadding()
             .padding(8.dp)
             .fillMaxWidth()
     ) {
         Text(
-            text = "Filter Game",
+            text = stringResource(R.string.filter_game),
             style = MaterialTheme.typography.h6
         )
         OutlinedTextField(
@@ -55,17 +65,17 @@ fun GameFilterDialog(
                 viewModel.setGameQuery(query)
             },
             modifier = Modifier.fillMaxWidth(),
-            label = { Text("Game Name") },
+            label = { Text(stringResource(R.string.game_name)) },
             placeholder = {
                 if (query.isBlank()) {
-                    Text(text = "Game Name")
+                    Text(text = stringResource(R.string.game_name))
                 } else {
                     Text(text = query)
                 }
             }
         )
         Text(
-            text = "Sort Game",
+            text = stringResource(R.string.sort_game),
             style = MaterialTheme.typography.h6
         )
         OutlinedTextField(
@@ -78,7 +88,7 @@ fun GameFilterDialog(
                     //This value is used to assign to the DropDown the same width
                     textfieldSize = coordinates.size.toSize()
                 },
-            label = { Text("Status") },
+            label = { Text(text = stringResource(R.string.status)) },
             trailingIcon = {
                 Icon(
                     imageVector = icon,
@@ -86,13 +96,7 @@ fun GameFilterDialog(
                     modifier = Modifier.clickable { expanded = !expanded }
                 )
             },
-            placeholder = {
-                if (gameStatus.isBlank()) {
-                    Text(text = "All")
-                } else {
-                    Text(text = status)
-                }
-            }
+            placeholder = { Text(text = status) }
         )
         DropdownMenu(
             expanded = expanded,
@@ -108,8 +112,8 @@ fun GameFilterDialog(
 
                         var listStatus = status
 
-                        if (listStatus.equals("All", true)) {
-                            listStatus = ""
+                        if (listStatus.equals(OtherConstant.ALL, true)) {
+                            listStatus = OtherConstant.EMPTY_STRING
                         }
 
                         viewModel.setGameStatus(listStatus)
@@ -128,40 +132,44 @@ fun AnimeFilterDialog(
     animeStatus: String
 ) {
 
-    val statusList = listOf("All", "Watching", "Completed", "On Hold", "Dropped", "Plan To Watch")
-    var query by rememberSaveable { mutableStateOf(animeStatus) }
+    val statusList = listOf(
+        OtherConstant.ALL,
+        MyAnimeListConstant.MYANIMELIST_STATUS_WATCHING,
+        MyAnimeListConstant.MYANIMELIST_STATUS_COMPLETED,
+        MyAnimeListConstant.MYANIMELIST_STATUS_ON_HOLD,
+        MyAnimeListConstant.MYANIMELIST_STATUS_DROPPED,
+        MyAnimeListConstant.MYANIMELIST_STATUS_PLAN_TO_WATCH
+    )
+    var status by rememberSaveable { mutableStateOf(animeStatus) }
     var textfieldSize by remember { mutableStateOf(Size.Zero) }
     var expanded by remember { mutableStateOf(false) }
     val icon = if (expanded)
-        Icons.Filled.ArrowDropUp //it requires androidx.compose.material:material-icons-extended
+        Icons.Filled.ArrowDropUp
     else
         Icons.Filled.ArrowDropDown
 
-    if (query.isBlank()) {
-        query = "All"
-    }
-
     Column(
         modifier = Modifier
-            .navigationBarsPadding().imePadding()
+            .navigationBarsPadding()
+            .imePadding()
             .padding(8.dp)
             .fillMaxWidth()
     ) {
         Text(
-            text = "Sort Anime",
+            text = stringResource(R.string.sort_anime),
             style = MaterialTheme.typography.h6
         )
         OutlinedTextField(
             readOnly = true,
-            value = query,
-            onValueChange = { query = it },
+            value = status,
+            onValueChange = { status = it },
             modifier = Modifier
                 .fillMaxWidth()
                 .onGloballyPositioned { coordinates ->
                     //This value is used to assign to the DropDown the same width
                     textfieldSize = coordinates.size.toSize()
                 },
-            label = { Text("Status") },
+            label = { Text(text = stringResource(id = R.string.status)) },
             trailingIcon = {
                 Icon(
                     imageVector = icon,
@@ -169,13 +177,7 @@ fun AnimeFilterDialog(
                     modifier = Modifier.clickable { expanded = !expanded }
                 )
             },
-            placeholder = {
-                if (query.isBlank()) {
-                    Text(text = "All")
-                } else {
-                    Text(text = query)
-                }
-            }
+            placeholder = { Text(text = status) }
         )
         DropdownMenu(
             expanded = expanded,
@@ -186,15 +188,15 @@ fun AnimeFilterDialog(
             statusList.forEach { item ->
                 DropdownMenuItem(
                     onClick = {
-                        query = item
+                        status = item
                         expanded = false
 
-                        var listStatus = query
-                        listStatus = listStatus.lowerCaseWords()
-                        listStatus = listStatus.replace(" ", "_")
+                        var listStatus = status
+                            .lowerCaseWords()
+                            .replace(OtherConstant.BLANK_SPACE, OtherConstant.UNDERSCORE)
 
-                        if (listStatus.equals("All", true)) {
-                            listStatus = ""
+                        if (listStatus.equals(OtherConstant.ALL, true)) {
+                            listStatus = OtherConstant.BLANK_SPACE
                         }
 
                         viewModel.setAnimeStatus(listStatus)
@@ -213,73 +215,70 @@ fun MangaFilterDialog(
     mangaStatus: String
 ) {
 
-    val statusList = listOf("All", "Reading", "Completed", "On Hold", "Dropped", "Plan To Read")
-    var query by rememberSaveable { mutableStateOf(mangaStatus) }
+    val statusList = listOf(
+        OtherConstant.ALL,
+        MyAnimeListConstant.MYANIMELIST_STATUS_READING,
+        MyAnimeListConstant.MYANIMELIST_STATUS_COMPLETED,
+        MyAnimeListConstant.MYANIMELIST_STATUS_ON_HOLD,
+        MyAnimeListConstant.MYANIMELIST_STATUS_DROPPED,
+        MyAnimeListConstant.MYANIMELIST_STATUS_PLAN_TO_READ
+    )
+    var status by rememberSaveable { mutableStateOf(mangaStatus) }
     var textfieldSize by remember { mutableStateOf(Size.Zero) }
     var expanded by remember { mutableStateOf(false) }
     val icon = if (expanded)
-        Icons.Filled.ArrowDropUp //it requires androidx.compose.material:material-icons-extended
+        Icons.Filled.ArrowDropUp
     else
         Icons.Filled.ArrowDropDown
 
-    if (query.isBlank()) {
-        query = "All"
-    }
-
     Column(
         modifier = Modifier
-            .navigationBarsPadding().imePadding()
+            .navigationBarsPadding()
+            .imePadding()
             .padding(8.dp)
             .fillMaxWidth()
     ) {
         Text(
-            text = "Sort Manga",
+            text = stringResource(R.string.sort_manga),
             style = MaterialTheme.typography.h6
         )
         OutlinedTextField(
             readOnly = true,
-            value = query,
-            onValueChange = { query = it },
+            value = status,
+            onValueChange = { status = it },
             modifier = Modifier
                 .fillMaxWidth()
                 .onGloballyPositioned { coordinates ->
                     //This value is used to assign to the DropDown the same width
                     textfieldSize = coordinates.size.toSize()
                 },
-            label = { Text("Status") },
+            label = { Text(text = stringResource(id = R.string.status)) },
             trailingIcon = {
                 Icon(
                     imageVector = icon,
-                    contentDescription = null,
+                    contentDescription = OtherConstant.EMPTY_STRING,
                     modifier = Modifier.clickable { expanded = !expanded }
                 )
             },
-            placeholder = {
-                if (query.isBlank()) {
-                    Text(text = "All")
-                } else {
-                    Text(text = query)
-                }
-            }
+            placeholder = { Text(text = status) }
         )
         DropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false },
-            modifier = Modifier
-                .width(with(LocalDensity.current) { textfieldSize.width.toDp() })
+            modifier = Modifier.width(with(LocalDensity.current) { textfieldSize.width.toDp() })
         ) {
             statusList.forEach { item ->
                 DropdownMenuItem(
                     onClick = {
-                        query = item
+                        status = item
                         expanded = false
 
-                        var listStatus = query
-                        listStatus = listStatus.lowerCaseWords()
-                        listStatus = listStatus.replace(" ", "_")
+                        var listStatus = status
+                            .lowerCaseWords()
+                            .replace(OtherConstant.BLANK_SPACE, OtherConstant.UNDERSCORE)
 
-                        if (listStatus.equals("All", true)) {
-                            listStatus = ""
+                        if (listStatus.equals(OtherConstant.ALL, true)) {
+                            listStatus = OtherConstant.EMPTY_STRING
                         }
 
                         viewModel.setMangaStatus(listStatus)
@@ -301,27 +300,31 @@ fun MovieFilterDialog(
 ) {
 
     var query by rememberSaveable { mutableStateOf(searchQuery) }
-    val statusList = listOf("All", "Watching", "Completed", "On-Hold", "Dropped", "Plan To Watch")
+    val statusList = listOf(
+        OtherConstant.ALL,
+        TmdbConstant.TMDB_STATUS_WATCHING,
+        TmdbConstant.TMDB_STATUS_COMPLETED,
+        TmdbConstant.TMDB_STATUS_ON_HOLD,
+        TmdbConstant.TMDB_STATUS_DROPPED,
+        TmdbConstant.TMDB_STATUS_PLAN_TO_WATCH
+    )
     var status by rememberSaveable { mutableStateOf(movieStatus) }
     var textfieldSize by remember { mutableStateOf(Size.Zero) }
     var expanded by remember { mutableStateOf(false) }
     val icon = if (expanded)
-        Icons.Filled.ArrowDropUp //it requires androidx.compose.material:material-icons-extended
+        Icons.Filled.ArrowDropUp
     else
         Icons.Filled.ArrowDropDown
 
-    if (status.isBlank()) {
-        status = "All"
-    }
-
     Column(
         modifier = Modifier
-            .navigationBarsPadding().imePadding()
+            .navigationBarsPadding()
+            .imePadding()
             .padding(8.dp)
             .fillMaxWidth()
     ) {
         Text(
-            text = "Filter Movie",
+            text = stringResource(R.string.filter_movie),
             style = MaterialTheme.typography.h6
         )
         OutlinedTextField(
@@ -329,24 +332,24 @@ fun MovieFilterDialog(
             onValueChange = {
                 query = it
 
-                if (type.equals("Movie", true)) {
+                if (type.equals(TmdbConstant.TMDB_TYPE_MOVIE, true)) {
                     viewModel.setMovieQuery(query)
                 } else {
                     viewModel.setTVShowQuery(query)
                 }
             },
             modifier = Modifier.fillMaxWidth(),
-            label = { Text("Movie Name") },
+            label = { Text(text = stringResource(R.string.movie_name)) },
             placeholder = {
                 if (query.isBlank()) {
-                    Text(text = "Movie Name")
+                    Text(text = stringResource(R.string.movie_name))
                 } else {
                     Text(text = query)
                 }
             }
         )
         Text(
-            text = "Sort Movie",
+            text = stringResource(R.string.sort_movie),
             style = MaterialTheme.typography.h6
         )
         OutlinedTextField(
@@ -367,19 +370,12 @@ fun MovieFilterDialog(
                     modifier = Modifier.clickable { expanded = !expanded }
                 )
             },
-            placeholder = {
-                if (movieStatus.isBlank()) {
-                    Text(text = "All")
-                } else {
-                    Text(text = status)
-                }
-            }
+            placeholder = { Text(text = status) }
         )
         DropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false },
-            modifier = Modifier
-                .width(with(LocalDensity.current) { textfieldSize.width.toDp() })
+            modifier = Modifier.width(with(LocalDensity.current) { textfieldSize.width.toDp() })
         ) {
             statusList.forEach { item ->
                 DropdownMenuItem(
@@ -389,11 +385,11 @@ fun MovieFilterDialog(
 
                         var listStatus = status
 
-                        if (listStatus.equals("All", true)) {
-                            listStatus = ""
+                        if (listStatus.equals(OtherConstant.ALL, true)) {
+                            listStatus = OtherConstant.EMPTY_STRING
                         }
 
-                        if (type.equals("Movie", true)) {
+                        if (type.equals(TmdbConstant.TMDB_TYPE_MOVIE, true)) {
                             viewModel.setMovieStatus(listStatus)
                         } else {
                             viewModel.setTVShowStatus(listStatus)

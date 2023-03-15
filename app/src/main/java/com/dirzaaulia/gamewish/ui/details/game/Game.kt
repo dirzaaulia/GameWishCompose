@@ -1,7 +1,6 @@
 package com.dirzaaulia.gamewish.ui.details.game
 
 import android.annotation.SuppressLint
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -38,14 +37,13 @@ import com.dirzaaulia.gamewish.data.model.rawg.EsrbRating
 import com.dirzaaulia.gamewish.data.model.rawg.GameDetails
 import com.dirzaaulia.gamewish.data.model.rawg.Screenshots
 import com.dirzaaulia.gamewish.data.model.wishlist.GameWishlist
-import com.dirzaaulia.gamewish.extension.isError
-import com.dirzaaulia.gamewish.extension.isSucceeded
-import com.dirzaaulia.gamewish.extension.visible
 import com.dirzaaulia.gamewish.theme.Red700
 import com.dirzaaulia.gamewish.theme.White
 import com.dirzaaulia.gamewish.ui.common.CommonGameCarousel
 import com.dirzaaulia.gamewish.ui.common.CommonLoading
 import com.dirzaaulia.gamewish.ui.common.ErrorConnect
+import com.dirzaaulia.gamewish.ui.common.list.GameDetailsPlatformList
+import com.dirzaaulia.gamewish.ui.common.list.GameDetailsStoresList
 import com.dirzaaulia.gamewish.ui.details.DetailsViewModel
 import com.dirzaaulia.gamewish.utils.*
 import com.google.accompanist.pager.rememberPagerState
@@ -61,7 +59,6 @@ fun GameDetails(
 ) {
     val scope = rememberCoroutineScope()
     val scaffoldState = rememberBottomSheetScaffoldState()
-    val loading = viewModel.loading.value
     val wishlistData = viewModel.gameWishlistedData.value
     val gameDetailsResult by viewModel.gameDetailsResult.collectAsState(null)
     val gameDetails by viewModel.gameDetails.collectAsState(null)
@@ -75,109 +72,120 @@ fun GameDetails(
         viewModel.checkIfGameWishlisted(gameId)
     }
 
-    CommonLoading(visibility = loading)
-    AnimatedVisibility(visible = !loading) {
-        when {
-            gameDetailsResult.isSucceeded -> {
-                BottomSheetScaffold(
-                    sheetContent = {
-                        gameDetails?.let {
-                            GameWishlistSheetContent(
-                                it,
-                                wishlistData,
-                                viewModel,
-                                scope,
-                                scaffoldState
+    when {
+        gameDetailsResult.isLoading -> {
+            CommonLoading(visibility = true)
+        }
+        gameDetailsResult.isSucceeded -> {
+            BottomSheetScaffold(
+                sheetContent = {
+                    gameDetails?.let { gameDetail ->
+                        GameWishlistSheetContent(
+                            gameDetail,
+                            wishlistData,
+                            viewModel,
+                            scope,
+                            scaffoldState
+                        )
+                    }
+                },
+                scaffoldState = scaffoldState,
+                sheetPeekHeight = 0.dp,
+            ) {
+                LazyColumn(
+                    modifier = Modifier
+                        .navigationBarsPadding()
+                        .fillMaxSize()
+                ) {
+                    screenshots?.results?.let { screenshots ->
+                        item {
+                            GameDetailsHeader(
+                                screenshots = screenshots,
+                                upPress = upPress
                             )
                         }
-                    },
-                    scaffoldState = scaffoldState,
-                    sheetPeekHeight = 0.dp,
-                ) {
-                    LazyColumn(
-                        modifier = Modifier
-                            .navigationBarsPadding()
-                            .fillMaxSize()
-                    ) {
-                        screenshots?.results?.let {
-                            item {
-                                GameDetailsHeader(
-                                    screenshots = it,
-                                    loading = loading,
-                                    upPress = upPress
+                    }
+                    item {
+                        gameDetails?.let { gameDetail ->
+                            GameDetailsMiddleContent(
+                                data = gameDetail,
+                                scope = scope,
+                                scaffoldState = scaffoldState
+                            )
+                        }
+                    }
+                }
+
+                when {
+                    updateGameResult.isSucceeded -> {
+                        LaunchedEffect(updateGameResult) {
+                            if (wishlistData != null) {
+                                scaffoldState.snackbarHostState.showSnackbar(
+                                    RawgConstant.RAWG_WISHLIST_UPDATED
+                                )
+                            } else {
+                                scaffoldState.snackbarHostState.showSnackbar(
+                                    RawgConstant.RAWG_WISHLIST_ADDED
                                 )
                             }
+                            gameDetails?.id?.let { id -> viewModel.checkIfGameWishlisted(id) }
                         }
-                        item {
-                            gameDetails?.let {
-                                GameDetailsMiddleContent(
-                                    data = it,
-                                    scope = scope,
-                                    scaffoldState = scaffoldState
+                    }
+
+                    updateGameResult.isError -> {
+                        LaunchedEffect(updateGameResult) {
+                            if (wishlistData != null) {
+                                scaffoldState.snackbarHostState.showSnackbar(
+                                    RawgConstant.RAWG_WISHLIST_UPDATE_ERROR
+                                )
+                            } else {
+                                scaffoldState.snackbarHostState.showSnackbar(
+                                    RawgConstant.RAWG_WISHLIST_ADD_ERROR
                                 )
                             }
                         }
                     }
 
-                    when {
-                        updateGameResult.isSucceeded -> {
-                            LaunchedEffect(updateGameResult) {
-                                if (wishlistData != null) {
-                                    val text = "This game has been updated on your Wishlist."
-                                    scaffoldState.snackbarHostState.showSnackbar(text)
-                                } else {
-                                    val text = "This game has been added to your Wishlist."
-                                    scaffoldState.snackbarHostState.showSnackbar(text)
-                                }
-                                gameDetails?.id?.let { id -> viewModel.checkIfGameWishlisted(id) }
-                            }
+                    deleteGameResult.isSucceeded -> {
+                        LaunchedEffect(deleteGameResult) {
+                            scaffoldState.snackbarHostState.showSnackbar(
+                                RawgConstant.RAWG_WISHLIST_DELETED
+                            )
                         }
-                        updateGameResult.isError -> {
-                            LaunchedEffect(updateGameResult) {
-                                if (wishlistData != null) {
-                                    val text = "Something wrong happen went updating game in your Wishlist."
-                                    scaffoldState.snackbarHostState.showSnackbar(text)
-                                } else {
-                                    val text = "Something wrong happen went adding game into your Wishlist"
-                                    scaffoldState.snackbarHostState.showSnackbar(text)
-                                }
-                            }
-                        }
-                        deleteGameResult.isSucceeded -> {
-                            LaunchedEffect(deleteGameResult) {
-                                scaffoldState.snackbarHostState.showSnackbar("This game has been deleted from your Wishlist.")
-                            }
-                        }
-                        deleteGameResult.isError -> {
-                            LaunchedEffect(deleteGameResult) {
-                                scaffoldState.snackbarHostState.showSnackbar("Something went wrong when deleting game from your Wishlist.")
-                            }
+                    }
+
+                    deleteGameResult.isError -> {
+                        LaunchedEffect(deleteGameResult) {
+                            scaffoldState.snackbarHostState.showSnackbar(
+                                RawgConstant.RAWG_WISHLIST_DELETE_ERROR
+                            )
                         }
                     }
                 }
             }
-            gameDetailsResult.isError -> {
-                val errorScaffoldState = rememberScaffoldState()
+        }
 
-                viewModel.setLoading(false)
+        gameDetailsResult.isError -> {
+            val errorScaffoldState = rememberScaffoldState()
 
-                Scaffold(
-                    modifier = Modifier.navigationBarsPadding(),
-                    scaffoldState = errorScaffoldState
+            viewModel.setLoading(false)
+
+            Scaffold(
+                modifier = Modifier.navigationBarsPadding(),
+                scaffoldState = errorScaffoldState
+            ) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center,
                 ) {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center,
+                    ErrorConnect(
+                        text = stringResource(
+                            id = R.string.game_details_error
+                        )
                     ) {
-                        ErrorConnect(
-                            text = stringResource(
-                                id = R.string.game_details_error
-                            )
-                        ) {
-                            viewModel.getGameDetails(gameId)
-                            viewModel.getGameDetailsScreenshots(gameId)
-                            viewModel.checkIfGameWishlisted(gameId)
-                        }
+                        viewModel.getGameDetails(gameId)
+                        viewModel.getGameDetailsScreenshots(gameId)
+                        viewModel.checkIfGameWishlisted(gameId)
                     }
                 }
             }
@@ -188,7 +196,6 @@ fun GameDetails(
 @Composable
 fun GameDetailsHeader(
     screenshots: List<Screenshots>,
-    loading: Boolean,
     upPress: () -> Unit
 ) {
     Box {
@@ -200,23 +207,21 @@ fun GameDetailsHeader(
                 height = 300.dp,
                 screenshots = screenshots
             )
-        } else if (screenshots.isEmpty()) {
+        } else {
             NetworkImage(
-                url = OtherConstant.NO_IMAGE_URL,
-                contentDescription = null,
                 modifier = Modifier
                     .height(200.dp)
-                    .fillMaxWidth()
-                    .visible(!loading)
+                    .fillMaxWidth(),
+                url = OtherConstant.NO_IMAGE_URL,
+                contentDescription = OtherConstant.EMPTY_STRING,
+
             )
         }
         TopAppBar(
+            modifier = Modifier.statusBarsPadding(),
             backgroundColor = Color.Transparent,
             elevation = 0.dp,
             contentColor = White,
-            modifier = Modifier
-                .visible(!loading)
-                .statusBarsPadding()
         ) {
             IconButton(onClick = upPress) {
                 Icon(
@@ -274,7 +279,7 @@ fun GameDetailsMiddleContent(
             ) {
                 Icon(
                     imageVector = Icons.Filled.Favorite,
-                    contentDescription = null,
+                    contentDescription = OtherConstant.EMPTY_STRING,
                     tint = MaterialTheme.colors.onSurface
                 )
             }
@@ -287,7 +292,7 @@ fun GameDetailsMiddleContent(
                     val releaseDate = if (it.isBlank()) {
                         stringResource(R.string.no_release_date)
                     } else {
-                        it.changeDateFormat("yyyy-MM-dd")
+                        it.changeDateFormat(OtherConstant.DATE_FORMAT_STRIP_yyyy_MM_dd)
                     }
 
 
@@ -421,8 +426,14 @@ fun GameWishlistSheetContent(
 ) {
 
     var expanded by remember { mutableStateOf(false) }
-    val status = gameWishlist?.status ?: "Plan To Buy"
-    val statusList = listOf("Playing", "Completed", "On-Hold", "Dropped", "Plan To Buy")
+    val status = gameWishlist?.status.replaceIfNull(RawgConstant.RAWG_STATUS_PLAN_TO_BUY)
+    val statusList = listOf(
+        RawgConstant.RAWG_STATUS_PLAYING,
+        RawgConstant.RAWG_STATUS_COMPLETED,
+        RawgConstant.RAWG_STATUS_ON_HOLD,
+        RawgConstant.RAWG_STATUS_DROPPED,
+        RawgConstant.RAWG_STATUS_PLAN_TO_BUY
+    )
     var statusText by remember { mutableStateOf(status) }
     var textfieldSize by remember { mutableStateOf(Size.Zero) }
     val icon = if (expanded)
@@ -450,14 +461,14 @@ fun GameWishlistSheetContent(
             ) {
                 Icon(
                     imageVector = Icons.Filled.Delete,
-                    contentDescription = null,
+                    contentDescription = OtherConstant.EMPTY_STRING,
                     tint = Red700
                 )
             }
         }
-        gameDetails.name?.let {
+        gameDetails.name?.let { name ->
             Text(
-                text = it,
+                text = name,
                 style = MaterialTheme.typography.h6
             )
         }
@@ -471,7 +482,7 @@ fun GameWishlistSheetContent(
                     //This value is used to assign to the DropDown the same width
                     textfieldSize = coordinates.size.toSize()
                 },
-            label = { Text("Status") },
+            label = { Text(RawgConstant.RAWG_STATUS) },
             trailingIcon = {
                 Icon(
                     imageVector = icon,
@@ -513,9 +524,9 @@ fun GameWishlistSheetContent(
             }
         ) {
             val text = if (gameWishlist != null) {
-                "Update Wishlist"
+                RawgConstant.RAWG_UPDATE_WISHLIST
             } else {
-                "Add To Wishlist"
+                RawgConstant.RAWG_ADD_WISHLIST
             }
 
             Text(text = text)

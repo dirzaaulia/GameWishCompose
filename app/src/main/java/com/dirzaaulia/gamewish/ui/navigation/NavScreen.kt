@@ -1,31 +1,33 @@
 package com.dirzaaulia.gamewish.ui.navigation
 
+import com.dirzaaulia.gamewish.utils.Route
+
 sealed class NavScreen(val route: String) {
-    object Login : NavScreen("Login")
+    object Login : NavScreen(Route.LOGIN)
 
-    object MyAnimeListLogin : NavScreen("MyAnimeListLogin")
+    object MyAnimeListLogin : NavScreen(Route.MYANIMELIST_LOGIN)
 
-    object Home : NavScreen("Home")
+    object Home : NavScreen(Route.HOME)
 
-    object Search : NavScreen("Search") {
-        const val routeWithArgument: String = "Search/{menuId}"
-        const val argument0: String = "menuId"
+    object Search : NavScreen(Route.SEARCH) {
+        const val routeWithArgument: String = Route.SEARCH_ARGS
+        const val argument0: String = Route.SEARCH_ARG_0
     }
 
-    object GameDetails : NavScreen("GameDetails") {
-        const val routeWithArgument: String = "GameDetails/{gameId}"
-        const val argument0: String = "gameId"
+    object GameDetails : NavScreen(Route.GAME_DETAILS) {
+        const val routeWithArgument: String = Route.GAME_DETAILS_ARGS
+        const val argument0: String = Route.GAME_DETAILS_ARG_0
     }
 
-    object AnimeDetails : NavScreen("AnimeDetails") {
-        const val routeWithArgument: String = "AnimeDetails/{animeId}/{type}"
-        const val argument0: String = "animeId"
-        const val argument1: String = "type"
+    object AnimeDetails : NavScreen(Route.ANIME_DETAILS) {
+        const val routeWithArgument: String = Route.ANIME_DETAILS_ARGS
+        const val argument0: String = Route.ANIME_DETAILS_ARG_0
+        const val argument1: String = Route.ANIME_DETAILS_ARG_1
     }
 
-    object MovieDetails: NavScreen("MovieDetails") {
-        const val routeWithArgument: String = "MovieDetails/{movieId}/{type}"
-        const val argument0: String = "movieId"
-        const val argument1: String = "type"
+    object MovieDetails: NavScreen(Route.MOVIE_DETAILS) {
+        const val routeWithArgument: String = Route.MOVIE_DETAILS_ARGS
+        const val argument0: String = Route.MOVIE_DETAILS_ARG_0
+        const val argument1: String = Route.MOVIE_DETAILS_ARG_1
     }
 }

@@ -25,8 +25,8 @@ import androidx.paging.compose.LazyPagingItems
 import com.dirzaaulia.gamewish.R
 import com.dirzaaulia.gamewish.data.model.tmdb.Movie
 import com.dirzaaulia.gamewish.theme.White
-import com.dirzaaulia.gamewish.ui.common.CommonMovieItem
 import com.dirzaaulia.gamewish.ui.common.CommonVerticalList
+import com.dirzaaulia.gamewish.ui.common.item.CommonMovieItem
 import com.dirzaaulia.gamewish.ui.search.SearchViewModel
 import com.dirzaaulia.gamewish.utils.PlaceholderConstant
 
@@ -62,7 +62,10 @@ fun Movie(
                 SearchMovieTabMenu(menu = menu, menuId = menuId, viewModel = viewModel)
             }
         ) {
-            Crossfade(targetState = SearchMovieTab.getTabFromResource(menuId)) { destination ->
+            Crossfade(
+                targetState = SearchMovieTab.getTabFromResource(menuId),
+                label = ""
+            ) { destination ->
                 when (destination) {
                     SearchMovieTab.MOVIE -> {
                         SearchMovieList(

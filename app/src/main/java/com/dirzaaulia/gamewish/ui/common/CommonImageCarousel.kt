@@ -1,7 +1,6 @@
 package com.dirzaaulia.gamewish.ui.common
 
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.Card
@@ -14,6 +13,7 @@ import com.dirzaaulia.gamewish.data.model.myanimelist.MainPicture
 import com.dirzaaulia.gamewish.data.model.rawg.Screenshots
 import com.dirzaaulia.gamewish.data.model.tmdb.Image
 import com.dirzaaulia.gamewish.utils.NetworkImage
+import com.dirzaaulia.gamewish.utils.OtherConstant
 import com.dirzaaulia.gamewish.utils.TmdbConstant
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.PagerState
@@ -23,41 +23,33 @@ import kotlinx.coroutines.yield
 @Composable
 fun CommonGameCarousel(
     pagerState: PagerState,
-    height: Dp?,
+    height: Dp,
     screenshots: List<Screenshots>
 ) {
     LaunchedEffect(Unit) {
         while (true) {
             yield()
-            delay(2000)
-            tween<Float>(600)
-            if (pagerState.pageCount != 0) {
+            delay(OtherConstant.TWO_THOUSAND_LONG)
+            tween<Float>(OtherConstant.SIX_HUNDRED)
+            if (pagerState.pageCount != OtherConstant.ZERO) {
                 pagerState.animateScrollToPage(
-                    page = (pagerState.currentPage + 1) % (pagerState.pageCount)
+                    page = (pagerState.currentPage + OtherConstant.ONE) % (pagerState.pageCount)
                 )
             }
         }
     }
 
-    height?.let {
-        Modifier
-            .fillMaxWidth()
-            .height(it)
-    }?.let {
-        HorizontalPager(
-            state = pagerState,
-            modifier = it,
-            count = screenshots.size
-        ) { pageIndex ->
-            val screenshot = screenshots[pageIndex]
-            Card {
-                screenshot.image?.let { url ->
-                    NetworkImage(
-                        url = url,
-                        contentDescription = null
-                    )
-                }
-            }
+    HorizontalPager(
+        state = pagerState,
+        modifier = Modifier.height(height),
+        count = screenshots.size
+    ) { pageIndex ->
+        val screenshot = screenshots[pageIndex]
+        Card {
+            NetworkImage(
+                url = screenshot.image,
+                contentDescription = OtherConstant.EMPTY_STRING
+            )
         }
     }
 }
@@ -70,26 +62,26 @@ fun CommonAnimeCarousel(
     LaunchedEffect(Unit) {
         while (true) {
             yield()
-            delay(2000)
-            tween<Float>(600)
+            delay(OtherConstant.TWO_THOUSAND_LONG)
+            tween<Float>(OtherConstant.SIX_HUNDRED)
             pagerState.animateScrollToPage(
-                page = (pagerState.currentPage + 1) % (pagerState.pageCount)
+                page = (pagerState.currentPage + OtherConstant.ONE) % (pagerState.pageCount)
             )
         }
     }
 
     HorizontalPager(
         state = pagerState,
-        modifier =  Modifier
+        modifier = Modifier
             .width(100.dp),
         count = screenshots.size
     ) { pageIndex ->
         val screenshot = screenshots[pageIndex]
         Card {
-            screenshot.large?.let {
+            screenshot.large?.let { image ->
                 NetworkImage(
-                    url = it,
-                    contentDescription = null
+                    url = image,
+                    contentDescription = OtherConstant.EMPTY_STRING
                 )
             }
         }
@@ -104,10 +96,10 @@ fun CommonMovieCarousel(
     LaunchedEffect(Unit) {
         while (true) {
             yield()
-            delay(2000)
-            tween<Float>(600)
+            delay(OtherConstant.TWO_THOUSAND_LONG)
+            tween<Float>(OtherConstant.SIX_HUNDRED)
             pagerState.animateScrollToPage(
-                page = (pagerState.currentPage + 1) % (pagerState.pageCount)
+                page = (pagerState.currentPage + OtherConstant.ONE) % (pagerState.pageCount)
             )
         }
     }
