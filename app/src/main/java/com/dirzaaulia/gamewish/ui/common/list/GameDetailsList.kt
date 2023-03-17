@@ -19,7 +19,6 @@ fun GameDetailsPlatformList(
     data: List<Platforms>,
     code: Int
 ) {
-
     FlowRow {
         data
             .sortedWith(compareBy { it.platform?.name?.length })

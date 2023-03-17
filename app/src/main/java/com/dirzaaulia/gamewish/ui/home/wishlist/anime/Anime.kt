@@ -13,16 +13,16 @@ import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import com.dirzaaulia.gamewish.R
-import com.dirzaaulia.gamewish.base.ResponseResult
+import com.dirzaaulia.gamewish.utils.ResponseResult
 import com.dirzaaulia.gamewish.data.model.myanimelist.ParentNode
+import com.dirzaaulia.gamewish.ui.common.CommonVerticalList
+import com.dirzaaulia.gamewish.ui.common.MyAnimeListWebViewClient
+import com.dirzaaulia.gamewish.ui.common.item.CommonAnimeItem
+import com.dirzaaulia.gamewish.ui.home.HomeViewModel
+import com.dirzaaulia.gamewish.utils.MyAnimeListConstant
 import com.dirzaaulia.gamewish.utils.isError
 import com.dirzaaulia.gamewish.utils.isSucceeded
 import com.dirzaaulia.gamewish.utils.visible
-import com.dirzaaulia.gamewish.ui.common.MyAnimeListWebViewClient
-import com.dirzaaulia.gamewish.ui.common.item.CommonAnimeItem
-import com.dirzaaulia.gamewish.ui.common.list.AnimeVerticalList
-import com.dirzaaulia.gamewish.ui.home.HomeViewModel
-import com.dirzaaulia.gamewish.utils.MyAnimeListConstant
 import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material.shimmer
 import com.google.accompanist.placeholder.placeholder
@@ -87,18 +87,17 @@ private fun MyAnimeListLoggedIn(
                 )
                 .visible(data.loadState.refresh is LoadState.NotLoading)
         )
-        AnimeVerticalList(
+        CommonVerticalList(
             data = data,
             lazyListState = lazyListState,
             emptyString = emptyString,
             errorString = errorString,
-            viewModel = viewModel
+            doWhenMyAnimeListError = { viewModel.getMyAnimeListRefreshToken() }
         ) { parentNode ->
             CommonAnimeItem(
                 parentNode = parentNode,
                 navigateToAnimeDetails = navigateToAnimeDetails,
                 type = animeType,
-                loadState = data.loadState
             )
         }
     }

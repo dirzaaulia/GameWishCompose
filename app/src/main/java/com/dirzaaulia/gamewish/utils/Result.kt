@@ -1,8 +1,6 @@
 package com.dirzaaulia.gamewish.utils
 
 import androidx.paging.PagingSource
-import com.dirzaaulia.gamewish.base.NotFoundException
-import com.dirzaaulia.gamewish.base.ResponseResult
 
 val ResponseResult<*>?.isInitialState get() = this != null && this is ResponseResult.Success && data == null
 

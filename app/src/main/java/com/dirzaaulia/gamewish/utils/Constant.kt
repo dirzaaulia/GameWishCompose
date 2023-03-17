@@ -36,6 +36,7 @@ object MyAnimeListConstant {
     const val MYANIMELIST_IS_REWATCHING = "Is Rewatching"
     const val MYANIMELIST_IS_REREADING = "Is Rereading"
     const val MYANIMELIST_WEBVIEW_WISHLIST = 0
+    const val MYANIMELIST_WEBVIEW_OTHER = 1
     const val MYANIMELIST_PAGE_SIZE_TEN = 10
     const val MYANIMELIST_DATA_NOT_FOUND = "Data Not Found"
     const val MYANIMELIST_GENERAL_ERROR = "Something went wrong when getting data from MyAnimeList. Please try it again later!"
@@ -67,6 +68,19 @@ object MyAnimeListConstant {
     const val MYANIMELIST_ADD_LIST_ANIME = "Add Anime To List"
     const val MYANIMELIST_ADD_LIST_MANGA = "Add Manga To List"
     const val MYANIMELIST_ACCOUNT = "MyAnimeList Account"
+    const val MYANIMELIST_HTTP_401_ERROR = "HTTP 401"
+    const val MYANIMELIST_SCHEME = "https"
+    const val MYANIMELIST_PATH_SEGMENT_1 = "v1"
+    const val MYANIMELIST_PATH_SEGMENT_2 = "oauth2"
+    const val MYANIMELIST_PATH_SEGMENT_3 = "authorize"
+    const val MYANIMELIST_QUERY_NAME_1 = "response_type"
+    const val MYANIMELIST_QUERY_VALUE_1 = "code"
+    const val MYANIMELIST_QUERY_NAME_2 = "client_id"
+    const val MYANIMELIST_QUERY_NAME_3 = "code_challenge"
+    const val MYANIMELIST_QUERY_NAME_4 = "state"
+    const val MYANIMELIST_QUERY_ERROR_1 = "code"
+    const val MYANIMELIST_QUERY_ERROR_2 = "error"
+    const val MYANIMELIST_GRANT_TYPE = "authorization_code"
 }
 
 object DatabaseConstant {
@@ -111,6 +125,8 @@ object TmdbConstant {
     const val TMDB_STATUS_ON_HOLD = "On-Hold"
     const val TMDB_STATUS_DROPPED = "Dropped"
     const val TMDB_STATUS = "Status"
+    const val TMDB_RELEASE_DATE = "Release Date"
+    const val TMDB_NO_RELEASE_DATE = "No Release Date"
 }
 
 object RawgConstant {
@@ -132,6 +148,7 @@ object RawgConstant {
     const val RAWG_STATUS_DROPPED = "Dropped"
     const val RAWG_UPDATE_WISHLIST = "Update Wishlist"
     const val RAWG_ADD_WISHLIST = "Add To Wishlist"
+    const val RAWG_RELEASE_DATE = "Release Date"
 }
 
 object CheapSharkConstant {
@@ -143,6 +160,7 @@ object CheapSharkConstant {
     const val CHEAPSHARK_DEFAULT_LOWER_PRICE = 0L
     const val CHEAPSHARK_DEFAULT_UPPER_PRICE = 1000L
     const val CHEAPSHARK_PAGE_SIZE_TEN = 10
+    const val CHEAPSHARK_DEAL_FORMAT = "%.2f%% Off"
 }
 
 object ProtoConstant {
@@ -152,11 +170,10 @@ object ProtoConstant {
 object FirebaseConstant {
     const val GOOGLE_SIGN_IN_WEB_CLIENT_ID =
         "203885987594-4u6tk8rbssjram2c5jf5jsls5ejeig0s.apps.googleusercontent.com"
-    const val FIREBASE_DATABASE_URL =
-        "https://gamewish-f7e0c-default-rtdb.asia-southeast1.firebasedatabase.app/"
     const val FIREBASE_COLLECTION_WISHLIST = "wishlist"
     const val FIREBASE_COLLECTION_GAME = "game"
     const val FIREBASE_COLLECTION_MOVIE = "movie"
+    const val FIREBASE_LOGIN_ERROR_MESSAGE = "Login went error! Please try again later."
 }
 
 object PlaceholderConstant {
@@ -192,6 +209,7 @@ object OtherConstant {
     const val NINE = 9
     const val TEN = 10
     const val ELEVEN = 11
+    const val FIFTY = 50
     const val SIX_HUNDRED = 600
 
     const val ZERO_LONG = 0L

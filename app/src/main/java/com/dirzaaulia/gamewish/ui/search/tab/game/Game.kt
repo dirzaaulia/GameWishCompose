@@ -148,7 +148,6 @@ fun SearchGameList(
             SearchGamesItem(
                 navigateToGameDetails = navigateToGameDetails,
                 games = games,
-                loadStates = data.loadState,
             )
         }
     }
@@ -184,7 +183,6 @@ fun GenreList(
             SearchGenreItem(
                 genre = genre,
                 viewModel = viewModel,
-                loadStates = data.loadState,
             )
         }
     }

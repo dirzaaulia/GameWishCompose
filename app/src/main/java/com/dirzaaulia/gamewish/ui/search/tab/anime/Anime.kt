@@ -31,7 +31,7 @@ import androidx.compose.ui.unit.toSize
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import com.dirzaaulia.gamewish.R
-import com.dirzaaulia.gamewish.base.ResponseResult
+import com.dirzaaulia.gamewish.utils.ResponseResult
 import com.dirzaaulia.gamewish.data.model.myanimelist.ParentNode
 import com.dirzaaulia.gamewish.data.request.myanimelist.SearchGameRequest
 import com.dirzaaulia.gamewish.utils.isError
@@ -42,6 +42,8 @@ import com.dirzaaulia.gamewish.ui.common.MyAnimeListWebViewClient
 import com.dirzaaulia.gamewish.ui.common.item.CommonAnimeItem
 import com.dirzaaulia.gamewish.ui.home.HomeViewModel
 import com.dirzaaulia.gamewish.ui.search.SearchViewModel
+import com.dirzaaulia.gamewish.utils.MyAnimeListConstant
+import com.dirzaaulia.gamewish.utils.OtherConstant
 import com.dirzaaulia.gamewish.utils.PlaceholderConstant
 import com.dirzaaulia.gamewish.utils.capitalizeWords
 import com.google.accompanist.placeholder.PlaceholderHighlight
@@ -117,6 +119,7 @@ fun SearchAnime(
                                     navigateToAnimeDetails = navigateToAnimeDetails
                                 )
                             }
+
                             SearchAnimeTab.ANIME -> {
                                 SearchAnimeList(
                                     data = searchAnimeList,
@@ -125,6 +128,7 @@ fun SearchAnime(
                                     searchAnimeQuery = searchAnimeQuery
                                 )
                             }
+
                             SearchAnimeTab.MANGA -> {
                                 SearchMangaList(
                                     data = searchMangaList,
@@ -142,9 +146,8 @@ fun SearchAnime(
 
         accessTokenResult.isError -> {
             MyAnimeListWebViewClient(
-                from = 1,
-                viewModel = homeViewModel,
-                upPress = {}
+                from = MyAnimeListConstant.MYANIMELIST_WEBVIEW_OTHER,
+                viewModel = homeViewModel
             )
         }
     }
@@ -157,21 +160,21 @@ fun SearchMangaList(
     navigateToAnimeDetails: (Long, String) -> Unit,
     searchAnimeQuery: String
 ) {
-    Column (
+    Column(
         modifier = Modifier.padding(top = 4.dp, start = 8.dp, end = 8.dp)
-    ){
+    ) {
         val emptyString = if (searchAnimeQuery.isBlank()) {
             stringResource(id = R.string.search_manga_empty_query)
         } else {
             stringResource(id = R.string.search_manga_empty)
         }
 
-        if (data.itemCount != 0 && data.loadState.refresh is LoadState.NotLoading) {
-            Text(
-                text = stringResource(id = R.string.manga_data_source),
-                style = MaterialTheme.typography.caption,
-            )
-        }
+        if (data.itemCount != OtherConstant.ZERO
+            && data.loadState.refresh is LoadState.NotLoading
+        ) Text(
+            text = stringResource(id = R.string.manga_data_source),
+            style = MaterialTheme.typography.caption,
+        )
         CommonVerticalList(
             data = data,
             lazyListState = lazyListState,
@@ -182,8 +185,7 @@ fun SearchMangaList(
             CommonAnimeItem(
                 parentNode = parentNode,
                 navigateToAnimeDetails = navigateToAnimeDetails,
-                type = "Manga",
-                loadState = data.loadState
+                type = MyAnimeListConstant.MYANIMELIST_TYPE_MANGA,
             )
         }
     }
@@ -196,9 +198,9 @@ fun SearchAnimeList(
     navigateToAnimeDetails: (Long, String) -> Unit,
     searchAnimeQuery: String
 ) {
-    Column (
+    Column(
         modifier = Modifier.padding(top = 4.dp, start = 8.dp, end = 8.dp)
-    ){
+    ) {
         val emptyString = if (searchAnimeQuery.isBlank()) {
             stringResource(id = R.string.search_anime_empty_query)
         } else {
@@ -222,7 +224,6 @@ fun SearchAnimeList(
                 parentNode = parentNode,
                 navigateToAnimeDetails = navigateToAnimeDetails,
                 type = "Anime",
-                loadState = data.loadState
             )
         }
     }
@@ -242,9 +243,9 @@ fun SeasonalAnime(
     val season = seasonal[0]
     val year = seasonal[1]
 
-    Column (
+    Column(
         modifier = Modifier.padding(top = 4.dp, start = 8.dp, end = 8.dp)
-    ){
+    ) {
         Row {
             Text(
                 text = "${season.capitalizeWords()} $year",
@@ -298,7 +299,6 @@ fun SeasonalAnime(
                 parentNode = parentNode,
                 navigateToAnimeDetails = navigateToAnimeDetails,
                 type = "Anime",
-                loadState = data.loadState
             )
         }
     }
@@ -325,7 +325,8 @@ fun SeasonalAnimeSheet(
     Column(
         modifier = Modifier
             .padding(8.dp)
-            .navigationBarsPadding().imePadding()
+            .navigationBarsPadding()
+            .imePadding()
     ) {
         OutlinedTextField(
             readOnly = true,
@@ -471,7 +472,7 @@ fun SearchAnimeTabMenu(
     }
 }
 
-enum class SearchAnimeTab (@StringRes val title: Int) {
+enum class SearchAnimeTab(@StringRes val title: Int) {
     SEASONAL(R.string.seasonal_anime),
     ANIME(R.string.anime),
     MANGA(R.string.manga);

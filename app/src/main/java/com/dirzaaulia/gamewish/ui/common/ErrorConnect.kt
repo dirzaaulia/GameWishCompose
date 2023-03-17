@@ -17,11 +17,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.dirzaaulia.gamewish.R
-import com.dirzaaulia.gamewish.theme.GameWishTheme
+import com.dirzaaulia.gamewish.utils.OtherConstant
 
 @Composable
 fun ErrorConnect(
@@ -50,7 +49,7 @@ fun ErrorConnect(
             ) {
                 Icon(
                     imageVector = Icons.Filled.SignalWifiBad,
-                    contentDescription = "Signal Wifi Bad",
+                    contentDescription = OtherConstant.EMPTY_STRING,
                     tint = MaterialTheme.colors.onSurface,
                     modifier = Modifier.size(100.dp)
                 )
@@ -59,8 +58,7 @@ fun ErrorConnect(
                     textAlign = TextAlign.Center,
                     color = MaterialTheme.colors.onSurface,
                     style = MaterialTheme.typography.h6,
-                    modifier = Modifier
-                        .padding(30.dp)
+                    modifier = Modifier.padding(30.dp)
                 )
                 OutlinedButton(
                     onClick = repeat,
@@ -70,21 +68,5 @@ fun ErrorConnect(
 
             }
         }
-    }
-}
-
-@Preview
-@Composable
-fun ErrorConnectPreviewLight() {
-    GameWishTheme(darkTheme = false) {
-        ErrorConnect(stringResource(id = R.string.no_connection)) {}
-    }
-}
-
-@Preview
-@Composable
-fun ErrorConnectPreviewDark() {
-    GameWishTheme(darkTheme = true) {
-        ErrorConnect(stringResource(id = R.string.no_connection)) {}
     }
 }

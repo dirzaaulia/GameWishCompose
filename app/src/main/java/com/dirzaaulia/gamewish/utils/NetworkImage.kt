@@ -20,15 +20,19 @@ import com.dirzaaulia.gamewish.ui.common.CommonLoading
  */
 @Composable
 fun NetworkImage(
-    url: String?,
-    contentDescription: String?,
     modifier: Modifier = Modifier,
+    url: String?,
+    contentDescription: String = OtherConstant.EMPTY_STRING,
     contentScale: ContentScale = ContentScale.FillBounds
 ) {
 
     SubcomposeAsyncImage(
         modifier = modifier,
-        model = url,
+        model = url
+            .replaceIfNull(OtherConstant.NO_IMAGE_URL)
+            .ifBlank {
+                OtherConstant.NO_IMAGE_URL
+            },
         contentDescription = contentDescription,
         contentScale = contentScale,
     ) {
@@ -36,9 +40,11 @@ fun NetworkImage(
             is AsyncImagePainter.State.Loading -> {
                 CommonLoading(visibility = true)
             }
+
             is AsyncImagePainter.State.Success -> {
                 SubcomposeAsyncImageContent()
             }
+
             is AsyncImagePainter.State.Error -> {
                 Box(contentAlignment = Alignment.Center) {
                     Image(
@@ -47,6 +53,7 @@ fun NetworkImage(
                     )
                 }
             }
+
             AsyncImagePainter.State.Empty -> Unit
         }
     }

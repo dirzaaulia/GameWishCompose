@@ -15,14 +15,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.dirzaaulia.gamewish.R
 import com.dirzaaulia.gamewish.data.model.tmdb.Movie
 import com.dirzaaulia.gamewish.utils.NetworkImage
 import com.dirzaaulia.gamewish.utils.OtherConstant
 import com.dirzaaulia.gamewish.utils.TmdbConstant
-import com.dirzaaulia.gamewish.utils.changeDateFormat
+import com.dirzaaulia.gamewish.utils.doBasedOnTmdbType
+import com.dirzaaulia.gamewish.utils.formatTmdbReleaseDate
+import com.dirzaaulia.gamewish.utils.replaceIfNull
 
 @Composable
 fun CommonMovieItem(
@@ -38,12 +38,11 @@ fun CommonMovieItem(
             .padding(vertical = 4.dp)
             .clickable(
                 onClick = {
-                    movie.id?.let {
-                        if (type.equals("Movie", true)) {
-                            navigateToDetails(it, "Movie")
-                        } else {
-                            navigateToDetails(it, "TV Show")
-                        }
+                    movie.id?.let { id ->
+                        type.doBasedOnTmdbType(
+                            doIfMovie = { navigateToDetails(id, TmdbConstant.TMDB_TYPE_MOVIE) },
+                            doIfTv = { navigateToDetails(id, TmdbConstant.TMDB_TYPE_TVSHOW) }
+                        )
                     }
                 }
             ),
@@ -53,51 +52,39 @@ fun CommonMovieItem(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            movie.posterPath.let {
-                val url = if (it.isNullOrBlank()) {
-                    OtherConstant.NO_IMAGE_URL
-                } else {
-                    "${TmdbConstant.TMDB_BASE_IMAGE_URL}$it"
-                }
-
-                NetworkImage(
-                    url = url,
-                    contentDescription = null,
-                    modifier = modifier
-                        .width(100.dp)
-                        .fillMaxHeight(),
-                    contentScale = ContentScale.FillBounds
-                )
-            }
+            NetworkImage(
+                url = String.format(
+                    OtherConstant.STRING_FORMAT_S_S,
+                    TmdbConstant.TMDB_BASE_IMAGE_URL,
+                    movie.posterPath
+                ),
+                modifier = modifier
+                    .width(100.dp)
+                    .fillMaxHeight(),
+                contentScale = ContentScale.FillBounds
+            )
             Column(
                 modifier = modifier
                     .padding(vertical = 4.dp, horizontal = 8.dp)
                     .weight(1f)
             ) {
-                movie.releaseDate?.let {
-                    val releaseDate = if (it.isBlank()) {
-                        stringResource(R.string.no_release_date)
-                    } else {
-                        it.changeDateFormat("yyyy-MM-dd")
-                    }
-
-                    Text(
-                        text = "Release Date : $releaseDate",
-                        style = MaterialTheme.typography.caption
-                    )
-                }
-                movie.title?.let {
-                    Text(
-                        text = it,
-                        style = MaterialTheme.typography.subtitle1
-                    )
-                }
-                movie.name?.let {
-                    Text(
-                        text = it,
-                        style = MaterialTheme.typography.subtitle1
-                    )
-                }
+                Text(
+                    text = String.format(
+                        OtherConstant.STRING_FORMAT_S_SPACE_S_SPACE_S,
+                        TmdbConstant.TMDB_RELEASE_DATE,
+                        OtherConstant.COLON,
+                        movie.releaseDate.formatTmdbReleaseDate()
+                    ),
+                    style = MaterialTheme.typography.caption
+                )
+                Text(
+                    text = movie.title.replaceIfNull(),
+                    style = MaterialTheme.typography.subtitle1
+                )
+                Text(
+                    text = movie.name.replaceIfNull(),
+                    style = MaterialTheme.typography.subtitle1
+                )
             }
         }
     }

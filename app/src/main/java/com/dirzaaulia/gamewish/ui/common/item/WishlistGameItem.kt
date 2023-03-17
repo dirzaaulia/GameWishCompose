@@ -12,19 +12,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
-import androidx.paging.CombinedLoadStates
-import androidx.paging.LoadState
 import com.dirzaaulia.gamewish.data.model.wishlist.GameWishlist
 import com.dirzaaulia.gamewish.utils.NetworkImage
-import com.google.accompanist.placeholder.PlaceholderHighlight
-import com.google.accompanist.placeholder.material.shimmer
-import com.google.accompanist.placeholder.placeholder
 
 @Composable
 fun WishlistGameItem(
     modifier: Modifier = Modifier,
     gameWishlist: GameWishlist,
-    loadState: CombinedLoadStates,
     navigateToGameDetails: (Long) -> Unit = { },
 ) {
     Surface(
@@ -38,16 +32,9 @@ fun WishlistGameItem(
         ) {
             NetworkImage(
                 url = gameWishlist.image.toString(),
-                contentDescription = null,
                 modifier = modifier
                     .fillMaxWidth()
-                    .height(200.dp)
-                    .placeholder(
-                        visible = loadState.refresh is LoadState.Loading,
-                        highlight = PlaceholderHighlight.shimmer(),
-                        color = MaterialTheme.colors.secondary,
-                        shape = MaterialTheme.shapes.small
-                    ),
+                    .height(200.dp),
                 contentScale = ContentScale.FillBounds
             )
             Text(
@@ -56,12 +43,6 @@ fun WishlistGameItem(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 4.dp, start = 8.dp)
-                    .placeholder(
-                        visible = loadState.refresh is LoadState.Loading,
-                        highlight = PlaceholderHighlight.shimmer(),
-                        color = MaterialTheme.colors.secondary,
-                        shape = MaterialTheme.shapes.small
-                    )
             )
             Text(
                 text = gameWishlist.name.toString(),
@@ -69,13 +50,6 @@ fun WishlistGameItem(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(start = 8.dp, top = 4.dp, bottom = 4.dp)
-                    .placeholder(
-                        visible = loadState.refresh is LoadState.Loading,
-                        highlight = PlaceholderHighlight.shimmer(),
-                        color = MaterialTheme.colors.secondary,
-                        shape = MaterialTheme.shapes.small
-                    )
-
             )
         }
     }

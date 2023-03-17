@@ -8,7 +8,7 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import com.dirzaaulia.gamewish.base.ResponseResult
+import com.dirzaaulia.gamewish.utils.ResponseResult
 import com.dirzaaulia.gamewish.data.model.cheapshark.Deals
 import com.dirzaaulia.gamewish.data.model.myanimelist.ParentNode
 import com.dirzaaulia.gamewish.data.model.myanimelist.ServiceCode

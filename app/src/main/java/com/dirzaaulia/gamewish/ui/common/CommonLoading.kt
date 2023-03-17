@@ -40,13 +40,3 @@ fun CommonLoadingItem() {
             .wrapContentWidth(Alignment.CenterHorizontally)
     )
 }
-
-@Composable
-fun CommonLoadingGridItem() {
-    CircularProgressIndicator(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-            .wrapContentSize(Alignment.Center)
-    )
-}

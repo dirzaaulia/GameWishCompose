@@ -18,16 +18,16 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.dirzaaulia.gamewish.R
-import com.dirzaaulia.gamewish.utils.visible
 import com.dirzaaulia.gamewish.ui.home.HomeViewModel
 import com.dirzaaulia.gamewish.utils.MyAnimeListConstant
+import com.dirzaaulia.gamewish.utils.OtherConstant
+import com.dirzaaulia.gamewish.utils.visible
 import com.google.accompanist.web.AccompanistWebViewClient
 import com.google.accompanist.web.WebView
 import com.google.accompanist.web.rememberWebViewNavigator
 import com.google.accompanist.web.rememberWebViewState
 import kotlinx.coroutines.launch
 import okhttp3.HttpUrl
-import timber.log.Timber
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter", "SetJavaScriptEnabled")
 @Composable
@@ -37,7 +37,7 @@ fun MyAnimeListWebViewClient(
     upPress: () -> Unit = {}
 ) {
 
-    val errorState = remember { mutableStateOf("") }
+    val errorState = remember { mutableStateOf(OtherConstant.EMPTY_STRING) }
     val progressShow = remember { mutableStateOf(false) }
 
     val scope = rememberCoroutineScope()
@@ -46,15 +46,27 @@ fun MyAnimeListWebViewClient(
     var reload: () -> Unit = {}
 
     val initialUrl = HttpUrl.Builder()
-        .scheme("https")
+        .scheme(MyAnimeListConstant.MYANIMELIST_SCHEME)
         .host(MyAnimeListConstant.MYANIMELIST_URL)
-        .addPathSegment("v1")
-        .addPathSegment("oauth2")
-        .addPathSegment("authorize")
-        .addQueryParameter("response_type", "code")
-        .addQueryParameter("client_id", MyAnimeListConstant.MYANIMELIST_CLIENT_ID)
-        .addQueryParameter("code_challenge", MyAnimeListConstant.MYANIMELIST_CODE_CHALLENGE)
-        .addQueryParameter("state", MyAnimeListConstant.MYANIMELIST_STATE)
+        .addPathSegment(MyAnimeListConstant.MYANIMELIST_PATH_SEGMENT_1)
+        .addPathSegment(MyAnimeListConstant.MYANIMELIST_PATH_SEGMENT_2)
+        .addPathSegment(MyAnimeListConstant.MYANIMELIST_PATH_SEGMENT_3)
+        .addQueryParameter(
+            name = MyAnimeListConstant.MYANIMELIST_QUERY_NAME_1,
+            value = MyAnimeListConstant.MYANIMELIST_QUERY_VALUE_1
+        )
+        .addQueryParameter(
+            name = MyAnimeListConstant.MYANIMELIST_QUERY_NAME_2,
+            value = MyAnimeListConstant.MYANIMELIST_CLIENT_ID
+        )
+        .addQueryParameter(
+            name = MyAnimeListConstant.MYANIMELIST_QUERY_NAME_3,
+            value = MyAnimeListConstant.MYANIMELIST_CODE_CHALLENGE
+        )
+        .addQueryParameter(
+            name = MyAnimeListConstant.MYANIMELIST_QUERY_NAME_4,
+            value = MyAnimeListConstant.MYANIMELIST_STATE
+        )
         .build()
     val webViewState = rememberWebViewState(url = initialUrl.toString())
     val webViewNavigator = rememberWebViewNavigator()
@@ -64,13 +76,11 @@ fun MyAnimeListWebViewClient(
             override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
                 super.onPageStarted(view, url, favicon)
                 progressShow.value = true
-                Timber.i(url)
             }
 
             override fun onPageFinished(view: WebView?, url: String?) {
                 super.onPageFinished(view, url)
                 progressShow.value = false
-                Timber.i(url)
             }
 
             override fun onReceivedError(
@@ -80,7 +90,6 @@ fun MyAnimeListWebViewClient(
             ) {
                 val errorDesc = error?.description.toString()
                 errorState.value = errorDesc
-                Timber.d("url: ${request?.url} | errorDesc : $errorDesc")
                 reload = { view?.reload() }
             }
 
@@ -89,9 +98,12 @@ fun MyAnimeListWebViewClient(
                 request: WebResourceRequest?
             ): Boolean {
                 val urlValue = request?.url.toString()
-                val code = request?.url?.getQueryParameter("code")
-                val error = request?.url?.getQueryParameter("error")
-                Timber.d(urlValue)
+                val code = request?.url?.getQueryParameter(
+                    MyAnimeListConstant.MYANIMELIST_QUERY_ERROR_1
+                )
+                val error = request?.url?.getQueryParameter(
+                    MyAnimeListConstant.MYANIMELIST_QUERY_ERROR_2
+                )
 
                 urlValue.let { url ->
                     if (url.contains(MyAnimeListConstant.MYANIMELIST_BASE_URL_CALLBACK)) {
@@ -100,7 +112,7 @@ fun MyAnimeListWebViewClient(
                                 MyAnimeListConstant.MYANIMELIST_CLIENT_ID,
                                 code,
                                 MyAnimeListConstant.MYANIMELIST_CODE_CHALLENGE,
-                                "authorization_code"
+                                MyAnimeListConstant.MYANIMELIST_GRANT_TYPE
                             )
                             upPress()
                         } else if (error != null) {
@@ -117,14 +129,13 @@ fun MyAnimeListWebViewClient(
         }
     }
 
-    val modifier : Modifier = if (from == 1) {
+    val modifier : Modifier = if (from == MyAnimeListConstant.MYANIMELIST_WEBVIEW_OTHER) {
         Modifier
             .statusBarsPadding()
             .fillMaxSize()
     } else {
         Modifier.fillMaxSize()
     }
-
 
     Scaffold(
         scaffoldState = scaffoldState,
@@ -151,7 +162,7 @@ fun MyAnimeListWebViewClient(
                 text = stringResource(id = R.string.no_connection)
             ) {
                 reload()
-                errorState.value = ""
+                errorState.value = OtherConstant.EMPTY_STRING
             }
         }
     }

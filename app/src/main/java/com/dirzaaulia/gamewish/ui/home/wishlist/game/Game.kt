@@ -53,7 +53,6 @@ fun WishlistGame(
         ) { wishlist ->
             WishlistGameItem(
                 gameWishlist = wishlist,
-                loadState = data.loadState,
                 navigateToGameDetails = navigateToGameDetails,
             )
         }

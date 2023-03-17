@@ -18,6 +18,7 @@ import com.dirzaaulia.gamewish.ui.details.movie.MovieDetails
 import com.dirzaaulia.gamewish.ui.home.HomeViewModel
 import com.dirzaaulia.gamewish.ui.main.StartApp
 import com.dirzaaulia.gamewish.ui.search.Search
+import com.dirzaaulia.gamewish.utils.MyAnimeListConstant
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 
@@ -152,7 +153,7 @@ fun NavGraph(
         }
         composable(NavScreen.MyAnimeListLogin.route) {
             MyAnimeListWebViewClient(
-                from = 1,
+                from = MyAnimeListConstant.MYANIMELIST_WEBVIEW_OTHER,
                 viewModel = homeViewModel,
                 upPress = actions.upPress
             )

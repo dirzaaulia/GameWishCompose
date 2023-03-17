@@ -1,9 +1,9 @@
 package com.dirzaaulia.gamewish.repository
 
 import androidx.annotation.WorkerThread
-import com.dirzaaulia.gamewish.base.ResponseResult
-import com.dirzaaulia.gamewish.base.executeWithData
-import com.dirzaaulia.gamewish.base.executeWithResponse
+import com.dirzaaulia.gamewish.utils.ResponseResult
+import com.dirzaaulia.gamewish.utils.executeWithData
+import com.dirzaaulia.gamewish.utils.executeWithResponse
 import com.dirzaaulia.gamewish.data.model.rawg.Games
 import com.dirzaaulia.gamewish.data.model.rawg.Genre
 import com.dirzaaulia.gamewish.data.model.rawg.Platform

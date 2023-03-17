@@ -15,12 +15,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.dirzaaulia.gamewish.R
 import com.dirzaaulia.gamewish.theme.LocalImages
 import com.dirzaaulia.gamewish.ui.home.HomeViewModel
 import com.dirzaaulia.gamewish.utils.FirebaseConstant
 import com.dirzaaulia.gamewish.utils.FirebaseState
+import com.dirzaaulia.gamewish.utils.OtherConstant
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
@@ -46,7 +48,6 @@ fun Login(viewModel: HomeViewModel) {
                 val credential = GoogleAuthProvider.getCredential(account.idToken!!, null)
                 viewModel.signWithCredential(credential)
             } catch (e: ApiException) {
-                Timber.w("Google sign in failed: ${e.message}")
                 scope.launch {
                     scaffoldState.snackbarHostState.showSnackbar(e.message.toString())
                 }
@@ -79,7 +80,7 @@ fun Login(viewModel: HomeViewModel) {
             FirebaseState.Status.FAILED -> {
                 LaunchedEffect(FirebaseState) {
                     scaffoldState.snackbarHostState.showSnackbar(
-                        "Login went error! Please try again later."
+                        FirebaseConstant.FIREBASE_LOGIN_ERROR_MESSAGE
                     )
                 }
             }
@@ -123,17 +124,17 @@ fun Login(viewModel: HomeViewModel) {
                             Icon(
                                 tint = Color.Unspecified,
                                 painter = painterResource(id = R.drawable.googleg_standard_color_18),
-                                contentDescription = null,
+                                contentDescription = OtherConstant.EMPTY_STRING,
                             )
                             Text(
                                 style = MaterialTheme.typography.button,
                                 color = MaterialTheme.colors.onSurface,
-                                text = "Google"
+                                text = stringResource(R.string.google)
                             )
                             Icon(
                                 tint = Color.Transparent,
                                 imageVector = Icons.Default.MailOutline,
-                                contentDescription = null,
+                                contentDescription = OtherConstant.EMPTY_STRING,
                             )
                         }
                     )

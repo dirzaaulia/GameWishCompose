@@ -229,4 +229,6 @@
     <string name="filter_movie">Filter Movie</string>
     <string name="movie_name">Movie Name</string>
     <string name="sort_movie">Sort Movie</string>
+    <string name="try_again">Try Again</string>
+    <string name="google">Google</string>
 </resources>

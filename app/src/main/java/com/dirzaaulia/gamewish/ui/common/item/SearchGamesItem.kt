@@ -11,20 +11,16 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.paging.CombinedLoadStates
-import androidx.paging.LoadState
 import com.dirzaaulia.gamewish.data.model.rawg.Games
+import com.dirzaaulia.gamewish.utils.OtherConstant
+import com.dirzaaulia.gamewish.utils.RawgConstant
 import com.dirzaaulia.gamewish.utils.changeDateFormat
-import com.google.accompanist.placeholder.PlaceholderHighlight
-import com.google.accompanist.placeholder.material.shimmer
-import com.google.accompanist.placeholder.placeholder
 
 @Composable
 fun SearchGamesItem(
     modifier: Modifier = Modifier,
     navigateToGameDetails: (Long) -> Unit = { },
     games: Games,
-    loadStates: CombinedLoadStates,
 ) {
     Surface(
         modifier = modifier
@@ -36,17 +32,16 @@ fun SearchGamesItem(
     ) {
         Column(modifier = modifier.padding(top = 4.dp)) {
             Text(
-                text = "Release Date : ${games.released?.changeDateFormat("yyyy-MM-dd")}",
+                text = String.format(
+                    OtherConstant.STRING_FORMAT_S_SPACE_S_SPACE_S,
+                    RawgConstant.RAWG_RELEASE_DATE,
+                    OtherConstant.COLON,
+                    games.released?.changeDateFormat(OtherConstant.DATE_FORMAT_STRIP_yyyy_MM_dd)
+                ),
                 style = MaterialTheme.typography.caption,
                 modifier = Modifier
                     .padding(horizontal = 8.dp)
                     .fillMaxWidth()
-                    .placeholder(
-                        visible = loadStates.refresh is LoadState.Loading,
-                        highlight = PlaceholderHighlight.shimmer(),
-                        color = MaterialTheme.colors.secondary,
-                        shape = MaterialTheme.shapes.small
-                    )
             )
             Text(
                 text = games.name.toString(),
@@ -54,12 +49,6 @@ fun SearchGamesItem(
                 modifier = Modifier
                     .padding(start = 8.dp, end = 4.dp, top = 4.dp)
                     .fillMaxWidth()
-                    .placeholder(
-                        visible = loadStates.refresh is LoadState.Loading,
-                        highlight = PlaceholderHighlight.shimmer(),
-                        color = MaterialTheme.colors.secondary,
-                        shape = MaterialTheme.shapes.small
-                    )
             )
             Divider(
                 modifier = Modifier

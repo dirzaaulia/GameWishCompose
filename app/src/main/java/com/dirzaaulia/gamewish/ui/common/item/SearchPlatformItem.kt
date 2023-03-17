@@ -16,6 +16,7 @@ import com.dirzaaulia.gamewish.data.model.rawg.Platform
 import com.dirzaaulia.gamewish.data.request.myanimelist.SearchGameRequest
 import com.dirzaaulia.gamewish.ui.search.SearchViewModel
 import com.dirzaaulia.gamewish.utils.NetworkImage
+import com.dirzaaulia.gamewish.utils.OtherConstant
 
 @Composable
 fun SearchPlatformItem(
@@ -28,11 +29,16 @@ fun SearchPlatformItem(
             .fillMaxWidth()
             .clickable(
                 onClick = {
-                    platform.id?.let {
+                    platform.id?.let { id ->
                         viewModel.apply {
-                            selectSearchGameTab(0)
+                            selectSearchGameTab(OtherConstant.ZERO)
                             setSearchGameRequest(
-                                SearchGameRequest("", null, null, it)
+                                SearchGameRequest(
+                                    searchQuery = OtherConstant.EMPTY_STRING,
+                                    genreId = null,
+                                    publisherId = null,
+                                    platformId = id
+                                )
                             )
                         }
                     }
@@ -44,7 +50,6 @@ fun SearchPlatformItem(
             platform.imageBackground?.let { imageUrl ->
                 NetworkImage(
                     url = imageUrl,
-                    contentDescription = null,
                     modifier = modifier
                         .fillMaxWidth()
                         .height(200.dp),

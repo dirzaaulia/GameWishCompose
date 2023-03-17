@@ -1,9 +1,9 @@
 package com.dirzaaulia.gamewish.repository
 
 import androidx.annotation.WorkerThread
-import com.dirzaaulia.gamewish.base.ResponseResult
-import com.dirzaaulia.gamewish.base.executeWithData
-import com.dirzaaulia.gamewish.base.executeWithResponse
+import com.dirzaaulia.gamewish.utils.ResponseResult
+import com.dirzaaulia.gamewish.utils.executeWithData
+import com.dirzaaulia.gamewish.utils.executeWithResponse
 import com.dirzaaulia.gamewish.data.model.tmdb.Movie
 import com.dirzaaulia.gamewish.network.tmdb.TmdbService
 import com.dirzaaulia.gamewish.utils.replaceIfNull

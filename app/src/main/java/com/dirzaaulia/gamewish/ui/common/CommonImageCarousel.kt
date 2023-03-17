@@ -110,10 +110,13 @@ fun CommonMovieCarousel(
     ) { pageIndex ->
         val image = imageList[pageIndex]
         Card {
-            image.filePath?.let {
+            image.filePath?.let { filePath ->
                 NetworkImage(
-                    url = "${TmdbConstant.TMDB_BASE_IMAGE_URL}$it",
-                    contentDescription = null
+                    url = String.format(
+                        OtherConstant.STRING_FORMAT_S_S,
+                        TmdbConstant.TMDB_BASE_IMAGE_URL,
+                        filePath
+                    ),
                 )
             }
         }

@@ -266,10 +266,26 @@ fun String.doBasedOnMyAnimeListType(
         doIfAnime.invoke() else doIfManga.invoke()
 }
 
-fun String.setStringBasedOnTmdbStatus(
+fun String.doBasedOnTmdbType(
+    doIfMovie: () -> Unit,
+    doIfTv: () -> Unit
+) {
+    if (this.equals(TmdbConstant.TMDB_TYPE_MOVIE, true))
+        doIfMovie.invoke() else doIfTv.invoke()
+}
+
+
+fun String.setStringBasedOnTmdbType(
     setIfMovie: String,
     setIfTv: String
 ): String {
     return if (this.equals(TmdbConstant.TMDB_TYPE_MOVIE, true))
         setIfMovie else setIfTv
+}
+
+fun String?.formatTmdbReleaseDate(): String {
+    return this
+        .replaceIfNull()
+        .changeDateFormat(OtherConstant.DATE_FORMAT_STRIP_yyyy_MM_dd)
+        .ifBlank { TmdbConstant.TMDB_NO_RELEASE_DATE }
 }

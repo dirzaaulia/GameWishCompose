@@ -21,101 +21,11 @@ import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.items
 import com.dirzaaulia.gamewish.R
-import com.dirzaaulia.gamewish.data.model.myanimelist.ParentNode
-import com.dirzaaulia.gamewish.data.model.rawg.Games
-import com.dirzaaulia.gamewish.data.model.rawg.Genre
-import com.dirzaaulia.gamewish.data.model.wishlist.GameWishlist
-import com.dirzaaulia.gamewish.data.model.wishlist.MovieWishlist
-import com.dirzaaulia.gamewish.utils.visible
-import com.dirzaaulia.gamewish.ui.common.item.CommonAnimeItem
-import com.dirzaaulia.gamewish.ui.common.item.SearchGamesItem
-import com.dirzaaulia.gamewish.ui.common.item.SearchGenreItem
-import com.dirzaaulia.gamewish.ui.common.item.WishlistGameItem
-import com.dirzaaulia.gamewish.ui.common.item.WishlistMovieItem
 import com.dirzaaulia.gamewish.ui.common.placeholder.CommonItemPlaceholder
+import com.dirzaaulia.gamewish.utils.MyAnimeListConstant
+import com.dirzaaulia.gamewish.utils.OtherConstant
 import com.dirzaaulia.gamewish.utils.PlaceholderConstant
-import com.google.accompanist.swiperefresh.SwipeRefresh
-import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
-import com.google.accompanist.swiperefresh.SwipeRefreshState
-import timber.log.Timber
-
-@Composable
-fun <T : Any> CommonVerticalSwipeList(
-    data: LazyPagingItems<T>,
-    state: SwipeRefreshState,
-    lazyListState: LazyListState,
-    emptyString: String,
-    content: @Composable (T) -> Unit
-) {
-    if (data.itemCount != 0) {
-        SwipeRefresh(
-            state = state,
-            onRefresh = { data.refresh() },
-            indicator = { indicatorState, refreshTrigger ->
-                SwipeRefreshIndicator(
-                    state = indicatorState,
-                    refreshTriggerDistance = refreshTrigger,
-                    contentColor = MaterialTheme.colors.primary
-                )
-            },
-        ) {
-            LazyColumn(
-                state = lazyListState,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .visible(data.loadState.refresh !is LoadState.Loading)
-            ) {
-                items(data) { data ->
-                    data?.let {
-                        content.invoke(data)
-                    }
-                }
-                data.apply {
-                    when {
-                        loadState.append is LoadState.Loading -> {
-                            item { CommonLoadingItem() }
-                        }
-
-                        loadState.refresh is LoadState.Error -> {
-                            val error = data.loadState.refresh as LoadState.Error
-                            item {
-                                Timber.e("Refresh Error: ${error.error.localizedMessage}")
-                            }
-                        }
-
-                        loadState.append is LoadState.Error -> {
-                            val error = data.loadState.refresh as LoadState.Error
-                            item {
-                                Timber.e("Append Error: ${error.error.localizedMessage}")
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    when {
-        data.loadState.refresh is LoadState.Loading -> {
-            CommonLoading(visibility = data.loadState.refresh is LoadState.Loading)
-        }
-
-        data.loadState.refresh is LoadState.Error -> {
-            ErrorConnect(text = stringResource(id = R.string.deals_error)) {
-                data.retry()
-            }
-        }
-
-        data.itemCount == 0 && data.loadState.refresh is LoadState.NotLoading -> {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(text = emptyString, style = MaterialTheme.typography.subtitle1)
-            }
-        }
-    }
-}
+import com.dirzaaulia.gamewish.utils.replaceIfNull
 
 @Composable
 fun <T : Any> CommonVerticalList(
@@ -124,123 +34,150 @@ fun <T : Any> CommonVerticalList(
     placeholderType: Int = PlaceholderConstant.DEFAULT,
     emptyString: String,
     errorString: String,
+    doWhenMyAnimeListError: () -> Unit = { },
     content: @Composable (T) -> Unit
 ) {
-    if (data.itemCount != 0) {
-        LazyColumn(modifier = Modifier.fillMaxSize()) {
-            items(data) { data ->
-                data?.let {
-                    content.invoke(data)
-                }
-            }
-            data.apply {
-                when {
-                    loadState.append is LoadState.Loading -> {
-                        item { CommonLoadingItem() }
-                    }
-
-                    loadState.refresh is LoadState.Error -> {
-                        val error = data.loadState.refresh as LoadState.Error
-                        item {
-                            Timber.e("Refresh Error: ${error.error.localizedMessage}")
-                            ErrorConnect(text = errorString) {
-                                retry()
-                            }
-                        }
-                    }
-
-                    loadState.append is LoadState.Error -> {
-                        val error = data.loadState.append as LoadState.Error
-                        item {
-                            Timber.e("Append Error: ${error.error.localizedMessage}")
-                            CommonPagingAppendError(
-                                message = errorString,
-                                retry = { retry() }
-                            )
-                        }
-                    }
-                }
-            }
-        }
-    }
-
     when {
         data.loadState.refresh is LoadState.Loading -> {
-            LazyColumn(
-                state = lazyListState,
-                modifier = Modifier.fillMaxSize(),
-            ) {
-                items(25) {
-                    when (placeholderType) {
-                        PlaceholderConstant.GAME_WISHLIST -> {
-                            WishlistGameItem(
-                                gameWishlist = GameWishlist(),
-                                loadState = data.loadState
-                            )
-                        }
-
-                        PlaceholderConstant.MOVIE_WISHLIST -> {
-                            WishlistMovieItem(
-                                movieWishlist = MovieWishlist(),
-                                loadState = data.loadState
-                            )
-                        }
-
-                        PlaceholderConstant.DEALS -> {
-                            CommonItemPlaceholder(
-                                height = 150.dp,
-                                shape = MaterialTheme.shapes.large
-                            )
-                        }
-
-                        PlaceholderConstant.SEARCH_GAME_TAB -> {
-                            SearchGenreItem(genre = Genre(), loadStates = data.loadState)
-                        }
-
-                        PlaceholderConstant.SEARCH_GAME -> {
-                            SearchGamesItem(games = Games(), loadStates = data.loadState)
-                        }
-
-                        PlaceholderConstant.ANIME -> {
-                            CommonAnimeItem(
-                                parentNode = ParentNode(),
-                                type = "",
-                                loadState = data.loadState
-                            )
-                        }
-
-                        else -> {
-                            WishlistGameItem(
-                                gameWishlist = GameWishlist(),
-                                loadState = data.loadState
-                            )
-                        }
-                    }
-                }
-            }
+            CommonVerticalListLoading(
+                lazyListState = lazyListState,
+                placeholderType = placeholderType
+            )
         }
 
         data.loadState.refresh is LoadState.Error -> {
             val error = data.loadState.refresh as LoadState.Error
-            Timber.e("Refresh Error : ${error.error.localizedMessage}")
-            ErrorConnect(text = errorString) {
-                data.retry()
-            }
+            val errorMessage = error.error.message.replaceIfNull()
+            if (errorMessage.contains(
+                    other = MyAnimeListConstant.MYANIMELIST_HTTP_401_ERROR,
+                    ignoreCase = true
+                )
+            ) doWhenMyAnimeListError.invoke()
+            else ErrorConnect(text = errorString) { data.retry() }
         }
 
-        data.itemCount == 0 && data.loadState.refresh is LoadState.NotLoading -> {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(8.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = emptyString,
-                    textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.subtitle1,
-                    color = MaterialTheme.colors.onBackground
-                )
+        data.itemCount != OtherConstant.ZERO
+                && data.loadState.refresh is LoadState.NotLoading -> {
+            CommonVerticalListNotEmpty(
+                data = data,
+                errorString = errorString,
+                content = content,
+            )
+        }
+
+        data.itemCount == OtherConstant.ZERO
+                && data.loadState.refresh is LoadState.NotLoading -> {
+            CommonVerticalListEmpty(emptyString = emptyString)
+        }
+    }
+}
+
+@Composable
+private fun CommonVerticalListLoading(
+    lazyListState: LazyListState,
+    placeholderType: Int,
+) {
+    LazyColumn(
+        state = lazyListState,
+        modifier = Modifier.fillMaxSize(),
+    ) {
+        items(OtherConstant.FIFTY) {
+            when (placeholderType) {
+                PlaceholderConstant.GAME_WISHLIST -> {
+                    CommonItemPlaceholder(
+                        height = 240.dp,
+                        shape = MaterialTheme.shapes.small
+                    )
+                }
+
+                PlaceholderConstant.MOVIE_WISHLIST -> {
+                    CommonItemPlaceholder(
+                        height = 240.dp,
+                        shape = MaterialTheme.shapes.small
+                    )
+                }
+
+                PlaceholderConstant.DEALS -> {
+                    CommonItemPlaceholder(
+                        height = 150.dp,
+                        shape = MaterialTheme.shapes.large
+                    )
+                }
+
+                PlaceholderConstant.SEARCH_GAME_TAB -> {
+                    CommonItemPlaceholder(
+                        height = 240.dp,
+                        shape = MaterialTheme.shapes.small
+                    )
+                }
+
+                PlaceholderConstant.SEARCH_GAME -> {
+                    CommonItemPlaceholder(
+                        height = 240.dp,
+                        shape = MaterialTheme.shapes.small
+                    )
+                }
+
+                PlaceholderConstant.ANIME -> {
+                    CommonItemPlaceholder(
+                        height = 150.dp,
+                        shape = MaterialTheme.shapes.large
+                    )
+                }
+                else -> {
+                    CommonItemPlaceholder(
+                        height = 240.dp,
+                        shape = MaterialTheme.shapes.small
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun CommonVerticalListEmpty(emptyString: String) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(8.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = emptyString,
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.subtitle1,
+            color = MaterialTheme.colors.onBackground
+        )
+    }
+}
+
+@Composable
+private fun <T : Any> CommonVerticalListNotEmpty(
+    data: LazyPagingItems<T>,
+    errorString: String,
+    content: @Composable (T) -> Unit,
+) {
+    LazyColumn(modifier = Modifier.fillMaxSize()) {
+        items(data) { data ->
+            data?.let {
+                content.invoke(data)
+            }
+        }
+        data.apply {
+            when {
+                loadState.append is LoadState.Loading -> item { CommonLoadingItem() }
+
+                loadState.refresh is LoadState.Error -> item {
+                    ErrorConnect(text = errorString) { retry() }
+                }
+
+                loadState.append is LoadState.Error -> item {
+                    CommonPagingAppendError(
+                        message = errorString,
+                        retry = { retry() }
+                    )
+                }
             }
         }
     }
@@ -262,7 +199,7 @@ fun CommonPagingAppendError(
             textAlign = TextAlign.Center
         )
         Button(onClick = { retry() }) {
-            Text(text = "Try Again")
+            Text(text = stringResource(R.string.try_again))
         }
     }
 }

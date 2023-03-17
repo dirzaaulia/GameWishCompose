@@ -80,13 +80,13 @@ fun MovieDetails(
         updateMovieResult.isSucceeded -> {
             LaunchedEffect(updateMovieResult) {
                 if (wishlistData != null) {
-                    val text = type.setStringBasedOnTmdbStatus(
+                    val text = type.setStringBasedOnTmdbType(
                         setIfMovie = TmdbConstant.TMDB_MOVIE_LIST_UPDATED,
                         setIfTv = TmdbConstant.TMDB_TV_LIST_UPDATED
                     )
                     scaffoldState.snackbarHostState.showSnackbar(text)
                 } else {
-                    val text = type.setStringBasedOnTmdbStatus(
+                    val text = type.setStringBasedOnTmdbType(
                         setIfMovie = TmdbConstant.TMDB_MOVIE_LIST_ADDED,
                         setIfTv = TmdbConstant.TMDB_TV_LIST_ADDED
                     )
@@ -98,15 +98,15 @@ fun MovieDetails(
         updateMovieResult.isError -> {
             LaunchedEffect(updateMovieResult) {
                 if (wishlistData != null) {
-                    val text = type.setStringBasedOnTmdbStatus(
+                    val text = type.setStringBasedOnTmdbType(
                         setIfMovie = TmdbConstant.TMDB_MOVIE_LIST_UPDATE_ERROR,
                         setIfTv = TmdbConstant.TMDB_TV_LIST_UPDATE_ERROR
                     )
                     scaffoldState.snackbarHostState.showSnackbar(text)
                 } else {
-                    val text = type.setStringBasedOnTmdbStatus(
-                        setIfMovie = TmdbConstant.TMDB_MOVIE_LIST_UPDATE_ERROR,
-                        setIfTv = TmdbConstant.TMDB_MOVIE_LIST_ADD_ERROR
+                    val text = type.setStringBasedOnTmdbType(
+                        setIfMovie = TmdbConstant.TMDB_MOVIE_LIST_ADD_ERROR,
+                        setIfTv = TmdbConstant.TMDB_TV_LIST_ADD_ERROR
                     )
                     scaffoldState.snackbarHostState.showSnackbar(text)
                 }
@@ -115,7 +115,7 @@ fun MovieDetails(
 
         deleteMovieResult.isSucceeded -> {
             LaunchedEffect(deleteMovieResult) {
-                val text = type.setStringBasedOnTmdbStatus(
+                val text = type.setStringBasedOnTmdbType(
                     setIfMovie = TmdbConstant.TMDB_MOVIE_LIST_DELETED,
                     setIfTv = TmdbConstant.TMDB_TV_LIST_DELETED
                 )
@@ -125,7 +125,7 @@ fun MovieDetails(
 
         deleteMovieResult.isError -> {
             LaunchedEffect(deleteMovieResult) {
-                val text = type.setStringBasedOnTmdbStatus(
+                val text = type.setStringBasedOnTmdbType(
                     setIfMovie = TmdbConstant.TMDB_MOVIE_LIST_DELETE_ERROR,
                     setIfTv = TmdbConstant.TMDB_TV_LIST_DELETE_ERROR
                 )
@@ -754,12 +754,12 @@ fun MovieDetailsSheetContent(
             }
         ) {
             val text = if (wishlist?.status != null) {
-                type.setStringBasedOnTmdbStatus(
+                type.setStringBasedOnTmdbType(
                     setIfMovie = TmdbConstant.TMDB_UPDATE_MOVIE,
                     setIfTv = TmdbConstant.TMDB_UPDATE_TV
                 )
             } else {
-                type.setStringBasedOnTmdbStatus(
+                type.setStringBasedOnTmdbType(
                     setIfMovie = TmdbConstant.TMDB_ADD_MOVIE,
                     setIfTv = TmdbConstant.TMDB_ADD_TV
                 )

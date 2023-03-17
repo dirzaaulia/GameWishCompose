@@ -1,8 +1,8 @@
 package com.dirzaaulia.gamewish.repository
 
 import androidx.annotation.WorkerThread
-import com.dirzaaulia.gamewish.base.ResponseResult
-import com.dirzaaulia.gamewish.base.executeFirebase
+import com.dirzaaulia.gamewish.utils.ResponseResult
+import com.dirzaaulia.gamewish.utils.executeFirebase
 import com.dirzaaulia.gamewish.data.model.wishlist.GameWishlist
 import com.dirzaaulia.gamewish.data.model.wishlist.MovieWishlist
 import com.dirzaaulia.gamewish.utils.FirebaseConstant.FIREBASE_COLLECTION_GAME

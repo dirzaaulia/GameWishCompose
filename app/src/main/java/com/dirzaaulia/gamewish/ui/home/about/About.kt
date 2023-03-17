@@ -30,7 +30,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import com.dirzaaulia.gamewish.R
-import com.dirzaaulia.gamewish.base.ResponseResult
+import com.dirzaaulia.gamewish.utils.ResponseResult
 import com.dirzaaulia.gamewish.data.model.myanimelist.User
 import com.dirzaaulia.gamewish.utils.isError
 import com.dirzaaulia.gamewish.utils.isSucceeded

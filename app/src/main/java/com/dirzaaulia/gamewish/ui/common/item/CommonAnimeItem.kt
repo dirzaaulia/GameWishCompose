@@ -1,6 +1,5 @@
 package com.dirzaaulia.gamewish.ui.common.item
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -20,22 +19,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
-import androidx.paging.CombinedLoadStates
-import androidx.paging.LoadState
 import com.dirzaaulia.gamewish.data.model.myanimelist.ParentNode
+import com.dirzaaulia.gamewish.utils.MyAnimeListConstant
 import com.dirzaaulia.gamewish.utils.NetworkImage
 import com.dirzaaulia.gamewish.utils.OtherConstant
-import com.dirzaaulia.gamewish.utils.capitalizeWords
-import com.google.accompanist.placeholder.PlaceholderHighlight
-import com.google.accompanist.placeholder.material.shimmer
-import com.google.accompanist.placeholder.placeholder
+import com.dirzaaulia.gamewish.utils.doBasedOnMyAnimeListType
+import com.dirzaaulia.gamewish.utils.myAnimeListStatusFormatted
+import com.dirzaaulia.gamewish.utils.visible
 
 @Composable
 fun CommonAnimeItem(
     modifier: Modifier = Modifier,
     parentNode: ParentNode,
     type: String,
-    loadState: CombinedLoadStates? = null,
     navigateToAnimeDetails: (Long, String) -> Unit = { _: Long, _: String -> },
 ) {
     Card(
@@ -45,12 +41,22 @@ fun CommonAnimeItem(
             .padding(vertical = 4.dp)
             .clickable(
                 onClick = {
-                    parentNode.node?.id?.let {
-                        if (type.equals("Anime", true)) {
-                            navigateToAnimeDetails(it, "Anime")
-                        } else {
-                            navigateToAnimeDetails(it, "Manga")
-                        }
+                    parentNode.node?.id?.let { id ->
+                        type.doBasedOnMyAnimeListType(
+                            doIfAnime = {
+                                navigateToAnimeDetails(
+                                    id,
+                                    MyAnimeListConstant.MYANIMELIST_TYPE_ANIME
+                                )
+                            },
+                            doIfManga = {
+                                navigateToAnimeDetails(
+                                    id,
+                                    MyAnimeListConstant.MYANIMELIST_TYPE_MANGA
+                                )
+                            }
+
+                        )
                     }
                 }
             ),
@@ -60,22 +66,11 @@ fun CommonAnimeItem(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            val url = parentNode.node?.mainPicture?.large?.ifBlank {
-                OtherConstant.NO_IMAGE_URL
-            }
-
             NetworkImage(
-                url = url.toString(),
-                contentDescription = null,
+                url = parentNode.node?.mainPicture?.large,
                 modifier = modifier
                     .width(100.dp)
-                    .fillMaxHeight()
-                    .placeholder(
-                        visible = loadState?.refresh is LoadState.Loading,
-                        highlight = PlaceholderHighlight.shimmer(),
-                        color = MaterialTheme.colors.secondary,
-                        shape = MaterialTheme.shapes.small
-                    ),
+                    .fillMaxHeight(),
                 contentScale = ContentScale.FillBounds
             )
             Column(
@@ -83,131 +78,62 @@ fun CommonAnimeItem(
                     .padding(vertical = 4.dp, horizontal = 8.dp)
                     .weight(1f)
             ) {
-                val isScorePlaceholderVisible = if (loadState?.refresh is LoadState.Loading) {
-                    true
-                } else loadState?.refresh is LoadState.NotLoading && parentNode.listStatus?.score != null
 
-                AnimatedVisibility(
-                    modifier = Modifier
-                        .placeholder(
-                            visible = loadState?.refresh is LoadState.Loading,
-                            highlight = PlaceholderHighlight.shimmer(),
-                            color = MaterialTheme.colors.secondary,
-                            shape = MaterialTheme.shapes.small
-                        )
-                        .align(Alignment.End),
-                    visible = isScorePlaceholderVisible
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Row (
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.Star,
-                            contentDescription = null
-                        )
-                        Text(
-                            text = parentNode.listStatus?.score.toString(),
-                            style = MaterialTheme.typography.caption
-                        )
-                    }
-                }
-
-                var statusFormatted = parentNode.listStatus?.status
-                    .toString()
-                    .replace("_"," ")
-                statusFormatted = statusFormatted.capitalizeWords()
-
-                val isStatusPlaceholderVisible = if (loadState?.refresh is LoadState.Loading) {
-                    true
-                } else loadState?.refresh is LoadState.NotLoading && parentNode.listStatus?.status != null
-
-                AnimatedVisibility(
-                    modifier = Modifier
-                        .placeholder(
-                            visible = loadState?.refresh is LoadState.Loading,
-                            highlight = PlaceholderHighlight.shimmer(),
-                            color = MaterialTheme.colors.secondary,
-                            shape = MaterialTheme.shapes.small
-                        ),
-                    visible = isStatusPlaceholderVisible
-                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Star,
+                        contentDescription = OtherConstant.EMPTY_STRING
+                    )
                     Text(
-                        text = statusFormatted,
-                        style = MaterialTheme.typography.body2
+                        text = parentNode.listStatus?.score.toString(),
+                        style = MaterialTheme.typography.caption
                     )
                 }
-
-                val isRelationTypePlaceholderVisible = if (loadState?.refresh is LoadState.Loading) {
-                    true
-                } else if (loadState?.refresh is LoadState.NotLoading && parentNode.relationType != null) {
-                    true
-                } else loadState == null && parentNode.relationType != null
-
-                AnimatedVisibility(
-                    modifier = Modifier
-                        .padding(top = 4.dp)
-                        .placeholder(
-                            visible = loadState?.refresh is LoadState.Loading,
-                            highlight = PlaceholderHighlight.shimmer(),
-                            color = MaterialTheme.colors.secondary,
-                            shape = MaterialTheme.shapes.small
-                        ),
-                    visible = isRelationTypePlaceholderVisible
-                ) {
-                    Text(
-                        text = parentNode.relationType.toString(),
-                        style = MaterialTheme.typography.body2
-                    )
-                }
-
+                val status = parentNode.listStatus?.status.myAnimeListStatusFormatted(
+                    MyAnimeListConstant.MYANIMELIST_STATUS_ALL
+                )
                 Text(
-                    modifier = Modifier
-                        .padding(top = 4.dp)
-                        .placeholder(
-                            visible = loadState?.refresh is LoadState.Loading,
-                            highlight = PlaceholderHighlight.shimmer(),
-                            color = MaterialTheme.colors.secondary,
-                            shape = MaterialTheme.shapes.small
-                        ),
+                    text = status,
+                    style = MaterialTheme.typography.body2
+                )
+                Text(
+                    text = parentNode.relationType.toString(),
+                    style = MaterialTheme.typography.body2
+                )
+                Text(
+                    modifier = Modifier.padding(top = 4.dp),
                     text = parentNode.node?.title.toString(),
                     style = MaterialTheme.typography.subtitle1
                 )
 
-                if (type.equals("Anime", true)) {
-                    if (!parentNode.listStatus?.status.equals("plan_to_watch", true)) {
-                        parentNode.listStatus?.episodes?.let {
-                            Text(
-                                modifier = Modifier
-                                    .padding(top = 4.dp)
-                                    .placeholder(
-                                        visible = loadState?.refresh is LoadState.Loading,
-                                        highlight = PlaceholderHighlight.shimmer(),
-                                        color = MaterialTheme.colors.secondary,
-                                        shape = MaterialTheme.shapes.small
-                                    ),
-                                text = "$it Episodes Watched",
-                                style = MaterialTheme.typography.caption
-                            )
-                        }
-                    }
-                } else {
-                    if (!parentNode.listStatus?.status.equals("plan_to_read", true)) {
-                        parentNode.listStatus?.chapters?.let {
-                            Text(
-                                modifier = Modifier
-                                    .padding(top = 4.dp)
-                                    .placeholder(
-                                        visible = loadState?.refresh is LoadState.Loading,
-                                        highlight = PlaceholderHighlight.shimmer(),
-                                        color = MaterialTheme.colors.secondary,
-                                        shape = MaterialTheme.shapes.small
-                                    ),
-                                text = "$it Chapters Watched",
-                                style = MaterialTheme.typography.caption
-                            )
-                        }
-                    }
-                }
+                if (type.equals(MyAnimeListConstant.MYANIMELIST_TYPE_ANIME, true))
+                    Text(
+                        modifier = Modifier
+                            .padding(top = 4.dp)
+                            .visible(status == MyAnimeListConstant.MYANIMELIST_STATUS_PLAN_TO_WATCH),
+                        text = String.format(
+                            OtherConstant.STRING_FORMAT_S_SPACE_S_SPACE_S,
+                            parentNode.listStatus?.episodes.toString(),
+                            MyAnimeListConstant.MYANIMELIST_EPISODES,
+                            MyAnimeListConstant.MYANIMELIST_WATCHED
+                        ),
+                        style = MaterialTheme.typography.caption
+                    )
+                else
+                    Text(
+                        modifier = Modifier
+                            .padding(top = 4.dp)
+                            .visible(status == MyAnimeListConstant.MYANIMELIST_STATUS_PLAN_TO_READ),
+                        text = String.format(
+                            OtherConstant.STRING_FORMAT_S_SPACE_S_SPACE_S,
+                            parentNode.listStatus?.chapters.toString(),
+                            MyAnimeListConstant.MYANIMELIST_CHAPTERS,
+                            MyAnimeListConstant.MYANIMELIST_READ
+                        ),
+                        style = MaterialTheme.typography.caption
+                    )
             }
         }
     }

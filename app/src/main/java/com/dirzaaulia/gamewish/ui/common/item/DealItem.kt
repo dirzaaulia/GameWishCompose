@@ -22,8 +22,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import com.dirzaaulia.gamewish.data.model.cheapshark.Deals
+import com.dirzaaulia.gamewish.utils.CheapSharkConstant
 import com.dirzaaulia.gamewish.utils.NetworkImage
-import com.dirzaaulia.gamewish.utils.OtherConstant
 import com.dirzaaulia.gamewish.utils.openDeals
 import com.dirzaaulia.gamewish.utils.toCurrencyFormat
 
@@ -47,13 +47,8 @@ fun DealItem(
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
-            val url = deals.thumb?.ifBlank {
-                OtherConstant.NO_IMAGE_URL
-            }
-
             NetworkImage(
-                url = url.toString(),
-                contentDescription = null,
+                url = deals.thumb,
                 modifier = modifier
                     .width(100.dp)
                     .fillMaxHeight(),
@@ -72,7 +67,10 @@ fun DealItem(
                     Text(
                         modifier = modifier.padding(vertical = 4.dp, horizontal = 8.dp),
                         textAlign = TextAlign.Center,
-                        text = String.format("%.2f%% Off", deals.savings?.toFloat()),
+                        text = String.format(
+                            CheapSharkConstant.CHEAPSHARK_DEAL_FORMAT,
+                            deals.savings?.toFloat()
+                        ),
                         style = MaterialTheme.typography.caption
                     )
                 }

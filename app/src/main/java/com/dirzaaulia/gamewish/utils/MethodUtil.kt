@@ -90,7 +90,7 @@ fun animeDateFormat(startDate: String, endDate: String): String {
 }
 
 fun setPlatformsBackgroundColor(data: Any, code: Int): Color {
-    if (code == 0) {
+    if (code == OtherConstant.ZERO) {
         val platforms = data as Platforms
         val name = platforms.platform?.name
 
@@ -137,7 +137,7 @@ fun getAnimeSeason(): String {
     val calendar = Calendar.getInstance()
     val year = calendar.get(Calendar.YEAR)
     val season =   when (calendar.get(Calendar.MONTH)) {
-        in OtherConstant.ZERO..OtherConstant.TWO -> MyAnimeListConstant.MYANIMELIST_SEASON_SUMMER
+        in OtherConstant.ZERO..OtherConstant.TWO -> MyAnimeListConstant.MYANIMELIST_SEASON_WINTER
         in OtherConstant.THREE..OtherConstant.FIVE -> MyAnimeListConstant.MYANIMELIST_SEASON_SPRING
         in OtherConstant.SIX..OtherConstant.EIGHT -> MyAnimeListConstant.MYANIMELIST_SEASON_SUMMER
         in OtherConstant.NINE..OtherConstant.ELEVEN -> MyAnimeListConstant.MYANIMELIST_SEASON_FALL

@@ -12,34 +12,33 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
-import androidx.paging.CombinedLoadStates
-import androidx.paging.LoadState
 import com.dirzaaulia.gamewish.data.model.rawg.Genre
 import com.dirzaaulia.gamewish.data.request.myanimelist.SearchGameRequest
 import com.dirzaaulia.gamewish.ui.search.SearchViewModel
 import com.dirzaaulia.gamewish.utils.NetworkImage
 import com.dirzaaulia.gamewish.utils.OtherConstant
-import com.google.accompanist.placeholder.PlaceholderHighlight
-import com.google.accompanist.placeholder.material.shimmer
-import com.google.accompanist.placeholder.placeholder
 
 @Composable
 fun SearchGenreItem(
     modifier: Modifier = Modifier,
     genre: Genre,
     viewModel: SearchViewModel? = null,
-    loadStates: CombinedLoadStates,
 ) {
     Surface(
         modifier = modifier
             .fillMaxWidth()
             .clickable(
                 onClick = {
-                    genre.id?.let {
+                    genre.id?.let { id ->
                         viewModel?.apply {
-                            selectSearchGameTab(0)
+                            selectSearchGameTab(OtherConstant.ZERO)
                             setSearchGameRequest(
-                                SearchGameRequest("", it, null, null)
+                                SearchGameRequest(
+                                    searchQuery = OtherConstant.EMPTY_STRING,
+                                    genreId = id,
+                                    publisherId = null,
+                                    platformId = null
+                                )
                             )
                         }
                     }
@@ -54,16 +53,9 @@ fun SearchGenreItem(
 
             NetworkImage(
                 url = url.toString(),
-                contentDescription = null,
                 modifier = modifier
                     .fillMaxWidth()
-                    .height(200.dp)
-                    .placeholder(
-                        visible = loadStates.refresh is LoadState.Loading,
-                        highlight = PlaceholderHighlight.shimmer(),
-                        color = MaterialTheme.colors.secondary,
-                        shape = MaterialTheme.shapes.small
-                    ),
+                    .height(200.dp),
                 contentScale = ContentScale.FillBounds
             )
             Text(
@@ -72,12 +64,6 @@ fun SearchGenreItem(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(start = 8.dp, top = 4.dp, bottom = 4.dp)
-                    .placeholder(
-                        visible = loadStates.refresh is LoadState.Loading,
-                        highlight = PlaceholderHighlight.shimmer(),
-                        color = MaterialTheme.colors.secondary,
-                        shape = MaterialTheme.shapes.small
-                    )
             )
         }
     }

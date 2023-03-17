@@ -57,7 +57,6 @@ fun WishlistMovie(
             WishlistMovieItem(
                 movieWishlist = wishlist,
                 navigateToMovieDetails = navigateToMovieDetail,
-                loadState = data.loadState,
             )
         }
     }

@@ -1,4 +1,4 @@
-package com.dirzaaulia.gamewish.base
+package com.dirzaaulia.gamewish.utils
 
 import com.google.android.gms.tasks.Task
 import retrofit2.HttpException
