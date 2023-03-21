@@ -35,7 +35,7 @@ import com.dirzaaulia.gamewish.theme.Grey700
 import com.dirzaaulia.gamewish.theme.Red700
 import com.dirzaaulia.gamewish.theme.White
 import com.dirzaaulia.gamewish.ui.common.*
-import com.dirzaaulia.gamewish.ui.common.item.CommonMovieItem
+import com.dirzaaulia.gamewish.ui.common.item.CommonTmdbItem
 import com.dirzaaulia.gamewish.ui.details.DetailsViewModel
 import com.dirzaaulia.gamewish.utils.*
 import com.google.accompanist.pager.rememberPagerState
@@ -254,7 +254,7 @@ fun MovieRecommendationsTab(
             emptyString = emptyString,
             errorString = errorString,
         ) { movie ->
-            CommonMovieItem(
+            CommonTmdbItem(
                 movie = movie,
                 type = type,
                 navigateToDetails = navigateToMovieDetails

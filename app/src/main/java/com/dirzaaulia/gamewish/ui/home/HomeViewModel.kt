@@ -35,6 +35,7 @@ import com.dirzaaulia.gamewish.utils.success
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -98,10 +99,11 @@ class HomeViewModel @Inject constructor(
     val errorMessage = _errorMessage.asStateFlow()
 
     val gameQuery = MutableStateFlow(OtherConstant.EMPTY_STRING)
-    val gameStatus = MutableStateFlow(OtherConstant.ALL)
+    val gameStatus = MutableStateFlow(OtherConstant.EMPTY_STRING)
     val listWishlist = gameQuery
         .flatMapLatest { query ->
             gameStatus.flatMapLatest { status ->
+                delay(5000)
                 databaseRepository.getGameFilteredWishlist(query, status)
             }
         }.cachedIn(viewModelScope)
@@ -117,7 +119,7 @@ class HomeViewModel @Inject constructor(
             }.flow.cachedIn(viewModelScope)
         }
 
-    val animeStatus = MutableStateFlow(OtherConstant.ALL)
+    val animeStatus = MutableStateFlow(OtherConstant.EMPTY_STRING)
     val animeList: Flow<PagingData<ParentNode>> = _token
         .flatMapLatest { accessToken ->
             animeStatus.flatMapLatest { status ->
@@ -134,7 +136,7 @@ class HomeViewModel @Inject constructor(
             }
         }
 
-    val mangaStatus = MutableStateFlow(OtherConstant.ALL)
+    val mangaStatus = MutableStateFlow(OtherConstant.EMPTY_STRING)
     val mangaList: Flow<PagingData<ParentNode>> = _token
         .flatMapLatest { accessToken ->
             mangaStatus.flatMapLatest { status ->
@@ -152,7 +154,7 @@ class HomeViewModel @Inject constructor(
         }
 
     val movieQuery = MutableStateFlow(OtherConstant.EMPTY_STRING)
-    val movieStatus = MutableStateFlow(OtherConstant.ALL)
+    val movieStatus = MutableStateFlow(OtherConstant.EMPTY_STRING)
     val movieWishlist = movieQuery
         .flatMapLatest { query ->
             movieStatus.flatMapLatest { status ->
@@ -161,7 +163,7 @@ class HomeViewModel @Inject constructor(
         }.cachedIn(viewModelScope)
 
     val tvShowQuery = MutableStateFlow(OtherConstant.EMPTY_STRING)
-    val tvShowStatus = MutableStateFlow(OtherConstant.ALL)
+    val tvShowStatus = MutableStateFlow(OtherConstant.EMPTY_STRING)
     val tvShowWishlist = tvShowQuery
         .flatMapLatest { query ->
             tvShowStatus.flatMapLatest { status ->

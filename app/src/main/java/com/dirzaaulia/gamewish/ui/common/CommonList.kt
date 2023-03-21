@@ -29,6 +29,7 @@ import com.dirzaaulia.gamewish.utils.replaceIfNull
 
 @Composable
 fun <T : Any> CommonVerticalList(
+    modifier: Modifier = Modifier,
     data: LazyPagingItems<T>,
     lazyListState: LazyListState,
     placeholderType: Int = PlaceholderConstant.DEFAULT,
@@ -59,6 +60,7 @@ fun <T : Any> CommonVerticalList(
         data.itemCount != OtherConstant.ZERO
                 && data.loadState.refresh is LoadState.NotLoading -> {
             CommonVerticalListNotEmpty(
+                modifier = modifier,
                 data = data,
                 errorString = errorString,
                 content = content,
@@ -86,38 +88,33 @@ private fun CommonVerticalListLoading(
                 PlaceholderConstant.GAME_WISHLIST -> {
                     CommonItemPlaceholder(
                         height = 240.dp,
-                        shape = MaterialTheme.shapes.small
+                        shape = MaterialTheme.shapes.medium
                     )
                 }
-
                 PlaceholderConstant.MOVIE_WISHLIST -> {
                     CommonItemPlaceholder(
                         height = 240.dp,
                         shape = MaterialTheme.shapes.small
                     )
                 }
-
                 PlaceholderConstant.DEALS -> {
                     CommonItemPlaceholder(
                         height = 150.dp,
                         shape = MaterialTheme.shapes.large
                     )
                 }
-
                 PlaceholderConstant.SEARCH_GAME_TAB -> {
                     CommonItemPlaceholder(
                         height = 240.dp,
                         shape = MaterialTheme.shapes.small
                     )
                 }
-
                 PlaceholderConstant.SEARCH_GAME -> {
                     CommonItemPlaceholder(
-                        height = 240.dp,
-                        shape = MaterialTheme.shapes.small
+                        height = 120.dp,
+                        shape = MaterialTheme.shapes.medium
                     )
                 }
-
                 PlaceholderConstant.ANIME -> {
                     CommonItemPlaceholder(
                         height = 150.dp,
@@ -154,11 +151,12 @@ private fun CommonVerticalListEmpty(emptyString: String) {
 
 @Composable
 private fun <T : Any> CommonVerticalListNotEmpty(
+    modifier: Modifier = Modifier,
     data: LazyPagingItems<T>,
     errorString: String,
     content: @Composable (T) -> Unit,
 ) {
-    LazyColumn(modifier = Modifier.fillMaxSize()) {
+    LazyColumn(modifier = modifier.fillMaxSize()) {
         items(data) { data ->
             data?.let {
                 content.invoke(data)

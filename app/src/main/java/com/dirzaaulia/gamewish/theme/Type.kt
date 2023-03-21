@@ -15,7 +15,6 @@ private val fonts = FontFamily(
     Font(R.font.opensans_bold, FontWeight.Bold)
 )
 
-// Set of Material typography styles to start with
 val typography = typographyFromDefaults(
     h1 = TextStyle(
         fontFamily = fonts,

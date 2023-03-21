@@ -39,7 +39,7 @@ import com.dirzaaulia.gamewish.utils.isSucceeded
 import com.dirzaaulia.gamewish.theme.White
 import com.dirzaaulia.gamewish.ui.common.CommonVerticalList
 import com.dirzaaulia.gamewish.ui.common.MyAnimeListWebViewClient
-import com.dirzaaulia.gamewish.ui.common.item.CommonAnimeItem
+import com.dirzaaulia.gamewish.ui.common.item.CommonMyAnimeListItem
 import com.dirzaaulia.gamewish.ui.home.HomeViewModel
 import com.dirzaaulia.gamewish.ui.search.SearchViewModel
 import com.dirzaaulia.gamewish.utils.MyAnimeListConstant
@@ -106,7 +106,7 @@ fun SearchAnime(
                 ) {
                     Crossfade(
                         targetState = SearchAnimeTab.getTabFromResource(menuId),
-                        label = ""
+                        label = OtherConstant.EMPTY_STRING
                     ) { destination ->
                         when (destination) {
                             SearchAnimeTab.SEASONAL -> {
@@ -182,7 +182,7 @@ fun SearchMangaList(
             emptyString = emptyString,
             errorString = stringResource(id = R.string.search_manga_error),
         ) { parentNode ->
-            CommonAnimeItem(
+            CommonMyAnimeListItem(
                 parentNode = parentNode,
                 navigateToAnimeDetails = navigateToAnimeDetails,
                 type = MyAnimeListConstant.MYANIMELIST_TYPE_MANGA,
@@ -220,10 +220,10 @@ fun SearchAnimeList(
             emptyString = emptyString,
             errorString = stringResource(id = R.string.search_anime_error),
         ) { parentNode ->
-            CommonAnimeItem(
+            CommonMyAnimeListItem(
                 parentNode = parentNode,
                 navigateToAnimeDetails = navigateToAnimeDetails,
-                type = "Anime",
+                type = MyAnimeListConstant.MYANIMELIST_TYPE_ANIME,
             )
         }
     }
@@ -239,7 +239,7 @@ fun SeasonalAnime(
     navigateToAnimeDetails: (Long, String) -> Unit,
 ) {
 
-    val seasonal = seasonalAnimeQuery.split(" ")
+    val seasonal = seasonalAnimeQuery.split(OtherConstant.BLANK_SPACE)
     val season = seasonal[0]
     val year = seasonal[1]
 
@@ -248,16 +248,13 @@ fun SeasonalAnime(
     ) {
         Row {
             Text(
-                text = "${season.capitalizeWords()} $year",
+                text = String.format(
+                    OtherConstant.STRING_FORMAT_S_SPACE_S,
+                    season.capitalizeWords(),
+                    year
+                ),
                 style = MaterialTheme.typography.body1,
-                modifier = Modifier
-                    .align(Alignment.CenterVertically)
-                    .placeholder(
-                        visible = data.loadState.refresh is LoadState.Loading,
-                        highlight = PlaceholderHighlight.shimmer(),
-                        color = MaterialTheme.colors.secondary,
-                        shape = MaterialTheme.shapes.small
-                    )
+                modifier = Modifier.align(Alignment.CenterVertically)
             )
             IconButton(
                 modifier = Modifier.align(Alignment.CenterVertically),
@@ -295,10 +292,10 @@ fun SeasonalAnime(
             emptyString = stringResource(id = R.string.search_seasonal_empty),
             errorString = stringResource(id = R.string.search_seasonal_error),
         ) { parentNode ->
-            CommonAnimeItem(
+            CommonMyAnimeListItem(
                 parentNode = parentNode,
                 navigateToAnimeDetails = navigateToAnimeDetails,
-                type = "Anime",
+                type = MyAnimeListConstant.MYANIMELIST_TYPE_ANIME,
             )
         }
     }
@@ -309,10 +306,15 @@ fun SeasonalAnimeSheet(
     seasonalAnimeQuery: String,
     viewModel: SearchViewModel
 ) {
-    val season = seasonalAnimeQuery.split(" ")
+    val season = seasonalAnimeQuery.split(OtherConstant.BLANK_SPACE)
 
     var seasonExpanded by remember { mutableStateOf(false) }
-    val statusList = listOf("Winter", "Spring", "Summer", "Fall")
+    val statusList = listOf(
+        MyAnimeListConstant.MYANIMELIST_SEASON_WINTER.capitalizeWords(),
+        MyAnimeListConstant.MYANIMELIST_SEASON_SPRING.capitalizeWords(),
+        MyAnimeListConstant.MYANIMELIST_SEASON_SUMMER.capitalizeWords(),
+        MyAnimeListConstant.MYANIMELIST_SEASON_FALL.capitalizeWords()
+    )
     var seasonText by rememberSaveable { mutableStateOf(season[0].capitalizeWords()) }
     var textfieldSize by remember { mutableStateOf(Size.Zero) }
     val seasonIcon = if (seasonExpanded)
@@ -338,7 +340,7 @@ fun SeasonalAnimeSheet(
                     //This value is used to assign to the DropDown the same width
                     textfieldSize = coordinates.size.toSize()
                 },
-            label = { Text("Season") },
+            label = { Text(stringResource(R.string.season)) },
             trailingIcon = {
                 Icon(
                     imageVector = seasonIcon,
@@ -359,7 +361,13 @@ fun SeasonalAnimeSheet(
                         seasonText = item
                         seasonExpanded = false
 
-                        viewModel.setSearchSeasonalQuery("${seasonText.lowercase()} $year")
+                        viewModel.setSearchSeasonalQuery(
+                            String.format(
+                                OtherConstant.STRING_FORMAT_S_S,
+                                seasonText.lowercase(),
+                                year
+                            )
+                        )
                     }
                 ) {
                     Text(text = item)
@@ -370,10 +378,16 @@ fun SeasonalAnimeSheet(
             value = year,
             onValueChange = {
                 year = it
-                viewModel.setSearchSeasonalQuery("${seasonText.lowercase()} $year")
+                viewModel.setSearchSeasonalQuery(
+                    String.format(
+                        OtherConstant.STRING_FORMAT_S_S,
+                        seasonText.lowercase(),
+                        year
+                    )
+                )
             },
             modifier = Modifier.fillMaxWidth(),
-            label = { Text("Year") },
+            label = { Text(stringResource(R.string.year)) },
         )
     }
 }
@@ -405,7 +419,7 @@ fun SearchAnimeAppBar(
             ) {
                 Icon(
                     imageVector = Icons.Filled.ArrowBack,
-                    contentDescription = null,
+                    contentDescription = OtherConstant.EMPTY_STRING,
                     tint = White
                 )
             }

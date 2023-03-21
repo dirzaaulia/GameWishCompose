@@ -72,8 +72,7 @@ fun CommonAnimeCarousel(
 
     HorizontalPager(
         state = pagerState,
-        modifier = Modifier
-            .width(100.dp),
+        modifier = Modifier.width(100.dp),
         count = screenshots.size
     ) { pageIndex ->
         val screenshot = screenshots[pageIndex]

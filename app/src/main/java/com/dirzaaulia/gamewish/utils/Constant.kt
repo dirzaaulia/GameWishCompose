@@ -141,6 +141,7 @@ object RawgConstant {
     const val RAWG_WISHLIST_DELETED = "This game has been deleted from your Wishlist."
     const val RAWG_WISHLIST_DELETE_ERROR = "Something went wrong when deleting game from your Wishlist."
     const val RAWG_STATUS = "Status"
+    const val RAWG_STATUS_ALL = "All"
     const val RAWG_STATUS_PLAN_TO_BUY = "Plan To Buy"
     const val RAWG_STATUS_PLAYING = "Playing"
     const val RAWG_STATUS_COMPLETED = "Completed"
@@ -205,6 +206,7 @@ object OtherConstant {
     const val FOUR = 4
     const val FIVE = 5
     const val SIX = 6
+    const val SEVEN = 7
     const val EIGHT = 8
     const val NINE = 9
     const val TEN = 10
@@ -216,12 +218,16 @@ object OtherConstant {
     const val THIRTY_LONG = 30L
     const val TWO_THOUSAND_LONG = 2000L
 
+    const val ZERO_DOUBLE = 0.0
+
     const val STRIP = "-"
     const val UNDERSCORE = "_"
     const val EMPTY_STRING = ""
     const val BLANK_SPACE = " "
     const val HASHTAG = "#"
     const val COLON = ":"
+    const val NEWLINE = "\n"
+    const val FORWARD_SLASH = "/"
 
     const val DATE_FORMAT_STRIP_dd_MM_yyyy = "dd-MM-yyyy"
     const val DATE_FORMAT_STRIP_yyyy_MM_dd = "yyyy-MM-dd"
@@ -231,6 +237,7 @@ object OtherConstant {
     const val STRING_FORMAT_S_SPACE_S_SPACE_S = "%s %s %s"
     const val STRING_FORMAT_S_SPACE_S = "%s %s"
     const val STRING_FORMAT_S_STRIP_S = "%s - %s"
+    const val STRING_FORMAT_REDDIT = "r/%s"
 
     const val NOMINAL_FORMAT = "%,d"
 
@@ -253,6 +260,7 @@ object OtherConstant {
     const val TMDB_LINK = "https://wwww.themoviedb.org/"
     const val NOW = "Now"
     const val ALL = "All"
+    const val EMAIL = "mailto:dirzaaulia11@gmail.com"
 }
 
 object Route {

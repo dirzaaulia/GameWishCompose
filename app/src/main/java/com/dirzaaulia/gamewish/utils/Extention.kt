@@ -21,7 +21,7 @@ import java.util.*
  */
 fun Context.sendEmail() {
     val intent = Intent(Intent.ACTION_SENDTO).apply {
-        data = Uri.parse("mailto:dirzaaulia11@gmail.com" )
+        data = Uri.parse(OtherConstant.EMAIL)
     }
 
     ContextCompat.startActivity(this, intent, null)
@@ -30,7 +30,7 @@ fun Context.sendEmail() {
 /**
  * Double
  */
-fun Double?.replaceIfNull(replacementValue: Double = 0.0): Double {
+fun Double?.replaceIfNull(replacementValue: Double = OtherConstant.ZERO_DOUBLE): Double {
     if (this == null)
         return replacementValue
     return this
@@ -43,7 +43,7 @@ fun Double?.toNumberFormat(): String {
 
 fun Double?.toCurrencyFormat(locale: Locale = Locale.US): String {
     val format: NumberFormat = NumberFormat.getCurrencyInstance(locale)
-    format.maximumFractionDigits = 2
+    format.maximumFractionDigits = OtherConstant.TWO
 
     return format.format(this.replaceIfNull())
 }
@@ -51,7 +51,7 @@ fun Double?.toCurrencyFormat(locale: Locale = Locale.US): String {
 /**
  * Int
  */
-fun Int?.replaceIfNull(replacementValue: Int = 0): Int {
+fun Int?.replaceIfNull(replacementValue: Int = OtherConstant.ZERO): Int {
     if (this == null)
         return replacementValue
     return this
@@ -59,17 +59,17 @@ fun Int?.replaceIfNull(replacementValue: Int = 0): Int {
 
 fun Int?.toAnimeScoreFormat(): String {
     return when (this.replaceIfNull()) {
-        1 -> "(1) - Appaling"
-        2 -> "(2) - Horrible"
-        3 -> "(3) - Very Bad"
-        4 -> "(4) - Bad"
-        5 -> "(5) - Average"
-        6 -> "(6) - Fine"
-        7 -> "(7) - Good"
-        8 -> "(8) - Very Good"
-        9 -> "(9) - Great"
-        10 -> "(10) - Masterpiece"
-        else -> ""
+        OtherConstant.ONE -> "(1) - Appaling"
+        OtherConstant.TWO -> "(2) - Horrible"
+        OtherConstant.THREE -> "(3) - Very Bad"
+        OtherConstant.FOUR -> "(4) - Bad"
+        OtherConstant.FIVE -> "(5) - Average"
+        OtherConstant.SIX -> "(6) - Fine"
+        OtherConstant.SEVEN -> "(7) - Good"
+        OtherConstant.EIGHT -> "(8) - Very Good"
+        OtherConstant.NINE -> "(9) - Great"
+        OtherConstant.TEN -> "(10) - Masterpiece"
+        else -> OtherConstant.EMPTY_STRING
     }
 }
 
@@ -84,53 +84,67 @@ fun <T> List<T>?.replaceIfNull(replacementValue: List<T> = emptyList()): List<T>
 }
 
 fun List<Developer>?.toDeveloper(): String {
-    var value = ""
+    var value = OtherConstant.EMPTY_STRING
     this?.forEachIndexed { index, developer ->
         value += developer.name.toString()
-        if (index != this.size - 1) {
-            value += "\n"
+        if (index != this.size - OtherConstant.ONE) {
+            value += OtherConstant.NEWLINE
         }
     }
     return value
 }
 
 fun List<Publisher>?.toPublisher(): String {
-    var value = ""
+    var value = OtherConstant.EMPTY_STRING
     this?.forEach {
         value += it.name.toString()
-        value += "\n"
+        value += OtherConstant.NEWLINE
 
         if (value.isNotEmpty()) {
-            value = value.substring(0, value.length - 1)
+            value = value.substring(
+                OtherConstant.ZERO, value.length - OtherConstant.ONE
+            )
         }
     }
     return value
 }
 
 fun List<MyAnimelistGenre>?.toAnimeGenre(): String {
-    var genre = ""
+    var genre = OtherConstant.EMPTY_STRING
     this?.forEach {
-        genre += "${it.name} "
+        genre += String.format(
+            OtherConstant.STRING_FORMAT_S_S,
+            it.name,
+            OtherConstant.BLANK_SPACE
+        )
     }
     return genre
 }
 
 fun List<ProductionCompany>?.toProductionCompany(): String {
-    var genre = ""
+    var genre = OtherConstant.EMPTY_STRING
     this?.forEachIndexed { index, productionCompany ->
-        genre += if (index == (this.size - 1)) {
-            "${productionCompany.name}"
+        genre += if (index == (this.size - OtherConstant.ONE)) {
+            productionCompany.name.toString()
         } else {
-            "${productionCompany.name}\n"
+            String.format(
+                OtherConstant.STRING_FORMAT_S_S,
+                productionCompany.name.toString(),
+                OtherConstant.NEWLINE
+            )
         }
     }
     return genre
 }
 
 fun List<TmdbGenre>?.toMovieGenre(): String {
-    var genre = ""
+    var genre = OtherConstant.EMPTY_STRING
     this?.forEach {
-        genre += "${it.name} "
+        genre += String.format(
+            OtherConstant.STRING_FORMAT_S_S,
+            it.name,
+            OtherConstant.BLANK_SPACE
+        )
     }
     return genre
 }
@@ -146,15 +160,19 @@ fun String?.replaceIfNull(replacementValue: String = OtherConstant.EMPTY_STRING)
 
 @SuppressLint("DefaultLocale")
 fun String.capitalizeWords(): String =
-    split(" ").joinToString(" ") { text ->
-        text.lowercase(Locale.getDefault())
-            .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
-    }
+    split(OtherConstant.BLANK_SPACE)
+        .joinToString(OtherConstant.BLANK_SPACE) { text ->
+            text.lowercase(Locale.getDefault())
+                .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
+        }
 
 
 @SuppressLint("DefaultLocale")
 fun String.lowerCaseWords(): String =
-    split(" ").joinToString(" ") { it.lowercase(Locale.getDefault()) }
+    split(OtherConstant.BLANK_SPACE)
+        .joinToString(OtherConstant.BLANK_SPACE) {
+            it.lowercase(Locale.getDefault())
+        }
 
 fun String?.animeRatingFormat(): String {
     return when (this.replaceIfNull()) {
@@ -189,8 +207,11 @@ fun String?.animeSourceFormat(): String {
 
 fun String?.getSubReddit(): String {
     val uri = Uri.parse(this)
-    val segment = uri.path?.split("/")
-    return String.format("r/%s", segment?.get(segment.size - 2))
+    val segment = uri.path?.split(OtherConstant.FORWARD_SLASH)
+    return String.format(
+        OtherConstant.STRING_FORMAT_REDDIT,
+        segment?.get(segment.size - OtherConstant.TWO)
+    )
 }
 
 fun String?.fromHtml(): String {
@@ -199,10 +220,13 @@ fun String?.fromHtml(): String {
 }
 
 fun String.changeDateFormat(fromFormat: String): String {
-    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) newDateFormatter(this, fromFormat) else oldDateFormatter(this, fromFormat)
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) newDateFormatter(
+        this,
+        fromFormat
+    ) else oldDateFormatter(this, fromFormat)
 }
 
-fun String?.myAnimeListStatusFormatted(ifBlank: String): String {
+fun String?.myAnimeListStatusFormatted(ifBlank: String = OtherConstant.EMPTY_STRING): String {
     return this
         .replaceIfNull()
         .replace(OtherConstant.UNDERSCORE, OtherConstant.BLANK_SPACE)
@@ -210,7 +234,7 @@ fun String?.myAnimeListStatusFormatted(ifBlank: String): String {
         .ifBlank { ifBlank }
 }
 
-fun String.movieStatusFormatted(): String {
+fun String.tmdbStatusFormatted(): String {
     return this.ifBlank { TmdbConstant.TMBD_STATUS_ALL }
 }
 

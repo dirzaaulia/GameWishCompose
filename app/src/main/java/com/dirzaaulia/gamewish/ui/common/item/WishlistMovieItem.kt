@@ -31,7 +31,6 @@ fun WishlistMovieItem(
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .height(150.dp)
             .padding(vertical = 4.dp)
             .clickable(
                 onClick = {
@@ -55,6 +54,7 @@ fun WishlistMovieItem(
                     movieWishlist.image
                 ),
                 modifier = modifier
+                    .height(150.dp)
                     .width(100.dp)
                     .fillMaxHeight(),
                 contentScale = ContentScale.FillBounds
@@ -71,7 +71,7 @@ fun WishlistMovieItem(
                 Text(
                     modifier = Modifier.padding(top = 4.dp),
                     text = movieWishlist.name.toString(),
-                    style = MaterialTheme.typography.subtitle1
+                    style = MaterialTheme.typography.h6
                 )
             }
         }

@@ -135,7 +135,6 @@ fun setPlatformsBackgroundColor(data: Any, code: Int): Color {
 
 fun getAnimeSeason(): String {
     val calendar = Calendar.getInstance()
-    val year = calendar.get(Calendar.YEAR)
     val season =   when (calendar.get(Calendar.MONTH)) {
         in OtherConstant.ZERO..OtherConstant.TWO -> MyAnimeListConstant.MYANIMELIST_SEASON_WINTER
         in OtherConstant.THREE..OtherConstant.FIVE -> MyAnimeListConstant.MYANIMELIST_SEASON_SPRING
@@ -143,5 +142,9 @@ fun getAnimeSeason(): String {
         in OtherConstant.NINE..OtherConstant.ELEVEN -> MyAnimeListConstant.MYANIMELIST_SEASON_FALL
         else -> OtherConstant.EMPTY_STRING
     }
-    return String.format(OtherConstant.STRING_FORMAT_S_SPACE_S, year, season)
+    val year = when (season) {
+        MyAnimeListConstant.MYANIMELIST_SEASON_WINTER ->  calendar.get(Calendar.YEAR) - OtherConstant.ONE
+        else ->  calendar.get(Calendar.YEAR)
+    }
+    return String.format(OtherConstant.STRING_FORMAT_S_SPACE_S, season, year)
 }

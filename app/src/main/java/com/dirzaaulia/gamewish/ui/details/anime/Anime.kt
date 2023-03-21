@@ -34,7 +34,7 @@ import com.dirzaaulia.gamewish.theme.White
 import com.dirzaaulia.gamewish.ui.common.CommonAnimeCarousel
 import com.dirzaaulia.gamewish.ui.common.CommonLoading
 import com.dirzaaulia.gamewish.ui.common.ErrorConnect
-import com.dirzaaulia.gamewish.ui.common.item.CommonAnimeItem
+import com.dirzaaulia.gamewish.ui.common.item.CommonMyAnimeListItem
 import com.dirzaaulia.gamewish.ui.details.DetailsViewModel
 import com.dirzaaulia.gamewish.utils.*
 import com.google.accompanist.pager.rememberPagerState
@@ -282,7 +282,7 @@ fun RecommendationTab(
             } else {
                 LazyColumn {
                     items(recommendationList!!) { value ->
-                        CommonAnimeItem(
+                        CommonMyAnimeListItem(
                             parentNode = value,
                             navigateToAnimeDetails = navigateToAnimeDetails,
                             type = MyAnimeListConstant.MYANIMELIST_TYPE_ANIME,
@@ -306,7 +306,7 @@ fun RecommendationTab(
             } else {
                 LazyColumn {
                     items(recommendationList!!) { value ->
-                        CommonAnimeItem(
+                        CommonMyAnimeListItem(
                             parentNode = value,
                             navigateToAnimeDetails = navigateToAnimeDetails,
                             type = MyAnimeListConstant.MYANIMELIST_TYPE_MANGA
@@ -363,7 +363,7 @@ fun RelatedTab(
             } else {
                 LazyColumn {
                     items(relatedList!!) { value ->
-                        CommonAnimeItem(
+                        CommonMyAnimeListItem(
                             parentNode = value,
                             navigateToAnimeDetails = navigateToAnimeDetails,
                             type = MyAnimeListConstant.MYANIMELIST_TYPE_ANIME
@@ -387,7 +387,7 @@ fun RelatedTab(
             } else {
                 LazyColumn {
                     items(relatedList!!) { value ->
-                        CommonAnimeItem(
+                        CommonMyAnimeListItem(
                             parentNode = value,
                             navigateToAnimeDetails = navigateToAnimeDetails,
                             type = MyAnimeListConstant.MYANIMELIST_TYPE_MANGA

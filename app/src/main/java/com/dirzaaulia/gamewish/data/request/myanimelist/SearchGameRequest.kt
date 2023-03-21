@@ -6,7 +6,7 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class SearchGameRequest(
-    val searchQuery: String = "",
+    val searchQuery: String = OtherConstant.EMPTY_STRING,
     val genreId: Int?,
     val publisherId: Int?,
     val platformId: Int?

@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -25,7 +26,7 @@ import com.dirzaaulia.gamewish.utils.formatTmdbReleaseDate
 import com.dirzaaulia.gamewish.utils.replaceIfNull
 
 @Composable
-fun CommonMovieItem(
+fun CommonTmdbItem(
     modifier: Modifier = Modifier,
     movie: Movie,
     navigateToDetails: (Long, String) -> Unit,
@@ -34,16 +35,14 @@ fun CommonMovieItem(
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .height(150.dp)
+            .wrapContentHeight()
             .padding(vertical = 4.dp)
             .clickable(
                 onClick = {
-                    movie.id?.let { id ->
-                        type.doBasedOnTmdbType(
-                            doIfMovie = { navigateToDetails(id, TmdbConstant.TMDB_TYPE_MOVIE) },
-                            doIfTv = { navigateToDetails(id, TmdbConstant.TMDB_TYPE_TVSHOW) }
-                        )
-                    }
+                    type.doBasedOnTmdbType(
+                        doIfMovie = { navigateToDetails(movie.id, TmdbConstant.TMDB_TYPE_MOVIE) },
+                        doIfTv = { navigateToDetails(movie.id, TmdbConstant.TMDB_TYPE_TVSHOW) }
+                    )
                 }
             ),
         shape = MaterialTheme.shapes.large,
@@ -59,6 +58,7 @@ fun CommonMovieItem(
                     movie.posterPath
                 ),
                 modifier = modifier
+                    .height(150.dp)
                     .width(100.dp)
                     .fillMaxHeight(),
                 contentScale = ContentScale.FillBounds
@@ -79,11 +79,11 @@ fun CommonMovieItem(
                 )
                 Text(
                     text = movie.title.replaceIfNull(),
-                    style = MaterialTheme.typography.subtitle1
+                    style = MaterialTheme.typography.h6
                 )
                 Text(
                     text = movie.name.replaceIfNull(),
-                    style = MaterialTheme.typography.subtitle1
+                    style = MaterialTheme.typography.h6
                 )
             }
         }

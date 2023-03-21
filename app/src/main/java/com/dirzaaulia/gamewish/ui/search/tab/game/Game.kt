@@ -24,22 +24,18 @@ import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import com.dirzaaulia.gamewish.R
 import com.dirzaaulia.gamewish.data.model.rawg.Games
-import com.dirzaaulia.gamewish.data.model.rawg.Genre
-import com.dirzaaulia.gamewish.data.model.rawg.Platform
-import com.dirzaaulia.gamewish.data.model.rawg.Publisher
+import com.dirzaaulia.gamewish.data.model.rawg.SearchTab
+import com.dirzaaulia.gamewish.data.model.rawg.SearchTabType
+import com.dirzaaulia.gamewish.data.model.rawg.SearchTabType.Companion.setRawgDataSource
 import com.dirzaaulia.gamewish.data.request.myanimelist.SearchGameRequest
-import com.dirzaaulia.gamewish.utils.visible
 import com.dirzaaulia.gamewish.theme.White
 import com.dirzaaulia.gamewish.ui.common.*
+import com.dirzaaulia.gamewish.ui.common.item.SearchGameTabItem
 import com.dirzaaulia.gamewish.ui.common.item.SearchGamesItem
-import com.dirzaaulia.gamewish.ui.common.item.SearchGenreItem
-import com.dirzaaulia.gamewish.ui.common.item.SearchPlatformItem
-import com.dirzaaulia.gamewish.ui.common.item.SearchPublisherItem
 import com.dirzaaulia.gamewish.ui.search.SearchViewModel
+import com.dirzaaulia.gamewish.utils.OtherConstant
 import com.dirzaaulia.gamewish.utils.PlaceholderConstant
-import com.google.accompanist.placeholder.PlaceholderHighlight
-import com.google.accompanist.placeholder.material.shimmer
-import com.google.accompanist.placeholder.placeholder
+import com.dirzaaulia.gamewish.utils.visible
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
@@ -54,9 +50,9 @@ fun SearchGame(
     lazyListStatePublisher: LazyListState,
     lazyListStatePlatform: LazyListState,
     searchGameList: LazyPagingItems<Games>,
-    genre: LazyPagingItems<Genre>,
-    publisher: LazyPagingItems<Publisher>,
-    platform: LazyPagingItems<Platform>,
+    genre: LazyPagingItems<SearchTab>,
+    publisher: LazyPagingItems<SearchTab>,
+    platform: LazyPagingItems<SearchTab>,
     searchGameRequest: SearchGameRequest
 ) {
 
@@ -73,7 +69,7 @@ fun SearchGame(
             ) {
                 Crossfade(
                     targetState = SearchGameTab.getTabFromResource(menuId),
-                    label = ""
+                    label = OtherConstant.EMPTY_STRING
                 ) { destination ->
                     when (destination) {
                         SearchGameTab.LIST -> {
@@ -83,23 +79,26 @@ fun SearchGame(
                                 lazyListStateSearchGames = lazyListStateSearchGames,
                             )
                         }
-                        SearchGameTab.GENRE -> {
-                            GenreList(
+                        SearchGameTab.GENRES -> {
+                            SearchGameTabList(
                                 data = genre,
+                                type = SearchTabType.GENRE,
                                 lazyListState = lazyListStateGenre,
                                 viewModel = viewModel,
                             )
                         }
                         SearchGameTab.PUBLISHER -> {
-                            PublisherList(
+                            SearchGameTabList(
                                 data = publisher,
+                                type = SearchTabType.PUBLISHER,
                                 lazyListState = lazyListStatePublisher,
                                 viewModel = viewModel,
                             )
                         }
                         SearchGameTab.PLATFORMS -> {
-                            PlatformList(
+                            SearchGameTabList(
                                 data = platform,
+                                type = SearchTabType.PLATFORM,
                                 lazyListState = lazyListStatePlatform,
                                 viewModel = viewModel,
                             )
@@ -128,12 +127,6 @@ fun SearchGameList(
         Text(
             modifier = Modifier
                 .padding(4.dp)
-                .placeholder(
-                    visible = data.loadState.refresh is LoadState.Loading,
-                    highlight = PlaceholderHighlight.shimmer(),
-                    color = MaterialTheme.colors.secondary,
-                    shape = MaterialTheme.shapes.small
-                )
                 .visible(data.loadState.refresh is LoadState.NotLoading),
             text = stringResource(id = R.string.games_data_source),
             style = MaterialTheme.typography.caption,
@@ -154,8 +147,9 @@ fun SearchGameList(
 }
 
 @Composable
-fun GenreList(
-    data: LazyPagingItems<Genre>,
+fun SearchGameTabList(
+    data: LazyPagingItems<SearchTab>,
+    type: SearchTabType,
     lazyListState: LazyListState,
     viewModel: SearchViewModel,
 ) {
@@ -163,14 +157,8 @@ fun GenreList(
         Text(
             modifier = Modifier
                 .padding(4.dp)
-                .placeholder(
-                    visible = data.loadState.refresh is LoadState.Loading,
-                    highlight = PlaceholderHighlight.shimmer(),
-                    color = MaterialTheme.colors.secondary,
-                    shape = MaterialTheme.shapes.small
-                )
                 .visible(data.loadState.refresh is LoadState.NotLoading),
-            text = stringResource(id = R.string.genre_data_source),
+            text = type.setRawgDataSource(),
             style = MaterialTheme.typography.caption,
         )
         CommonVerticalList(
@@ -179,79 +167,9 @@ fun GenreList(
             placeholderType = PlaceholderConstant.SEARCH_GAME_TAB,
             emptyString = stringResource(id = R.string.search_genre_empty),
             errorString = stringResource(id = R.string.search_genre_error),
-        ) { genre ->
-            SearchGenreItem(
-                genre = genre,
-                viewModel = viewModel,
-            )
-        }
-    }
-}
-
-@Composable
-fun PublisherList(
-    data: LazyPagingItems<Publisher>,
-    lazyListState: LazyListState,
-    viewModel: SearchViewModel,
-) {
-    Column {
-        Text(
-            modifier = Modifier
-                .padding(4.dp)
-                .placeholder(
-                    visible = data.loadState.refresh is LoadState.Loading,
-                    highlight = PlaceholderHighlight.shimmer(),
-                    color = MaterialTheme.colors.secondary,
-                    shape = MaterialTheme.shapes.small
-                )
-                .visible(data.loadState.refresh is LoadState.NotLoading),
-            text = stringResource(id = R.string.publisher_data_source),
-            style = MaterialTheme.typography.caption,
-        )
-        CommonVerticalList(
-            data = data,
-            lazyListState = lazyListState,
-            placeholderType = PlaceholderConstant.SEARCH_GAME_TAB,
-            emptyString = stringResource(id = R.string.search_publisher_empty),
-            errorString = stringResource(id = R.string.search_publisher_error),
-        ) { publisher ->
-            SearchPublisherItem(
-                publisher = publisher,
-                viewModel = viewModel
-            )
-        }
-    }
-}
-
-@Composable
-fun PlatformList(
-    data: LazyPagingItems<Platform>,
-    lazyListState: LazyListState,
-    viewModel: SearchViewModel,
-) {
-    Column {
-        Text(
-            modifier = Modifier
-                .padding(4.dp)
-                .placeholder(
-                    visible = data.loadState .refresh is LoadState.Loading,
-                    highlight = PlaceholderHighlight.shimmer(),
-                    color = MaterialTheme.colors.secondary,
-                    shape = MaterialTheme.shapes.small
-                )
-                .visible(data.loadState.refresh is LoadState.NotLoading),
-            text = stringResource(id = R.string.platform_data_source),
-            style = MaterialTheme.typography.caption,
-        )
-        CommonVerticalList(
-            data = data,
-            lazyListState = lazyListState,
-            placeholderType = PlaceholderConstant.SEARCH_GAME_TAB,
-            emptyString = stringResource(id = R.string.search_platform_empty),
-            errorString = stringResource(id = R.string.search_platform_error),
-        ) { platform ->
-            SearchPlatformItem(
-                platform = platform,
+        ) { searchTab ->
+            SearchGameTabItem(
+                searchTab = searchTab,
                 viewModel = viewModel,
             )
         }
@@ -351,7 +269,7 @@ fun SearchGameTabMenu(
 
 enum class SearchGameTab (@StringRes val title: Int) {
     LIST(R.string.search),
-    GENRE(R.string.genres),
+    GENRES(R.string.genres),
     PUBLISHER(R.string.publishers),
     PLATFORMS(R.string.platforms);
 
@@ -359,7 +277,7 @@ enum class SearchGameTab (@StringRes val title: Int) {
         fun getTabFromResource(index: Int): SearchGameTab {
             return when (index) {
                 0 -> LIST
-                1 -> GENRE
+                1 -> GENRES
                 2 -> PUBLISHER
                 3 -> PLATFORMS
                 else -> LIST

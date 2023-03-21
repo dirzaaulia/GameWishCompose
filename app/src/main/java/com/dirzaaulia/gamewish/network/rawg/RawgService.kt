@@ -37,7 +37,8 @@ interface RawgService {
     @GET("genres")
     suspend fun getGenres(
         @Query("key") key: String = RawgConstant.RAWG_KEY,
-        @Query("page") page: Int
+        @Query("page") page: Int,
+        @Query("page_size") pageSize: Int = RawgConstant.RAWG_PAGE_SIZE_TEN
     ): Response<GenresResponse>
 
     @GET("publishers")

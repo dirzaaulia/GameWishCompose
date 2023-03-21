@@ -9,9 +9,6 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class ParentNode(
     val node: Node? = null,
-    @Json(name = "relation_type_formatted")
-    val relationType: String? = null,
     @Json(name = "list_status")
     var listStatus: ListStatus? = null,
-    val role: String? = null
 ) : Parcelable

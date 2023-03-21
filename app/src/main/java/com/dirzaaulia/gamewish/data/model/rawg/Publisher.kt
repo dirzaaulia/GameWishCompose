@@ -2,6 +2,7 @@ package com.dirzaaulia.gamewish.data.model.rawg
 
 import android.os.Parcelable
 import androidx.annotation.Keep
+import com.dirzaaulia.gamewish.utils.replaceIfNull
 import com.squareup.moshi.Json
 import kotlinx.parcelize.Parcelize
 
@@ -16,4 +17,13 @@ data class Publisher(
     @Json(name = "image_background")
     val imageBackground: String?,
     val games: List<Games>?
-) : Parcelable
+) : Parcelable {
+    companion object {
+        fun Publisher.toSearchTab() = SearchTab(
+            id = id.replaceIfNull(),
+            type = SearchTabType.GENRE,
+            image = imageBackground.replaceIfNull(),
+            name = name.replaceIfNull()
+        )
+    }
+}

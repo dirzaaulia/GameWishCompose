@@ -6,12 +6,23 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.*
+import androidx.compose.material.BottomNavigation
+import androidx.compose.material.BottomNavigationItem
+import androidx.compose.material.Icon
+import androidx.compose.material.LocalContentColor
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Scaffold
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Games
 import androidx.compose.material.icons.filled.Theaters
 import androidx.compose.material.icons.filled.Tv
-import androidx.compose.runtime.*
+import androidx.compose.material.primarySurface
+import androidx.compose.material.rememberScaffoldState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -20,15 +31,15 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import com.dirzaaulia.gamewish.R
 import com.dirzaaulia.gamewish.data.model.myanimelist.ParentNode
 import com.dirzaaulia.gamewish.data.model.rawg.Games
-import com.dirzaaulia.gamewish.data.model.rawg.Genre
-import com.dirzaaulia.gamewish.data.model.rawg.Platform
-import com.dirzaaulia.gamewish.data.model.rawg.Publisher
+import com.dirzaaulia.gamewish.data.model.rawg.SearchTab
 import com.dirzaaulia.gamewish.data.model.tmdb.Movie
-import com.dirzaaulia.gamewish.utils.isSucceeded
+import com.dirzaaulia.gamewish.data.model.wishlist.SearchMenu
 import com.dirzaaulia.gamewish.ui.home.HomeViewModel
 import com.dirzaaulia.gamewish.ui.search.tab.anime.SearchAnime
 import com.dirzaaulia.gamewish.ui.search.tab.game.SearchGame
 import com.dirzaaulia.gamewish.ui.search.tab.movie.Movie
+import com.dirzaaulia.gamewish.utils.OtherConstant
+import com.dirzaaulia.gamewish.utils.isSucceeded
 
 @Composable
 fun Search(
@@ -51,9 +62,9 @@ fun Search(
     val lazyListStatePublisher = rememberLazyListState()
     val lazyListStatePlatform = rememberLazyListState()
 
-    val genre: LazyPagingItems<Genre> = viewModel.genres.collectAsLazyPagingItems()
-    val publisher: LazyPagingItems<Publisher> = viewModel.publishers.collectAsLazyPagingItems()
-    val platform: LazyPagingItems<Platform> = viewModel.platforms.collectAsLazyPagingItems()
+    val genre: LazyPagingItems<SearchTab> = viewModel.genres.collectAsLazyPagingItems()
+    val publisher: LazyPagingItems<SearchTab> = viewModel.publishers.collectAsLazyPagingItems()
+    val platform: LazyPagingItems<SearchTab> = viewModel.platforms.collectAsLazyPagingItems()
     val searchGameList: LazyPagingItems<Games> = viewModel.searchGameList.collectAsLazyPagingItems()
     val searchGameRequest by viewModel.searchGameRequest.collectAsState()
 
@@ -84,9 +95,7 @@ fun Search(
     }
 
     LaunchedEffect(menuId) {
-        if (searchMenuId == 0) {
-            viewModel.selectBottomNavMenu(menuId)
-        }
+        viewModel.selectBottomNavMenu(menuId)
     }
 
     Scaffold(
@@ -97,7 +106,8 @@ fun Search(
         },
     ) { innerPadding ->
         Crossfade(
-            targetState = SearchNavMenu.getSearchNavMenuFromResource(searchMenuId)
+            targetState = SearchNavMenu.getSearchNavMenu(searchMenuId),
+            label = OtherConstant.EMPTY_STRING
         ) { destination ->
             val innerModifier = Modifier.padding(innerPadding)
             when (destination) {
@@ -166,10 +176,8 @@ fun SearchBottomBar(
         menu.forEach { menu ->
             BottomNavigationItem(
                 icon = { Icon(imageVector = menu.icon, contentDescription = null) },
-                selected = menu == SearchNavMenu.getSearchNavMenuFromResource(menuId),
-                onClick = {
-                    viewModel.selectBottomNavMenu(menu.title)
-                },
+                selected = menu == SearchNavMenu.getSearchNavMenu(menuId),
+                onClick = { viewModel.selectBottomNavMenu(menu.ordinal) },
                 selectedContentColor = MaterialTheme.colors.secondary,
                 unselectedContentColor = LocalContentColor.current,
                 modifier = Modifier.navigationBarsPadding()
@@ -187,11 +195,11 @@ enum class SearchNavMenu (
     MOVIE(R.string.movie_tv_show, Icons.Filled.Theaters);
 
     companion object {
-        fun getSearchNavMenuFromResource(@StringRes resources: Int) : SearchNavMenu {
-            return when (resources) {
-                R.string.game -> GAME
-                R.string.anime_manga -> ANIME
-                R.string.movie_tv_show -> MOVIE
+        fun getSearchNavMenu(menu: Int) : SearchNavMenu {
+            return when (menu) {
+                SearchMenu.GAME.ordinal -> GAME
+                SearchMenu.ANIME.ordinal -> ANIME
+                SearchMenu.MOVIE.ordinal -> MOVIE
                 else -> GAME
             }
         }

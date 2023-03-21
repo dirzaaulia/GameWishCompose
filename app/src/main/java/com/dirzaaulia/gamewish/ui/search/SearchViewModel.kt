@@ -1,20 +1,17 @@
 package com.dirzaaulia.gamewish.ui.search
 
 import androidx.annotation.MainThread
-import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
-import com.dirzaaulia.gamewish.utils.ResponseResult
 import com.dirzaaulia.gamewish.data.model.myanimelist.ServiceCode
+import com.dirzaaulia.gamewish.data.model.rawg.SearchTabType
 import com.dirzaaulia.gamewish.data.request.myanimelist.SearchGameRequest
 import com.dirzaaulia.gamewish.network.myanimelist.paging.MyAnimeListPagingSource
-import com.dirzaaulia.gamewish.network.rawg.paging.RawgGenrePagingSource
-import com.dirzaaulia.gamewish.network.rawg.paging.RawgPlatformPagingSource
-import com.dirzaaulia.gamewish.network.rawg.paging.RawgPublisherPagingSource
 import com.dirzaaulia.gamewish.network.rawg.paging.RawgSearchPagingSource
+import com.dirzaaulia.gamewish.network.rawg.paging.RawgSearchTabPagingSource
 import com.dirzaaulia.gamewish.network.tmdb.paging.TmdbPagingSource
 import com.dirzaaulia.gamewish.repository.MyAnimeListRepository
 import com.dirzaaulia.gamewish.repository.ProtoRepository
@@ -22,6 +19,7 @@ import com.dirzaaulia.gamewish.repository.RawgRepository
 import com.dirzaaulia.gamewish.repository.TmdbRepository
 import com.dirzaaulia.gamewish.utils.OtherConstant
 import com.dirzaaulia.gamewish.utils.RawgConstant
+import com.dirzaaulia.gamewish.utils.ResponseResult
 import com.dirzaaulia.gamewish.utils.TmdbConstant
 import com.dirzaaulia.gamewish.utils.getAnimeSeason
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -48,28 +46,40 @@ class SearchViewModel @Inject constructor(
     private val _selectedSearchGameTab: MutableStateFlow<Int> = MutableStateFlow(OtherConstant.ZERO)
     val selectedSearchGameTab = _selectedSearchGameTab.asStateFlow()
 
-    private val _selectedSearchAnimeTab: MutableStateFlow<Int> = MutableStateFlow(OtherConstant.ZERO)
+    private val _selectedSearchAnimeTab: MutableStateFlow<Int> =
+        MutableStateFlow(OtherConstant.ZERO)
     val selectedSearchAnimeTab = _selectedSearchAnimeTab.asStateFlow()
 
-    private val _selectedSearchMovieTab: MutableStateFlow<Int> = MutableStateFlow(OtherConstant.ZERO)
+    private val _selectedSearchMovieTab: MutableStateFlow<Int> =
+        MutableStateFlow(OtherConstant.ZERO)
     val selectedSearchMovieTab = _selectedSearchMovieTab.asStateFlow()
 
     private var _tokenResult: MutableStateFlow<ResponseResult<String>?> = MutableStateFlow(null)
 
     private var _token: MutableStateFlow<String> = MutableStateFlow(OtherConstant.EMPTY_STRING)
 
-    private val _refreshToken: MutableStateFlow<String> = MutableStateFlow(OtherConstant.EMPTY_STRING)
+    private val _refreshToken: MutableStateFlow<String> =
+        MutableStateFlow(OtherConstant.EMPTY_STRING)
 
-    val genres =  Pager(PagingConfig(pageSize = RawgConstant.RAWG_PAGE_SIZE_TEN)) {
-        RawgGenrePagingSource(rawgRepository)
+    val genres = Pager(PagingConfig(pageSize = RawgConstant.RAWG_PAGE_SIZE_TEN)) {
+        RawgSearchTabPagingSource(
+            repository = rawgRepository,
+            searchTabType = SearchTabType.GENRE
+        )
     }.flow.cachedIn(viewModelScope)
 
-    val publishers =  Pager(PagingConfig(pageSize = RawgConstant.RAWG_PAGE_SIZE_TEN)) {
-        RawgPublisherPagingSource(rawgRepository)
+    val publishers = Pager(PagingConfig(pageSize = RawgConstant.RAWG_PAGE_SIZE_TEN)) {
+        RawgSearchTabPagingSource(
+            repository = rawgRepository,
+            searchTabType = SearchTabType.PUBLISHER
+        )
     }.flow.cachedIn(viewModelScope)
 
     val platforms = Pager(PagingConfig(pageSize = RawgConstant.RAWG_PAGE_SIZE_TEN)) {
-        RawgPlatformPagingSource(rawgRepository)
+        RawgSearchTabPagingSource(
+            repository = rawgRepository,
+            searchTabType = SearchTabType.PLATFORM
+        )
     }.flow.cachedIn(viewModelScope)
 
     val searchGameRequest = MutableStateFlow(SearchGameRequest.default())
@@ -137,34 +147,34 @@ class SearchViewModel @Inject constructor(
 
     val searchMovieQuery = MutableStateFlow(OtherConstant.EMPTY_STRING)
     val searchMovieList = searchMovieQuery.flatMapLatest { query ->
-            Pager(PagingConfig(pageSize = TmdbConstant.TMDB_PAGE_SIZE_TEN)) {
-                TmdbPagingSource(
-                    repository = tmdbRepository,
-                    searchQuery = query,
-                    movieId = OtherConstant.ZERO_LONG,
-                    serviceCode = TmdbCode.SEARCH_MOVIE
-                )
-            }.flow.cachedIn(viewModelScope)
-        }
+        Pager(PagingConfig(pageSize = TmdbConstant.TMDB_PAGE_SIZE_TEN)) {
+            TmdbPagingSource(
+                repository = tmdbRepository,
+                searchQuery = query,
+                movieId = OtherConstant.ZERO_LONG,
+                serviceCode = TmdbCode.SEARCH_MOVIE
+            )
+        }.flow.cachedIn(viewModelScope)
+    }
 
     val searchTvList = searchMovieQuery.flatMapLatest { query ->
-            Pager(PagingConfig(pageSize = TmdbConstant.TMDB_PAGE_SIZE_TEN)) {
-                TmdbPagingSource(
-                    repository = tmdbRepository,
-                    searchQuery = query,
-                    movieId = OtherConstant.ZERO_LONG,
-                    serviceCode = TmdbCode.SEARCH_TV
-                )
-            }.flow.cachedIn(viewModelScope)
-        }
+        Pager(PagingConfig(pageSize = TmdbConstant.TMDB_PAGE_SIZE_TEN)) {
+            TmdbPagingSource(
+                repository = tmdbRepository,
+                searchQuery = query,
+                movieId = OtherConstant.ZERO_LONG,
+                serviceCode = TmdbCode.SEARCH_TV
+            )
+        }.flow.cachedIn(viewModelScope)
+    }
 
     init {
         getAccessToken()
     }
 
     @MainThread
-    fun selectBottomNavMenu(@StringRes tab: Int) {
-        _selectedBottomNav.value = tab
+    fun selectBottomNavMenu(index: Int) {
+        _selectedBottomNav.value = index
     }
 
     @MainThread

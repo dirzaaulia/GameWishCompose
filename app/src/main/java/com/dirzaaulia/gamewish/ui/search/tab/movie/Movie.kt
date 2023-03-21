@@ -26,7 +26,7 @@ import com.dirzaaulia.gamewish.R
 import com.dirzaaulia.gamewish.data.model.tmdb.Movie
 import com.dirzaaulia.gamewish.theme.White
 import com.dirzaaulia.gamewish.ui.common.CommonVerticalList
-import com.dirzaaulia.gamewish.ui.common.item.CommonMovieItem
+import com.dirzaaulia.gamewish.ui.common.item.CommonTmdbItem
 import com.dirzaaulia.gamewish.ui.search.SearchViewModel
 import com.dirzaaulia.gamewish.utils.PlaceholderConstant
 
@@ -119,7 +119,7 @@ fun SearchTvList(
             emptyString = emptyString,
             errorString = stringResource(id = R.string.search_tv_error),
         ) { movie ->
-            CommonMovieItem(
+            CommonTmdbItem(
                 movie = movie,
                 type = "TV Show",
                 navigateToDetails = navigateToTvDetails
@@ -159,7 +159,7 @@ fun SearchMovieList(
             emptyString = emptyString,
             errorString = stringResource(id = R.string.search_movie_error),
         ) { movie ->
-            CommonMovieItem(
+            CommonTmdbItem(
                 movie = movie,
                 type = "Movie",
                 navigateToDetails = navigateToMovieDetails

@@ -10,7 +10,7 @@ class NetworkConfig(
     moshi: Moshi,
     baseUrl: String
 ) {
-    val retrofit: Retrofit = Retrofit.Builder()
+    private val retrofit: Retrofit = Retrofit.Builder()
         .baseUrl(baseUrl)
         .client(client)
         .addConverterFactory(MoshiConverterFactory.create(moshi))

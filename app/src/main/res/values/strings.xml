@@ -18,7 +18,7 @@
     <string name="label_back">Back</string>
     <string name="link">Link</string>
     <string name="description">Description</string>
-    <string name="genres">Genre</string>
+    <string name="genres">Genres</string>
     <string name="publishers">Publishers</string>
     <string name="platforms">Platforms</string>
     <string name="seasonal_anime">Seasonal Anime</string>
@@ -227,8 +227,13 @@
     <string name="sort_anime">Sort Anime</string>
     <string name="sort_manga">Sort Manga</string>
     <string name="filter_movie">Filter Movie</string>
+    <string name="filter_tv">Filter TV Show</string>
     <string name="movie_name">Movie Name</string>
+    <string name="tv_name">TV Show Name</string>
     <string name="sort_movie">Sort Movie</string>
+    <string name="sort_tv">Sort TV</string>
     <string name="try_again">Try Again</string>
     <string name="google">Google</string>
+    <string name="season">Season</string>
+    <string name="year">Year</string>
 </resources>

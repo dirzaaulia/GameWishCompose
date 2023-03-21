@@ -12,16 +12,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
-import com.dirzaaulia.gamewish.data.model.rawg.Genre
-import com.dirzaaulia.gamewish.data.request.myanimelist.SearchGameRequest
+import com.dirzaaulia.gamewish.data.model.rawg.SearchTab
+import com.dirzaaulia.gamewish.data.model.rawg.SearchTab.Companion.toSearchGameRequest
 import com.dirzaaulia.gamewish.ui.search.SearchViewModel
 import com.dirzaaulia.gamewish.utils.NetworkImage
 import com.dirzaaulia.gamewish.utils.OtherConstant
 
 @Composable
-fun SearchGenreItem(
+fun SearchGameTabItem(
     modifier: Modifier = Modifier,
-    genre: Genre,
+    searchTab: SearchTab,
     viewModel: SearchViewModel? = null,
 ) {
     Surface(
@@ -29,37 +29,28 @@ fun SearchGenreItem(
             .fillMaxWidth()
             .clickable(
                 onClick = {
-                    genre.id?.let { id ->
-                        viewModel?.apply {
-                            selectSearchGameTab(OtherConstant.ZERO)
-                            setSearchGameRequest(
-                                SearchGameRequest(
-                                    searchQuery = OtherConstant.EMPTY_STRING,
-                                    genreId = id,
-                                    publisherId = null,
-                                    platformId = null
-                                )
-                            )
-                        }
+                    viewModel?.apply {
+                        selectSearchGameTab(OtherConstant.ZERO)
+                        setSearchGameRequest(searchTab.toSearchGameRequest(OtherConstant.EMPTY_STRING))
                     }
                 }
             ),
         elevation = 0.dp,
     ) {
         Column {
-            val url = genre.imageBackground?.ifBlank {
+            val url = searchTab.image.ifBlank {
                 OtherConstant.NO_IMAGE_URL
             }
 
             NetworkImage(
-                url = url.toString(),
+                url = url,
                 modifier = modifier
                     .fillMaxWidth()
                     .height(200.dp),
                 contentScale = ContentScale.FillBounds
             )
             Text(
-                text = genre.name.toString(),
+                text = searchTab.name,
                 style = MaterialTheme.typography.h5,
                 modifier = Modifier
                     .fillMaxWidth()

@@ -16,14 +16,4 @@ data class MovieWishlist(
     val image: String? = null,
     val status: String? = null,
     var type: String? = null,
-) : Parcelable {
-    companion object {
-        fun mock() = MovieWishlist(
-            24428,
-            "The Avengers",
-            "https://image.tmdb.org/t/p/original/nNmJRkg8wWnRmzQDe2FwKbPIsJV.jpg",
-            "Plan To Watch",
-            "Movie"
-        )
-    }
-}
+) : Parcelable
