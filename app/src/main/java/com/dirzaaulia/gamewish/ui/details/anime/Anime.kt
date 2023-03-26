@@ -77,6 +77,7 @@ fun AnimeDetails(
         dataResult.isSucceeded -> {
             Scaffold(
                 modifier = Modifier.navigationBarsPadding(),
+                backgroundColor = MaterialTheme.colors.primarySurface,
                 topBar = {
                     data?.title?.let { title: String ->
                         AnimeDetailsTopBar(
@@ -689,12 +690,14 @@ fun AnimeDetailsTopBar(
         elevation = 0.dp,
         contentColor = White,
         modifier = Modifier
-            .height(80.dp)
+            .wrapContentHeight()
             .statusBarsPadding()
     ) {
         Row(
             horizontalArrangement = Arrangement.Start,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .wrapContentHeight()
+                .fillMaxWidth()
         ) {
             IconButton(
                 modifier = Modifier.align(Alignment.CenterVertically),
@@ -702,15 +705,14 @@ fun AnimeDetailsTopBar(
             ) {
                 Icon(
                     imageVector = Icons.Filled.ArrowBack,
-                    contentDescription = null,
+                    contentDescription = OtherConstant.EMPTY_STRING,
                     tint = White
                 )
             }
             Text(
-                maxLines = OtherConstant.TWO,
-                softWrap = true,
                 modifier = Modifier.align(Alignment.CenterVertically),
                 text = title,
+                softWrap = true,
                 style = MaterialTheme.typography.h6,
                 color = White
             )

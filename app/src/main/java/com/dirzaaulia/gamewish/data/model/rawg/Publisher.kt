@@ -21,7 +21,7 @@ data class Publisher(
     companion object {
         fun Publisher.toSearchTab() = SearchTab(
             id = id.replaceIfNull(),
-            type = SearchTabType.GENRE,
+            type = SearchTabType.PUBLISHER,
             image = imageBackground.replaceIfNull(),
             name = name.replaceIfNull()
         )

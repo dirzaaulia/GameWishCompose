@@ -94,8 +94,9 @@ fun Search(
         }
     }
 
-    LaunchedEffect(menuId) {
-        viewModel.selectBottomNavMenu(menuId)
+    LaunchedEffect(viewModel) {
+        val setMenuValue = if (searchMenuId != OtherConstant.MINUS_ONE) searchMenuId else menuId
+        viewModel.selectBottomNavMenu(setMenuValue)
     }
 
     Scaffold(

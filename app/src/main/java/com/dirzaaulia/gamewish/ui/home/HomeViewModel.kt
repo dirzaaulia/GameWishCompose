@@ -8,7 +8,6 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import com.dirzaaulia.gamewish.utils.ResponseResult
 import com.dirzaaulia.gamewish.data.model.cheapshark.Deals
 import com.dirzaaulia.gamewish.data.model.myanimelist.ParentNode
 import com.dirzaaulia.gamewish.data.model.myanimelist.ServiceCode
@@ -20,28 +19,12 @@ import com.dirzaaulia.gamewish.data.request.cheapshark.DealsRequest
 import com.dirzaaulia.gamewish.data.response.myanimelist.MyAnimeListTokenResponse
 import com.dirzaaulia.gamewish.network.cheapshark.paging.CheapSharkPagingSource
 import com.dirzaaulia.gamewish.network.myanimelist.paging.MyAnimeListPagingSource
-import com.dirzaaulia.gamewish.repository.CheapSharkRepository
-import com.dirzaaulia.gamewish.repository.DatabaseRepository
-import com.dirzaaulia.gamewish.repository.FirebaseRepository
-import com.dirzaaulia.gamewish.repository.MyAnimeListRepository
-import com.dirzaaulia.gamewish.repository.ProtoRepository
-import com.dirzaaulia.gamewish.utils.CheapSharkConstant
-import com.dirzaaulia.gamewish.utils.FirebaseState
-import com.dirzaaulia.gamewish.utils.MyAnimeListConstant
-import com.dirzaaulia.gamewish.utils.OtherConstant
-import com.dirzaaulia.gamewish.utils.checkContain
-import com.dirzaaulia.gamewish.utils.error
-import com.dirzaaulia.gamewish.utils.success
+import com.dirzaaulia.gamewish.repository.*
+import com.dirzaaulia.gamewish.utils.*
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -103,7 +86,6 @@ class HomeViewModel @Inject constructor(
     val listWishlist = gameQuery
         .flatMapLatest { query ->
             gameStatus.flatMapLatest { status ->
-                delay(5000)
                 databaseRepository.getGameFilteredWishlist(query, status)
             }
         }.cachedIn(viewModelScope)
@@ -116,8 +98,8 @@ class HomeViewModel @Inject constructor(
                     cheapSharkRepository,
                     request
                 )
-            }.flow.cachedIn(viewModelScope)
-        }
+            }.flow
+        }.cachedIn(viewModelScope)
 
     val animeStatus = MutableStateFlow(OtherConstant.EMPTY_STRING)
     val animeList: Flow<PagingData<ParentNode>> = _token
@@ -132,9 +114,9 @@ class HomeViewModel @Inject constructor(
                         seasonalQuery = OtherConstant.EMPTY_STRING,
                         searchQuery = OtherConstant.EMPTY_STRING
                     )
-                }.flow.cachedIn(viewModelScope)
+                }.flow
             }
-        }
+        }.cachedIn(viewModelScope)
 
     val mangaStatus = MutableStateFlow(OtherConstant.EMPTY_STRING)
     val mangaList: Flow<PagingData<ParentNode>> = _token
@@ -149,9 +131,9 @@ class HomeViewModel @Inject constructor(
                         seasonalQuery = OtherConstant.EMPTY_STRING,
                         searchQuery = OtherConstant.EMPTY_STRING
                     )
-                }.flow.cachedIn(viewModelScope)
+                }.flow
             }
-        }
+        }.cachedIn(viewModelScope)
 
     val movieQuery = MutableStateFlow(OtherConstant.EMPTY_STRING)
     val movieStatus = MutableStateFlow(OtherConstant.EMPTY_STRING)

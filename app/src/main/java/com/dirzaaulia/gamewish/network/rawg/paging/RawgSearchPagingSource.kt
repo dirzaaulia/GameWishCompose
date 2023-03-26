@@ -7,6 +7,7 @@ import com.dirzaaulia.gamewish.utils.pagingSucceeded
 import com.dirzaaulia.gamewish.repository.RawgRepository
 import com.dirzaaulia.gamewish.utils.OtherConstant
 import com.dirzaaulia.gamewish.utils.replaceIfNull
+import timber.log.Timber
 
 class RawgSearchPagingSource(
     private val repository: RawgRepository,
@@ -25,6 +26,7 @@ class RawgSearchPagingSource(
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Games> {
         val page = params.key.replaceIfNull(OtherConstant.ONE)
+        Timber.d("HAYDEN TAG | Genre : %d, Publisher : %d, Platform : %d", genreId, publisherId, platformId)
 
         return when {
             genreId != null -> {

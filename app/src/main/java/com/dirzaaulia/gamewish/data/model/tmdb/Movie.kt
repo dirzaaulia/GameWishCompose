@@ -10,7 +10,7 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class Movie (
     @Json(name = "backdrop_path")
-    val backdropPath: String = OtherConstant.EMPTY_STRING,
+    val backdropPath: String? = OtherConstant.EMPTY_STRING,
     @Json(name = "genre_ids")
     val genreIdList: List<Long> = emptyList(),
     val id: Long = 0L,
@@ -20,7 +20,7 @@ data class Movie (
     val name: String = OtherConstant.EMPTY_STRING,
     val overview: String = OtherConstant.EMPTY_STRING,
     @Json(name = "poster_path")
-    val posterPath: String = OtherConstant.EMPTY_STRING,
+    val posterPath: String? = OtherConstant.EMPTY_STRING,
     @Json(name = "release_date")
     val releaseDate: String = OtherConstant.EMPTY_STRING,
 ) : Parcelable

@@ -17,16 +17,16 @@ plugins {
 android {
     signingConfigs {
         getByName("debug") {
-//            storeFile = file("D:\\AndroidStudio\\Keystore\\keystore.jks")
-//            storePassword = AppConfig.KeyStore.password
-//            keyAlias = AppConfig.KeyStore.alias
-//            keyPassword = AppConfig.KeyStore.password
+            storeFile = file("D:\\AndroidStudio\\Keystore\\keystore.jks")
+            storePassword = AppConfig.KeyStore.password
+            keyAlias = AppConfig.KeyStore.alias
+            keyPassword = AppConfig.KeyStore.password
         }
         create("release") {
-//            storeFile = file("D:\\AndroidStudio\\Keystore\\keystore.jks")
-//            storePassword = AppConfig.KeyStore.password
-//            keyAlias = AppConfig.KeyStore.alias
-//            keyPassword = AppConfig.KeyStore.password
+            storeFile = file("D:\\AndroidStudio\\Keystore\\keystore.jks")
+            storePassword = AppConfig.KeyStore.password
+            keyAlias = AppConfig.KeyStore.alias
+            keyPassword = AppConfig.KeyStore.password
         }
     }
 

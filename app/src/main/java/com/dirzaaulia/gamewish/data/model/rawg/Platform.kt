@@ -22,7 +22,7 @@ data class Platform(
     companion object {
         fun Platform.toSearchTab() = SearchTab(
             id = id.replaceIfNull(),
-            type = SearchTabType.GENRE,
+            type = SearchTabType.PLATFORM,
             image = imageBackground.replaceIfNull(),
             name = name.replaceIfNull()
         )

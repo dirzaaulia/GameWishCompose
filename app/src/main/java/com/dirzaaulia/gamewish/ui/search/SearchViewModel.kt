@@ -40,7 +40,7 @@ class SearchViewModel @Inject constructor(
 
     private val userPreferencesFlow = protoRepository.userPreferencesFlow
 
-    private val _selectedBottomNav: MutableStateFlow<Int> = MutableStateFlow(OtherConstant.ZERO)
+    private val _selectedBottomNav: MutableStateFlow<Int> = MutableStateFlow(OtherConstant.MINUS_ONE)
     val selectedBottomNav = _selectedBottomNav.asStateFlow()
 
     private val _selectedSearchGameTab: MutableStateFlow<Int> = MutableStateFlow(OtherConstant.ZERO)
@@ -83,7 +83,6 @@ class SearchViewModel @Inject constructor(
     }.flow.cachedIn(viewModelScope)
 
     val searchGameRequest = MutableStateFlow(SearchGameRequest.default())
-
     val searchGameList = searchGameRequest.flatMapLatest { request ->
         Pager(PagingConfig(pageSize = RawgConstant.RAWG_PAGE_SIZE_FIFTY)) {
             RawgSearchPagingSource(
@@ -93,8 +92,8 @@ class SearchViewModel @Inject constructor(
                 publisherId = request.publisherId,
                 platformId = request.platformId
             )
-        }.flow.cachedIn(viewModelScope)
-    }
+        }.flow
+    }.cachedIn(viewModelScope)
 
     val searchAnimeQuery = MutableStateFlow(OtherConstant.EMPTY_STRING)
     val searchAnimeList = _token
@@ -109,9 +108,9 @@ class SearchViewModel @Inject constructor(
                         seasonalQuery = OtherConstant.EMPTY_STRING,
                         searchQuery = query
                     )
-                }.flow.cachedIn(viewModelScope)
+                }.flow
             }
-        }
+        }.cachedIn(viewModelScope)
     val searchMangaList = _token
         .flatMapLatest { token ->
             searchAnimeQuery.flatMapLatest { query ->
@@ -124,9 +123,9 @@ class SearchViewModel @Inject constructor(
                         seasonalQuery = OtherConstant.EMPTY_STRING,
                         searchQuery = query
                     )
-                }.flow.cachedIn(viewModelScope)
+                }.flow
             }
-        }
+        }.cachedIn(viewModelScope)
 
     val seasonalAnimeQuery = MutableStateFlow(getAnimeSeason())
     val seasonalAnimeList = _token
@@ -141,9 +140,9 @@ class SearchViewModel @Inject constructor(
                         seasonalQuery = query,
                         searchQuery = OtherConstant.EMPTY_STRING
                     )
-                }.flow.cachedIn(viewModelScope)
+                }.flow
             }
-        }
+        }.cachedIn(viewModelScope)
 
     val searchMovieQuery = MutableStateFlow(OtherConstant.EMPTY_STRING)
     val searchMovieList = searchMovieQuery.flatMapLatest { query ->

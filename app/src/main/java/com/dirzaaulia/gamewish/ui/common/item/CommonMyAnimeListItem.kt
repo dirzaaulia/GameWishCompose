@@ -83,26 +83,29 @@ fun CommonMyAnimeListItem(
                     .weight(1f),
                 verticalArrangement = Arrangement.Center
             ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .align(Alignment.End),
-                    horizontalArrangement = Arrangement.End,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Star,
-                        contentDescription = OtherConstant.EMPTY_STRING
-                    )
-                    Text(
-                        text = parentNode.listStatus?.score.toString(),
-                        style = MaterialTheme.typography.caption
-                    )
+                parentNode.listStatus?.score?.let { score ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .align(Alignment.End),
+                        horizontalArrangement = Arrangement.End,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Star,
+                            contentDescription = OtherConstant.EMPTY_STRING
+                        )
+                        Text(
+                            text = score.toString(),
+                            style = MaterialTheme.typography.caption
+                        )
+                    }
                 }
                 val status = parentNode.listStatus?.status.myAnimeListStatusFormatted(
                     MyAnimeListConstant.MYANIMELIST_STATUS_ALL
                 )
                 Text(
+                    modifier = Modifier.visible(status != MyAnimeListConstant.MYANIMELIST_STATUS_ALL),
                     text = status,
                     style = MaterialTheme.typography.caption
                 )

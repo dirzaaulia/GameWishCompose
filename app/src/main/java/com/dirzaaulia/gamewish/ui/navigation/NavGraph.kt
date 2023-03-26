@@ -1,10 +1,8 @@
 package com.dirzaaulia.gamewish.ui.navigation
 
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.expandIn
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkOut
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -73,12 +71,6 @@ fun NavGraph(
             arguments = listOf(navArgument(NavScreen.GameDetails.argument0) {
                 type = NavType.LongType
             }),
-            enterTransition = {
-                expandIn(animationSpec = tween(700))
-            },
-            exitTransition = {
-                shrinkOut(animationSpec = tween(700))
-            }
         ) { backStackEntry ->
             backStackEntry.arguments.let { bundle ->
                 bundle?.let { argument ->
@@ -99,13 +91,7 @@ fun NavGraph(
                 navArgument(NavScreen.AnimeDetails.argument1) {
                     type = NavType.StringType
                 }
-            ),
-            enterTransition = {
-                expandIn(animationSpec = tween(700))
-            },
-            exitTransition = {
-                shrinkOut(animationSpec = tween(700))
-            }
+            )
         ) { backStackEntry ->
             backStackEntry.arguments.let { bundle ->
                 bundle?.let { argument ->
@@ -131,12 +117,6 @@ fun NavGraph(
                     type = NavType.StringType
                 }
             ),
-            enterTransition = {
-                expandIn(animationSpec = tween(700))
-            },
-            exitTransition = {
-                shrinkOut(animationSpec = tween(700))
-            }
         ) { backStackEntry ->
             backStackEntry.arguments.let { bundle ->
                 bundle?.let { argument ->

@@ -63,50 +63,6 @@ fun SearchGame(
         modifier = modifier,
         backgroundColor = MaterialTheme.colors.primarySurface,
         scaffoldState = scaffoldState,
-        content = {
-            Scaffold(
-                topBar = { SearchGameTabMenu(menu = menu, menuId = menuId, viewModel = viewModel) }
-            ) {
-                Crossfade(
-                    targetState = SearchGameTab.getTabFromResource(menuId),
-                    label = OtherConstant.EMPTY_STRING
-                ) { destination ->
-                    when (destination) {
-                        SearchGameTab.LIST -> {
-                            SearchGameList(
-                                navigateToGameDetails = navigateToGameDetails,
-                                data = searchGameList,
-                                lazyListStateSearchGames = lazyListStateSearchGames,
-                            )
-                        }
-                        SearchGameTab.GENRES -> {
-                            SearchGameTabList(
-                                data = genre,
-                                type = SearchTabType.GENRE,
-                                lazyListState = lazyListStateGenre,
-                                viewModel = viewModel,
-                            )
-                        }
-                        SearchGameTab.PUBLISHER -> {
-                            SearchGameTabList(
-                                data = publisher,
-                                type = SearchTabType.PUBLISHER,
-                                lazyListState = lazyListStatePublisher,
-                                viewModel = viewModel,
-                            )
-                        }
-                        SearchGameTab.PLATFORMS -> {
-                            SearchGameTabList(
-                                data = platform,
-                                type = SearchTabType.PLATFORM,
-                                lazyListState = lazyListStatePlatform,
-                                viewModel = viewModel,
-                            )
-                        }
-                    }
-                }
-            }
-        },
         topBar =  {
             SearchGameAppBar(
                 searchQuery = searchGameRequest.searchQuery,
@@ -114,7 +70,50 @@ fun SearchGame(
                 upPress = upPress
             )
         }
-    )
+    ) {
+        Scaffold(
+            topBar = { SearchGameTabMenu(menu = menu, menuId = menuId, viewModel = viewModel) }
+        ) {
+            Crossfade(
+                targetState = SearchGameTab.getTabFromResource(menuId),
+                label = OtherConstant.EMPTY_STRING
+            ) { destination ->
+                when (destination) {
+                    SearchGameTab.LIST -> {
+                        SearchGameList(
+                            navigateToGameDetails = navigateToGameDetails,
+                            data = searchGameList,
+                            lazyListStateSearchGames = lazyListStateSearchGames,
+                        )
+                    }
+                    SearchGameTab.GENRES -> {
+                        SearchGameTabList(
+                            data = genre,
+                            type = SearchTabType.GENRE,
+                            lazyListState = lazyListStateGenre,
+                            viewModel = viewModel,
+                        )
+                    }
+                    SearchGameTab.PUBLISHER -> {
+                        SearchGameTabList(
+                            data = publisher,
+                            type = SearchTabType.PUBLISHER,
+                            lazyListState = lazyListStatePublisher,
+                            viewModel = viewModel,
+                        )
+                    }
+                    SearchGameTab.PLATFORMS -> {
+                        SearchGameTabList(
+                            data = platform,
+                            type = SearchTabType.PLATFORM,
+                            lazyListState = lazyListStatePlatform,
+                            viewModel = viewModel,
+                        )
+                    }
+                }
+            }
+        }
+    }
 }
 
 @Composable
@@ -194,8 +193,7 @@ fun SearchGameAppBar(
     ) {
         Row(
             horizontalArrangement = Arrangement.Start,
-            modifier = Modifier
-                .fillMaxWidth()
+            modifier = Modifier.fillMaxWidth()
         ) {
             IconButton(
                 modifier = Modifier.align(Alignment.CenterVertically),
@@ -203,7 +201,7 @@ fun SearchGameAppBar(
             ) {
                 Icon(
                     imageVector = Icons.Filled.ArrowBack,
-                    contentDescription = null,
+                    contentDescription = OtherConstant.EMPTY_STRING,
                     tint = White
                 )
             }
@@ -238,7 +236,7 @@ fun SearchGameAppBar(
                     onDone = {
                         localFocusManager.clearFocus()
                         viewModel.apply {
-                            selectSearchGameTab(0)
+                            selectSearchGameTab(OtherConstant.ZERO)
                             setSearchGameRequest(
                                 SearchGameRequest(query, null, null, null)
                             )

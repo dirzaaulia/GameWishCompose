@@ -31,24 +31,14 @@ import androidx.compose.ui.unit.toSize
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import com.dirzaaulia.gamewish.R
-import com.dirzaaulia.gamewish.utils.ResponseResult
 import com.dirzaaulia.gamewish.data.model.myanimelist.ParentNode
-import com.dirzaaulia.gamewish.data.request.myanimelist.SearchGameRequest
-import com.dirzaaulia.gamewish.utils.isError
-import com.dirzaaulia.gamewish.utils.isSucceeded
 import com.dirzaaulia.gamewish.theme.White
 import com.dirzaaulia.gamewish.ui.common.CommonVerticalList
 import com.dirzaaulia.gamewish.ui.common.MyAnimeListWebViewClient
 import com.dirzaaulia.gamewish.ui.common.item.CommonMyAnimeListItem
 import com.dirzaaulia.gamewish.ui.home.HomeViewModel
 import com.dirzaaulia.gamewish.ui.search.SearchViewModel
-import com.dirzaaulia.gamewish.utils.MyAnimeListConstant
-import com.dirzaaulia.gamewish.utils.OtherConstant
-import com.dirzaaulia.gamewish.utils.PlaceholderConstant
-import com.dirzaaulia.gamewish.utils.capitalizeWords
-import com.google.accompanist.placeholder.PlaceholderHighlight
-import com.google.accompanist.placeholder.material.shimmer
-import com.google.accompanist.placeholder.placeholder
+import com.dirzaaulia.gamewish.utils.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -119,7 +109,6 @@ fun SearchAnime(
                                     navigateToAnimeDetails = navigateToAnimeDetails
                                 )
                             }
-
                             SearchAnimeTab.ANIME -> {
                                 SearchAnimeList(
                                     data = searchAnimeList,
@@ -128,7 +117,6 @@ fun SearchAnime(
                                     searchAnimeQuery = searchAnimeQuery
                                 )
                             }
-
                             SearchAnimeTab.MANGA -> {
                                 SearchMangaList(
                                     data = searchMangaList,
@@ -140,7 +128,6 @@ fun SearchAnime(
                         }
                     }
                 }
-
             }
         }
 
@@ -275,13 +262,7 @@ fun SeasonalAnime(
             }
         }
         Text(
-            modifier = Modifier
-                .placeholder(
-                    visible = data.loadState.refresh is LoadState.Loading,
-                    highlight = PlaceholderHighlight.shimmer(),
-                    color = MaterialTheme.colors.secondary,
-                    shape = MaterialTheme.shapes.small
-                ),
+            modifier = Modifier.visible(visibility = data.loadState.refresh is LoadState.NotLoading),
             text = stringResource(id = R.string.seasonal_data_source),
             style = MaterialTheme.typography.caption,
         )
@@ -363,7 +344,7 @@ fun SeasonalAnimeSheet(
 
                         viewModel.setSearchSeasonalQuery(
                             String.format(
-                                OtherConstant.STRING_FORMAT_S_S,
+                                OtherConstant.STRING_FORMAT_S_SPACE_S,
                                 seasonText.lowercase(),
                                 year
                             )
@@ -380,7 +361,7 @@ fun SeasonalAnimeSheet(
                 year = it
                 viewModel.setSearchSeasonalQuery(
                     String.format(
-                        OtherConstant.STRING_FORMAT_S_S,
+                        OtherConstant.STRING_FORMAT_S_SPACE_S,
                         seasonText.lowercase(),
                         year
                     )
@@ -459,9 +440,7 @@ fun SearchAnimeAppBar(
                 keyboardActions = KeyboardActions(
                     onDone = {
                         localFocusManager.clearFocus()
-                        viewModel.setSearchGameRequest(
-                            SearchGameRequest(query, null, null, null)
-                        )
+                        viewModel.setSearchAnimeQuery(query)
                     }
                 )
             )

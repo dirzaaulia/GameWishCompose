@@ -48,13 +48,13 @@ fun <T : Any> CommonVerticalList(
 
         data.loadState.refresh is LoadState.Error -> {
             val error = data.loadState.refresh as LoadState.Error
-            val errorMessage = error.error.message.replaceIfNull()
+            val errorMessage = error.error.message.replaceIfNull(errorString)
             if (errorMessage.contains(
                     other = MyAnimeListConstant.MYANIMELIST_HTTP_401_ERROR,
                     ignoreCase = true
                 )
             ) doWhenMyAnimeListError.invoke()
-            else ErrorConnect(text = errorString) { data.retry() }
+            else ErrorConnect(text = errorMessage) { data.retry() }
         }
 
         data.itemCount != OtherConstant.ZERO

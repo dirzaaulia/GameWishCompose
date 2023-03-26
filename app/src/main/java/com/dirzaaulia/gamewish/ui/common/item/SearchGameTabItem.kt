@@ -17,6 +17,7 @@ import com.dirzaaulia.gamewish.data.model.rawg.SearchTab.Companion.toSearchGameR
 import com.dirzaaulia.gamewish.ui.search.SearchViewModel
 import com.dirzaaulia.gamewish.utils.NetworkImage
 import com.dirzaaulia.gamewish.utils.OtherConstant
+import timber.log.Timber
 
 @Composable
 fun SearchGameTabItem(
@@ -32,6 +33,7 @@ fun SearchGameTabItem(
                     viewModel?.apply {
                         selectSearchGameTab(OtherConstant.ZERO)
                         setSearchGameRequest(searchTab.toSearchGameRequest(OtherConstant.EMPTY_STRING))
+                        Timber.d("HAYDEN TAG | REQUEST : %s", searchTab.toSearchGameRequest(OtherConstant.EMPTY_STRING).toString())
                     }
                 }
             ),
