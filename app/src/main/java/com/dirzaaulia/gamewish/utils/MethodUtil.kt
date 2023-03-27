@@ -10,10 +10,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.core.content.ContextCompat.startActivity
 import com.dirzaaulia.gamewish.data.model.rawg.Platforms
 import com.dirzaaulia.gamewish.data.model.rawg.Stores
-import com.dirzaaulia.gamewish.theme.Green700
-import com.dirzaaulia.gamewish.theme.Grey700
-import com.dirzaaulia.gamewish.theme.LightBlue700
-import com.dirzaaulia.gamewish.theme.Red700
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
@@ -97,21 +93,21 @@ fun setPlatformsBackgroundColor(data: Any, code: Int): Color {
         return when {
             name?.contains(PlatformsConstant.XBOX) == true
                     || name?.contains(PlatformsConstant.ANDROID) == true -> {
-                Green700
+                Color.Green
             }
 
             name?.contains(PlatformsConstant.PLAYSTATION) == true
                     || name?.contains(PlatformsConstant.PS) == true -> {
-                LightBlue700
+                Color.Blue
             }
 
             name?.contains(PlatformsConstant.NINTENDO) == true
                     || name?.contains(PlatformsConstant.WII) == true
                     || name?.contains(PlatformsConstant.NES) == true -> {
-                Red700
+                Color.Red
             }
 
-            else -> Grey700
+            else -> Color.Gray
         }
     } else {
         val stores = data as Stores
@@ -119,16 +115,16 @@ fun setPlatformsBackgroundColor(data: Any, code: Int): Color {
 
         return when {
             name?.contains(PlatformsConstant.XBOX) == true
-                    || name?.contains(PlatformsConstant.ANDROID) == true -> Green700
+                    || name?.contains(PlatformsConstant.ANDROID) == true -> Color.Green
 
             name?.contains(PlatformsConstant.PLAYSTATION) == true
-                    || name?.contains(PlatformsConstant.PS) == true -> LightBlue700
+                    || name?.contains(PlatformsConstant.PS) == true -> Color.Blue
 
             name?.contains(PlatformsConstant.NINTENDO) == true
                     || name?.contains(PlatformsConstant.WII) == true
-                    || name?.contains(PlatformsConstant.NES) == true -> Red700
+                    || name?.contains(PlatformsConstant.NES) == true -> Color.Red
 
-            else -> Grey700
+            else -> Color.Gray
         }
     }
 }

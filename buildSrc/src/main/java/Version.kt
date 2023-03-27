@@ -15,6 +15,7 @@ object Version {
     const val composeAnimation = "1.3.3"
     const val composeFoundation = "1.3.1"
     const val composeMaterial = "1.3.1"
+    const val composeMaterial3 = "1.1.0-beta01"
     const val composeRuntime = "1.3.3"
     const val composeUi = "1.3.3"
     const val constraintLayoutCompose = "1.0.1"

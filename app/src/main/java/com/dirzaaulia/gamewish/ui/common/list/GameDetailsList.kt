@@ -1,16 +1,17 @@
 package com.dirzaaulia.gamewish.ui.common.list
 
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Card
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.dirzaaulia.gamewish.data.model.rawg.Platforms
 import com.dirzaaulia.gamewish.data.model.rawg.Stores
-import com.dirzaaulia.gamewish.theme.White
 import com.dirzaaulia.gamewish.utils.setPlatformsBackgroundColor
 import com.google.accompanist.flowlayout.FlowRow
 
@@ -34,16 +35,16 @@ fun GameDetailsItemPlatforms(
     code: Int
 ) {
     Card(
-        backgroundColor = setPlatformsBackgroundColor(data, code),
-        shape = MaterialTheme.shapes.small,
-        modifier = Modifier
-            .padding(4.dp)
+        modifier = Modifier.padding(4.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = setPlatformsBackgroundColor(data, code)
+        ),
     ) {
         data.platform?.name?.let {
             Text(
                 text = it,
                 color = White,
-                style = MaterialTheme.typography.subtitle1,
+                style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier.padding(vertical = 4.dp, horizontal = 12.dp),
                 textAlign = TextAlign.Center
             )
@@ -71,16 +72,16 @@ fun GameDetailsItemStores(
     code: Int
 ) {
     Card(
-        backgroundColor = setPlatformsBackgroundColor(data, code),
-        shape = MaterialTheme.shapes.small,
-        modifier = Modifier
-            .padding(4.dp)
+        modifier = Modifier.padding(4.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = setPlatformsBackgroundColor(data, code)
+        ),
     ) {
         data.store?.name?.let {
             Text(
                 text = it,
                 color = White,
-                style = MaterialTheme.typography.subtitle1,
+                style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier.padding(vertical = 4.dp, horizontal = 12.dp),
                 textAlign = TextAlign.Center
             )

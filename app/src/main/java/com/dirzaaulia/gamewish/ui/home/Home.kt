@@ -3,17 +3,16 @@ package com.dirzaaulia.gamewish.ui.home
 import HomeBottomBar
 import HomeBottomNavMenu
 import androidx.compose.animation.Crossfade
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
-import androidx.compose.material.primarySurface
-import androidx.compose.material.rememberScaffoldState
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -47,11 +46,10 @@ fun Home(
     val myAnimeListTokenResponse by viewModel.myAnimeListTokenResult.collectAsState()
     val errorMessage by viewModel.errorMessage.collectAsState()
     val scope = rememberCoroutineScope()
-    val scaffoldState = rememberScaffoldState()
+    val snackbarHostState = remember { SnackbarHostState() }
 
     Scaffold(
-        modifier = Modifier.navigationBarsPadding(),
-        backgroundColor = MaterialTheme.colors.primarySurface,
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         bottomBar = {
             HomeBottomBar(menu = menu, menuId = menuId, viewModel = viewModel)
         },
@@ -64,17 +62,15 @@ fun Home(
                 myAnimeListTokenResponse.isError -> {
                     LaunchedEffect(myAnimeListTokenResponse.isError) {
                         scope.launch {
-                            scaffoldState.snackbarHostState.showSnackbar(errorMessage)
+                            snackbarHostState.showSnackbar(errorMessage)
                         }
                     }
                 }
             }
-
-            val innerModifier = Modifier.padding(innerPadding)
             when (destination) {
                 HomeBottomNavMenu.WISHLIST -> {
                     Wishlist(
-                        modifier = innerModifier,
+                        modifier = Modifier.padding(innerPadding),
                         viewModel = viewModel,
                         myAnimeListUser = myAnimeListUser,
                         navigateToGameDetails = navigateToGameDetails,
@@ -85,7 +81,6 @@ fun Home(
                 }
                 HomeBottomNavMenu.DEALS -> Deals(
                     viewModel = viewModel,
-                    modifier = innerModifier,
                     lazyListState = lazyListStateDeals,
                     data = lazyDeals
                 )
@@ -96,7 +91,6 @@ fun Home(
                     myAnimeListUserResult = myAnimeListUserResult,
                     myAnimeListUser = myAnimeListUser,
                     navigateToMyAnimeListLogin = navigateToMyAnimeListLogin,
-                    modifier = innerModifier,
                 )
             }
         }

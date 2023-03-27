@@ -4,10 +4,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Divider
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material3.Divider
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -28,7 +28,6 @@ fun SearchGamesItem(
             .clickable(
                 onClick = { games.id?.let { navigateToGameDetails(it) } }
             ),
-        elevation = 0.dp,
     ) {
         Column(modifier = modifier.padding(top = 4.dp)) {
             Text(
@@ -38,14 +37,14 @@ fun SearchGamesItem(
                     OtherConstant.COLON,
                     games.released?.changeDateFormat(OtherConstant.DATE_FORMAT_STRIP_yyyy_MM_dd)
                 ),
-                style = MaterialTheme.typography.caption,
+                style = MaterialTheme.typography.labelSmall,
                 modifier = Modifier
                     .padding(horizontal = 8.dp)
                     .fillMaxWidth()
             )
             Text(
                 text = games.name.toString(),
-                style = MaterialTheme.typography.h6,
+                style = MaterialTheme.typography.headlineLarge,
                 modifier = Modifier
                     .padding(start = 8.dp, end = 4.dp, top = 4.dp)
                     .fillMaxWidth()

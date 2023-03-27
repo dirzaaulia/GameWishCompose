@@ -53,8 +53,6 @@ class DetailsViewModel @Inject constructor(
 
     private val userPreferencesFlow = protoRepository.userPreferencesFlow
 
-    val loading = mutableStateOf(true)
-
     val gameWishlistedData = mutableStateOf<GameWishlist?>(null)
     val movieWishlistedData = mutableStateOf<MovieWishlist?>(null)
 
@@ -147,11 +145,6 @@ class DetailsViewModel @Inject constructor(
     @MainThread
     fun selectMovieDetailsTab(tab: Int) {
         _selectedMovieTab.value = tab
-    }
-
-    @MainThread
-    fun setLoading(status: Boolean) {
-        loading.value = status
     }
 
     @MainThread
@@ -250,7 +243,6 @@ class DetailsViewModel @Inject constructor(
                     _movieDetails.value = data
                 }
                 _movieDetailsResult.value = it
-                loading.value = false
             }
             .launchIn(viewModelScope)
     }
@@ -262,7 +254,6 @@ class DetailsViewModel @Inject constructor(
                     _movieDetails.value = data
                 }
                 _movieDetailsResult.value = it
-                loading.value = false
             }
             .launchIn(viewModelScope)
     }
@@ -294,7 +285,6 @@ class DetailsViewModel @Inject constructor(
                     _gameDetails.value = data
                 }
                 _gameDetailsResult.value = it
-                loading.value = false
             }
             .launchIn(viewModelScope)
     }
@@ -316,7 +306,6 @@ class DetailsViewModel @Inject constructor(
                     _animeDetails.value = data
                 }
                 _animeDetailsResult.value = it
-                loading.value = false
             }
             .launchIn(viewModelScope)
     }
@@ -328,7 +317,6 @@ class DetailsViewModel @Inject constructor(
                     _animeDetails.value = data
                 }
                 _animeDetailsResult.value = it
-                loading.value = false
             }
             .launchIn(viewModelScope)
     }

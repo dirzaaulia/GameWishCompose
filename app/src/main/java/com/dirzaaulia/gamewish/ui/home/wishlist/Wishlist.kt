@@ -2,21 +2,23 @@ package com.dirzaaulia.gamewish.ui.home.wishlist
 
 import WishlistTab
 import WishlistTabMenu
-import android.annotation.SuppressLint
 import androidx.compose.animation.Crossfade
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.BottomSheetScaffold
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
-import androidx.compose.material.primarySurface
-import androidx.compose.material.rememberBottomSheetScaffoldState
+import androidx.compose.material3.BottomSheetScaffold
+import androidx.compose.material3.SheetState
+import androidx.compose.material3.SheetValue
+import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.paging.compose.LazyPagingItems
@@ -29,18 +31,19 @@ import com.dirzaaulia.gamewish.data.model.wishlist.GameWishlist
 import com.dirzaaulia.gamewish.data.model.wishlist.MovieWishlist
 import com.dirzaaulia.gamewish.data.model.wishlist.SearchMenu
 import com.dirzaaulia.gamewish.ui.home.HomeViewModel
-import com.dirzaaulia.gamewish.ui.home.wishlist.myanimelist.WishlistMyAnimeList
 import com.dirzaaulia.gamewish.ui.home.wishlist.game.WishlistGame
+import com.dirzaaulia.gamewish.ui.home.wishlist.myanimelist.WishlistMyAnimeList
 import com.dirzaaulia.gamewish.ui.home.wishlist.tmdb.WishlistTmdb
 import com.dirzaaulia.gamewish.utils.MyAnimeListConstant
 import com.dirzaaulia.gamewish.utils.OtherConstant
-import com.dirzaaulia.gamewish.utils.tmdbStatusFormatted
 import com.dirzaaulia.gamewish.utils.myAnimeListStatusFormatted
+import com.dirzaaulia.gamewish.utils.tmdbStatusFormatted
+import kotlinx.coroutines.launch
 
-@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun Wishlist(
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
     viewModel: HomeViewModel,
     myAnimeListUser: User,
     navigateToGameDetails: (Long) -> Unit,
@@ -59,7 +62,18 @@ fun Wishlist(
     val movieStatus by viewModel.movieStatus.collectAsState()
     val tvShowStatus by viewModel.tvShowStatus.collectAsState()
     val scope = rememberCoroutineScope()
-    val scaffoldState = rememberBottomSheetScaffoldState()
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val scaffoldState = rememberBottomSheetScaffoldState(
+        bottomSheetState = SheetState(
+            skipPartiallyExpanded = true,
+            confirmValueChange = { sheetValue ->
+                if (sheetValue == SheetValue.Hidden) {
+                    keyboardController?.hide()
+                }
+                true
+            }
+        )
+    )
     val lazyListStateGame = rememberLazyListState()
     val lazyListStateAnime = rememberLazyListState()
     val lazyListStateManga = rememberLazyListState()
@@ -79,52 +93,7 @@ fun Wishlist(
 
     BottomSheetScaffold(
         modifier = modifier,
-        backgroundColor = MaterialTheme.colors.primarySurface,
         scaffoldState = scaffoldState,
-        sheetShape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp),
-        sheetContent = {
-            Crossfade(
-                targetState = WishlistTab.getTabFromResource(menuId),
-                label = OtherConstant.EMPTY_STRING
-            ) { destination ->
-                when (destination) {
-                    WishlistTab.GAME -> FilterDialog(
-                        viewModel = viewModel,
-                        filterStatus = gameStatus,
-                        searchQuery = gameQuery,
-                        type = FilterDialogType.GAME
-                    )
-
-                    WishlistTab.ANIME -> FilterDialog(
-                        viewModel = viewModel,
-                        filterStatus = animeStatus,
-                        type = FilterDialogType.ANIME
-                    )
-
-                    WishlistTab.MANGA -> FilterDialog(
-                        viewModel = viewModel,
-                        filterStatus = mangaStatus,
-                        type = FilterDialogType.MANGA
-                    )
-
-                    WishlistTab.MOVIE -> FilterDialog(
-                        viewModel = viewModel,
-                        filterStatus = movieStatus,
-                        searchQuery = movieQuery,
-                        type = FilterDialogType.MOVIE
-                    )
-
-                    WishlistTab.TVSHOW -> FilterDialog(
-                        viewModel = viewModel,
-                        filterStatus = tvShowStatus,
-                        searchQuery = tvShowQuery,
-                        type = FilterDialogType.TV
-                    )
-                }
-            }
-
-        },
-        sheetPeekHeight = 0.dp,
         topBar = {
             Crossfade(
                 targetState = WishlistTab.getTabFromResource(menuId),
@@ -156,16 +125,51 @@ fun Wishlist(
                 )
             }
         },
-    ) {
-        Scaffold(
-            topBar = {
-                WishlistTabMenu(
-                    menu = menu,
-                    menuId = menuId,
-                    viewModel = viewModel
-                )
+        sheetContent = {
+            Crossfade(
+                targetState = WishlistTab.getTabFromResource(menuId),
+                label = OtherConstant.EMPTY_STRING
+            ) { destination ->
+                when (destination) {
+                    WishlistTab.GAME -> FilterDialog(
+                        viewModel = viewModel,
+                        filterStatus = gameStatus,
+                        searchQuery = gameQuery,
+                        type = FilterDialogType.GAME
+                    )
+                    WishlistTab.ANIME -> FilterDialog(
+                        viewModel = viewModel,
+                        filterStatus = animeStatus,
+                        type = FilterDialogType.ANIME
+                    )
+                    WishlistTab.MANGA -> FilterDialog(
+                        viewModel = viewModel,
+                        filterStatus = mangaStatus,
+                        type = FilterDialogType.MANGA
+                    )
+                    WishlistTab.MOVIE -> FilterDialog(
+                        viewModel = viewModel,
+                        filterStatus = movieStatus,
+                        searchQuery = movieQuery,
+                        type = FilterDialogType.MOVIE
+                    )
+                    WishlistTab.TVSHOW -> FilterDialog(
+                        viewModel = viewModel,
+                        filterStatus = tvShowStatus,
+                        searchQuery = tvShowQuery,
+                        type = FilterDialogType.TV
+                    )
+                }
             }
-        ) {
+        },
+        sheetPeekHeight = 0.dp,
+    ) { innerPadding ->
+        Column (modifier = Modifier.padding(innerPadding)) {
+            WishlistTabMenu(
+                menu = menu,
+                menuId = menuId,
+                viewModel = viewModel
+            )
             Crossfade(
                 targetState = WishlistTab.getTabFromResource(menuId),
                 label = OtherConstant.EMPTY_STRING
@@ -224,7 +228,7 @@ fun Wishlist(
                 }
                 LaunchedEffect(WishlistTab.getTabFromResource(menuId)) {
                     viewModel.selectWishlistTab(menuId)
-                    scaffoldState.bottomSheetState.collapse()
+                    scaffoldState.bottomSheetState.hide()
                 }
             }
         }

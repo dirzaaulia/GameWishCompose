@@ -8,9 +8,10 @@ import android.webkit.WebView
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.material.LinearProgressIndicator
-import androidx.compose.material.Scaffold
-import androidx.compose.material.rememberScaffoldState
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -29,7 +30,7 @@ import com.google.accompanist.web.rememberWebViewState
 import kotlinx.coroutines.launch
 import okhttp3.HttpUrl
 
-@SuppressLint("UnusedMaterialScaffoldPaddingParameter", "SetJavaScriptEnabled")
+@SuppressLint("SetJavaScriptEnabled", "UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun MyAnimeListWebViewClient(
     from: Int,
@@ -41,7 +42,7 @@ fun MyAnimeListWebViewClient(
     val progressShow = remember { mutableStateOf(false) }
 
     val scope = rememberCoroutineScope()
-    val scaffoldState = rememberScaffoldState()
+    val snackbarHostState = remember { SnackbarHostState() }
 
     var reload: () -> Unit = {}
 
@@ -117,7 +118,7 @@ fun MyAnimeListWebViewClient(
                             upPress()
                         } else if (error != null) {
                             scope.launch {
-                                scaffoldState.snackbarHostState.showSnackbar(error)
+                                snackbarHostState.showSnackbar(error)
                             }
                             view?.loadUrl(initialUrl.toString())
                         }
@@ -138,7 +139,8 @@ fun MyAnimeListWebViewClient(
     }
 
     Scaffold(
-        scaffoldState = scaffoldState,
+        modifier = modifier,
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
             LinearProgressIndicator(
                 modifier = Modifier
@@ -146,7 +148,6 @@ fun MyAnimeListWebViewClient(
                     .visible(progressShow.value)
             )
         },
-        modifier = modifier
     ) {
         if (errorState.value.isBlank()) {
             WebView(

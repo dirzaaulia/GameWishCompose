@@ -10,11 +10,13 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
@@ -28,7 +30,6 @@ import com.dirzaaulia.gamewish.data.model.rawg.SearchTab
 import com.dirzaaulia.gamewish.data.model.rawg.SearchTabType
 import com.dirzaaulia.gamewish.data.model.rawg.SearchTabType.Companion.setRawgDataSource
 import com.dirzaaulia.gamewish.data.request.myanimelist.SearchGameRequest
-import com.dirzaaulia.gamewish.theme.White
 import com.dirzaaulia.gamewish.ui.common.*
 import com.dirzaaulia.gamewish.ui.common.item.SearchGameTabItem
 import com.dirzaaulia.gamewish.ui.common.item.SearchGamesItem
@@ -37,14 +38,14 @@ import com.dirzaaulia.gamewish.utils.OtherConstant
 import com.dirzaaulia.gamewish.utils.PlaceholderConstant
 import com.dirzaaulia.gamewish.utils.visible
 
-@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun SearchGame(
     navigateToGameDetails: (Long) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: SearchViewModel,
     upPress: () -> Unit,
-    scaffoldState: ScaffoldState,
+    snackbarHostState: SnackbarHostState,
     lazyListStateSearchGames: LazyListState,
     lazyListStateGenre: LazyListState,
     lazyListStatePublisher: LazyListState,
@@ -61,9 +62,9 @@ fun SearchGame(
 
     Scaffold(
         modifier = modifier,
-        backgroundColor = MaterialTheme.colors.primarySurface,
-        scaffoldState = scaffoldState,
-        topBar =  {
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
+        containerColor = MaterialTheme.colorScheme.surface,
+        topBar = {
             SearchGameAppBar(
                 searchQuery = searchGameRequest.searchQuery,
                 viewModel = viewModel,
@@ -128,7 +129,7 @@ fun SearchGameList(
                 .padding(4.dp)
                 .visible(data.loadState.refresh is LoadState.NotLoading),
             text = stringResource(id = R.string.games_data_source),
-            style = MaterialTheme.typography.caption,
+            style = MaterialTheme.typography.labelSmall,
         )
         CommonVerticalList(
             data = data,
@@ -158,7 +159,7 @@ fun SearchGameTabList(
                 .padding(4.dp)
                 .visible(data.loadState.refresh is LoadState.NotLoading),
             text = type.setRawgDataSource(),
-            style = MaterialTheme.typography.caption,
+            style = MaterialTheme.typography.labelSmall,
         )
         CommonVerticalList(
             data = data,
@@ -184,67 +185,62 @@ fun SearchGameAppBar(
     var query by rememberSaveable { mutableStateOf(searchQuery) }
     val localFocusManager = LocalFocusManager.current
 
-    TopAppBar(
-        elevation = 0.dp,
-        contentColor = White,
+    Row(
+        horizontalArrangement = Arrangement.Start,
         modifier = Modifier
+            .fillMaxWidth()
             .wrapContentHeight()
             .statusBarsPadding()
     ) {
-        Row(
-            horizontalArrangement = Arrangement.Start,
-            modifier = Modifier.fillMaxWidth()
+        IconButton(
+            modifier = Modifier.align(Alignment.CenterVertically),
+            onClick = { upPress() }
         ) {
-            IconButton(
-                modifier = Modifier.align(Alignment.CenterVertically),
-                onClick = { upPress() }
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.ArrowBack,
-                    contentDescription = OtherConstant.EMPTY_STRING,
-                    tint = White
-                )
-            }
-            TextField(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxHeight(),
-                value = query,
-                onValueChange = {
-                    query = it
-                },
-                shape = RectangleShape,
-                placeholder = {
-                    Text(
-                        text = stringResource(id = R.string.search_game),
-                        color = White
-                    )
-                },
-                singleLine = true,
-                colors = TextFieldDefaults.textFieldColors(
-                    backgroundColor = MaterialTheme.colors.primarySurface,
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                    disabledIndicatorColor = Color.Transparent,
-                    cursorColor = White,
-                    textColor = White,
-                ),
-                keyboardOptions = KeyboardOptions(
-                    imeAction = ImeAction.Done
-                ),
-                keyboardActions = KeyboardActions(
-                    onDone = {
-                        localFocusManager.clearFocus()
-                        viewModel.apply {
-                            selectSearchGameTab(OtherConstant.ZERO)
-                            setSearchGameRequest(
-                                SearchGameRequest(query, null, null, null)
-                            )
-                        }
-                    }
-                )
+            Icon(
+                imageVector = Icons.Filled.ArrowBack,
+                contentDescription = OtherConstant.EMPTY_STRING,
+                tint = White
             )
         }
+        TextField(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxHeight(),
+            value = query,
+            onValueChange = {
+                query = it
+            },
+            shape = RectangleShape,
+            placeholder = {
+                Text(
+                    text = stringResource(id = R.string.search_game),
+                    color = White
+                )
+            },
+            singleLine = true,
+            colors = TextFieldDefaults.textFieldColors(
+                containerColor = MaterialTheme.colorScheme.surface,
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                disabledIndicatorColor = Color.Transparent,
+                cursorColor = White,
+                focusedTextColor = White,
+            ),
+            keyboardOptions = KeyboardOptions(
+                imeAction = ImeAction.Done
+            ),
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    localFocusManager.clearFocus()
+                    viewModel.apply {
+                        selectSearchGameTab(OtherConstant.ZERO)
+                        setSearchGameRequest(
+                            SearchGameRequest(query, null, null, null)
+                        )
+                    }
+                }
+            )
+        )
     }
 }
 
@@ -265,7 +261,7 @@ fun SearchGameTabMenu(
     }
 }
 
-enum class SearchGameTab (@StringRes val title: Int) {
+enum class SearchGameTab(@StringRes val title: Int) {
     LIST(R.string.search),
     GENRES(R.string.genres),
     PUBLISHER(R.string.publishers),

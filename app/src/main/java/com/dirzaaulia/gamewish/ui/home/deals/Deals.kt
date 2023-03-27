@@ -2,43 +2,17 @@ package com.dirzaaulia.gamewish.ui.home.deals
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.BottomSheetScaffold
-import androidx.compose.material.BottomSheetScaffoldState
-import androidx.compose.material.DropdownMenu
-import androidx.compose.material.DropdownMenuItem
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Switch
-import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.material.icons.filled.FilterList
-import androidx.compose.material.primarySurface
-import androidx.compose.material.rememberBottomSheetScaffoldState
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
@@ -54,22 +28,18 @@ import com.dirzaaulia.gamewish.R
 import com.dirzaaulia.gamewish.data.model.cheapshark.Deals
 import com.dirzaaulia.gamewish.data.model.rawg.Stores
 import com.dirzaaulia.gamewish.data.request.cheapshark.DealsRequest
-import com.dirzaaulia.gamewish.utils.isError
-import com.dirzaaulia.gamewish.utils.isSucceeded
 import com.dirzaaulia.gamewish.ui.common.CommonVerticalList
 import com.dirzaaulia.gamewish.ui.common.ErrorConnect
 import com.dirzaaulia.gamewish.ui.common.item.DealItem
 import com.dirzaaulia.gamewish.ui.home.HomeViewModel
-import com.dirzaaulia.gamewish.utils.CheapSharkConstant
-import com.dirzaaulia.gamewish.utils.OtherConstant
-import com.dirzaaulia.gamewish.utils.PlaceholderConstant
+import com.dirzaaulia.gamewish.utils.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
 fun Deals(
-    viewModel: HomeViewModel,
     modifier: Modifier = Modifier,
+    viewModel: HomeViewModel,
     lazyListState: LazyListState,
     data: LazyPagingItems<Deals>
 ) {
@@ -83,7 +53,7 @@ fun Deals(
         storesResult.isSucceeded -> {
             BottomSheetScaffold(
                 modifier = modifier,
-                backgroundColor = MaterialTheme.colors.primarySurface,
+                containerColor = MaterialTheme.colorScheme.surface,
                 scaffoldState = scaffoldState,
                 topBar = {
                     dealsRequest.storeID?.let {
@@ -156,11 +126,11 @@ fun DealsFilter(
                     //This value is used to assign to the DropDown the same width
                     storeFieldSize = coordinates.size.toSize()
                 },
-            textStyle = TextStyle(color = MaterialTheme.colors.onSurface),
+            textStyle = TextStyle(color = MaterialTheme.colorScheme.onSurface),
             label = {
                 Text(
                     text = CheapSharkConstant.CHEAPSHARK_STORE,
-                    color = MaterialTheme.colors.onSurface
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             },
             trailingIcon = {
@@ -180,6 +150,7 @@ fun DealsFilter(
         ) {
             stores?.forEachIndexed { index, item ->
                 DropdownMenuItem(
+                    text = { Text(text = item.storeName.toString()) },
                     onClick = {
                         storeIndex = index + OtherConstant.ONE
                         storeQuery = item.storeName.toString()
@@ -194,9 +165,7 @@ fun DealsFilter(
                             )
                         )
                     }
-                ) {
-                    Text(text = item.storeName.toString())
-                }
+                )
             }
         }
         OutlinedTextField(
@@ -219,12 +188,12 @@ fun DealsFilter(
                 )
             },
             modifier = Modifier.fillMaxWidth(),
-            textStyle = TextStyle(color = MaterialTheme.colors.onSurface),
+            textStyle = TextStyle(color = MaterialTheme.colorScheme.onSurface),
             leadingIcon = { Text(text = stringResource(R.string.dollar_sign)) },
             label = {
                 Text(
                     text = stringResource(R.string.minimum_price),
-                    color = MaterialTheme.colors.onSurface
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
@@ -249,12 +218,12 @@ fun DealsFilter(
                 )
             },
             modifier = Modifier.fillMaxWidth(),
-            textStyle = TextStyle(color = MaterialTheme.colors.onSurface),
+            textStyle = TextStyle(color = MaterialTheme.colorScheme.onSurface),
             leadingIcon = { Text(text = stringResource(id = R.string.dollar_sign)) },
             label = {
                 Text(
                     text = stringResource(R.string.maximum_price),
-                    color = MaterialTheme.colors.onSurface
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
@@ -275,11 +244,11 @@ fun DealsFilter(
                 )
             },
             modifier = Modifier.fillMaxWidth(),
-            textStyle = TextStyle(color = MaterialTheme.colors.onSurface),
+            textStyle = TextStyle(color = MaterialTheme.colorScheme.onSurface),
             label = {
                 Text(
                     text = stringResource(R.string.game_title),
-                    color = MaterialTheme.colors.onSurface
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             },
         )
@@ -290,7 +259,7 @@ fun DealsFilter(
         ) {
             Text(
                 text = stringResource(R.string.aaa_games),
-                style = MaterialTheme.typography.subtitle1
+                style = MaterialTheme.typography.bodyMedium
             )
             Row(
                 modifier = Modifier.weight(1f),
@@ -322,7 +291,7 @@ fun DealsList(
     lazyListState: LazyListState,
 ) {
     Box(
-        modifier = Modifier.background(MaterialTheme.colors.background)
+        modifier = Modifier.background(MaterialTheme.colorScheme.background)
     ) {
         CommonVerticalList(
             data = data,
@@ -343,30 +312,25 @@ fun DealsAppBar(
     scaffoldState: BottomSheetScaffoldState
 ) {
     TopAppBar(
-        elevation = 0.dp,
         modifier = Modifier
             .statusBarsPadding()
-            .wrapContentHeight()
-    ) {
-        Text(
-            text = storeName,
-            style = MaterialTheme.typography.h6,
-            modifier = Modifier.padding(horizontal = 8.dp)
-        )
-        Row(
-            horizontalArrangement = Arrangement.End,
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth()
-        ) {
+            .wrapContentHeight(),
+        title = {
+            Text(
+                text = storeName,
+                style = MaterialTheme.typography.headlineLarge,
+                modifier = Modifier.padding(horizontal = 8.dp)
+            )
+        },
+        actions = {
             IconButton(
                 modifier = Modifier.align(Alignment.CenterVertically),
                 onClick = {
                     scope.launch {
-                        if (scaffoldState.bottomSheetState.isCollapsed) {
+                        if (!scaffoldState.bottomSheetState.isVisible) {
                             scaffoldState.bottomSheetState.expand()
                         } else {
-                            scaffoldState.bottomSheetState.collapse()
+                            scaffoldState.bottomSheetState.hide()
                         }
                     }
                 }
@@ -377,5 +341,5 @@ fun DealsAppBar(
                 )
             }
         }
-    }
+    )
 }

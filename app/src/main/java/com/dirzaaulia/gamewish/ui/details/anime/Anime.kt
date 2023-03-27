@@ -13,11 +13,14 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.Red
+import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
@@ -28,9 +31,6 @@ import androidx.compose.ui.unit.toSize
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.dirzaaulia.gamewish.R
 import com.dirzaaulia.gamewish.data.model.myanimelist.Details
-import com.dirzaaulia.gamewish.theme.Grey700
-import com.dirzaaulia.gamewish.theme.Red700
-import com.dirzaaulia.gamewish.theme.White
 import com.dirzaaulia.gamewish.ui.common.CommonAnimeCarousel
 import com.dirzaaulia.gamewish.ui.common.CommonLoading
 import com.dirzaaulia.gamewish.ui.common.ErrorConnect
@@ -41,7 +41,7 @@ import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun AnimeDetails(
     viewModel: DetailsViewModel = hiltViewModel(),
@@ -68,7 +68,6 @@ fun AnimeDetails(
         type.doBasedOnMyAnimeListType(
             doIfAnime = { viewModel.getAnimeDetails(animeId) },
             doIfManga = { viewModel.getMangaDetails(animeId) }
-
         )
     }
 
@@ -77,7 +76,7 @@ fun AnimeDetails(
         dataResult.isSucceeded -> {
             Scaffold(
                 modifier = Modifier.navigationBarsPadding(),
-                backgroundColor = MaterialTheme.colors.primarySurface,
+                containerColor = MaterialTheme.colorScheme.surface,
                 topBar = {
                     data?.title?.let { title: String ->
                         AnimeDetailsTopBar(
@@ -228,13 +227,11 @@ fun AnimeDetails(
             }
         }
         dataResult.isError -> {
-            val errorScaffoldState = rememberScaffoldState()
-
-            viewModel.setLoading(false)
+            val snackbarHostState = remember { SnackbarHostState() }
 
             Scaffold(
                 modifier = Modifier.navigationBarsPadding(),
-                scaffoldState = errorScaffoldState
+                snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
             ) {
                 Box(
                     modifier = Modifier.fillMaxSize(),
@@ -264,7 +261,7 @@ fun RecommendationTab(
             )
             Text(
                 text = text,
-                style = MaterialTheme.typography.caption,
+                style = MaterialTheme.typography.labelSmall,
             )
         }
         if (type.equals(MyAnimeListConstant.MYANIMELIST_TYPE_ANIME, true)) {
@@ -277,7 +274,7 @@ fun RecommendationTab(
                 ) {
                     Text(
                         text = stringResource(id = R.string.recommendation_anime_empty),
-                        style = MaterialTheme.typography.h6
+                        style = MaterialTheme.typography.headlineLarge
                     )
                 }
             } else {
@@ -301,7 +298,7 @@ fun RecommendationTab(
                 ) {
                     Text(
                         text = stringResource(id = R.string.recommendation_manga_empty),
-                        style = MaterialTheme.typography.h6
+                        style = MaterialTheme.typography.headlineLarge
                     )
                 }
             } else {
@@ -336,14 +333,14 @@ fun RelatedTab(
                 if (data.relatedAnime?.isNotEmpty() == true) {
                     Text(
                         text = text,
-                        style = MaterialTheme.typography.caption,
+                        style = MaterialTheme.typography.labelSmall,
                     )
                 }
             } else {
                 if (data.relatedManga?.isNotEmpty() == true) {
                     Text(
                         text = text,
-                        style = MaterialTheme.typography.caption,
+                        style = MaterialTheme.typography.labelSmall,
                     )
                 }
             }
@@ -358,7 +355,7 @@ fun RelatedTab(
                 ) {
                     Text(
                         text = stringResource(id = R.string.related_anime_empty),
-                        style = MaterialTheme.typography.h6
+                        style = MaterialTheme.typography.headlineLarge
                     )
                 }
             } else {
@@ -382,7 +379,7 @@ fun RelatedTab(
                 ) {
                     Text(
                         text = stringResource(id = R.string.related_manga_empty),
-                        style = MaterialTheme.typography.h6
+                        style = MaterialTheme.typography.headlineLarge
                     )
                 }
             } else {
@@ -440,7 +437,6 @@ fun AnimeDescriptionHeader(
         ) {
             if (!data.pictures.isNullOrEmpty()) {
                 val pagerState = rememberPagerState()
-
                 CommonAnimeCarousel(
                     pagerState = pagerState,
                     screenshots = data.pictures
@@ -465,7 +461,6 @@ fun AnimeDescriptionHeader(
                 verticalArrangement = Arrangement.SpaceEvenly
             ) {
                 Card(
-                    backgroundColor = Grey700,
                     shape = MaterialTheme.shapes.small,
                     modifier = Modifier
                         .padding(4.dp)
@@ -474,13 +469,12 @@ fun AnimeDescriptionHeader(
                     Text(
                         text = type,
                         color = White,
-                        style = MaterialTheme.typography.caption,
+                        style = MaterialTheme.typography.labelSmall,
                         modifier = Modifier.padding(4.dp),
                         textAlign = TextAlign.Center
                     )
                 }
                 Card(
-                    backgroundColor = Grey700,
                     shape = MaterialTheme.shapes.small,
                     modifier = Modifier
                         .padding(4.dp)
@@ -492,7 +486,7 @@ fun AnimeDescriptionHeader(
                                 OtherConstant.EMPTY_STRING
                             ),
                             color = White,
-                            style = MaterialTheme.typography.caption,
+                            style = MaterialTheme.typography.labelSmall,
                             modifier = Modifier.padding(4.dp),
                             textAlign = TextAlign.Center
                         )
@@ -500,7 +494,7 @@ fun AnimeDescriptionHeader(
                 }
                 Text(
                     text = data.mediaType.animeSourceFormat(),
-                    style = MaterialTheme.typography.subtitle2,
+                    style = MaterialTheme.typography.bodyLarge,
                 )
 
                 val episodes = type.setStringBasedOnMyAnimeListType(
@@ -518,20 +512,20 @@ fun AnimeDescriptionHeader(
                 Text(
                     text = episodes,
                     color = Color.Gray,
-                    style = MaterialTheme.typography.caption,
+                    style = MaterialTheme.typography.labelSmall,
                 )
                 Text(
                     text = MyAnimeListConstant.MYANIMELIST_SCORE,
-                    style = MaterialTheme.typography.subtitle2,
+                    style = MaterialTheme.typography.bodyLarge,
                 )
                 Text(
                     text = data.mean.toString(),
                     color = Color.Gray,
-                    style = MaterialTheme.typography.caption,
+                    style = MaterialTheme.typography.labelSmall,
                 )
                 Text(
                     text = MyAnimeListConstant.MYANIMELIST_RANK,
-                    style = MaterialTheme.typography.subtitle2,
+                    style = MaterialTheme.typography.bodyLarge,
                 )
                 Text(
                     text = String.format(
@@ -540,11 +534,11 @@ fun AnimeDescriptionHeader(
                         data.rank.toString()
                     ),
                     color = Color.Gray,
-                    style = MaterialTheme.typography.caption,
+                    style = MaterialTheme.typography.labelSmall,
                 )
                 Text(
                     text = MyAnimeListConstant.MYANIMELIST_POPULARITY,
-                    style = MaterialTheme.typography.subtitle2,
+                    style = MaterialTheme.typography.bodyLarge,
                 )
                 Text(
                     text = String.format(
@@ -553,16 +547,16 @@ fun AnimeDescriptionHeader(
                         data.popularity.toString()
                     ),
                     color = Color.Gray,
-                    style = MaterialTheme.typography.caption,
+                    style = MaterialTheme.typography.labelSmall,
                 )
                 Text(
                     text = MyAnimeListConstant.MYANIMELIST_MEMBERS,
-                    style = MaterialTheme.typography.subtitle2,
+                    style = MaterialTheme.typography.bodyLarge,
                 )
                 Text(
                     text = data.members?.toDouble().toNumberFormat(),
                     color = Color.Gray,
-                    style = MaterialTheme.typography.caption,
+                    style = MaterialTheme.typography.labelSmall,
                 )
             }
         }
@@ -579,7 +573,7 @@ fun AnimeDescriptionFooter(
         data.title?.let {
             Text(
                 text = stringResource(id = R.string.anime_data_source),
-                style = MaterialTheme.typography.caption,
+                style = MaterialTheme.typography.labelSmall,
             )
         }
         Row(
@@ -589,41 +583,41 @@ fun AnimeDescriptionFooter(
                 Text(
                     modifier = Modifier.weight(1f),
                     text = title,
-                    style = MaterialTheme.typography.h4,
+                    style = MaterialTheme.typography.displaySmall,
                 )
             }
             OutlinedButton(
                 modifier = Modifier.size(50.dp),
                 onClick = {
                     scope.launch {
-                        if (scaffoldState.bottomSheetState.isCollapsed) {
+                        if (!scaffoldState.bottomSheetState.isVisible) {
                             scaffoldState.bottomSheetState.expand()
                         } else {
-                            scaffoldState.bottomSheetState.collapse()
+                            scaffoldState.bottomSheetState.hide()
                         }
                     }
                 },
                 shape = CircleShape,
-                border = BorderStroke(1.dp, MaterialTheme.colors.onSurface),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurface),
                 contentPadding = PaddingValues(0.dp),
             ) {
                 Icon(
                     imageVector = Icons.Filled.Favorite,
                     contentDescription = OtherConstant.EMPTY_STRING,
-                    tint = MaterialTheme.colors.onSurface
+                    tint = MaterialTheme.colorScheme.onSurface
                 )
             }
         }
         data.alternativeTitles?.ja?.let {
             Text(
                 text = it,
-                style = MaterialTheme.typography.h5,
+                style = MaterialTheme.typography.headlineLarge,
             )
         }
         data.startDate?.let {
             Text(
                 text = animeDateFormat(data.startDate, data.endDate.replaceIfNull()),
-                style = MaterialTheme.typography.body2,
+                style = MaterialTheme.typography.bodyMedium,
             )
         }
         Row {
@@ -631,7 +625,7 @@ fun AnimeDescriptionFooter(
                 Text(
                     modifier = Modifier.weight(1f),
                     text = source.toMyAnimeListSource(),
-                    style = MaterialTheme.typography.body2,
+                    style = MaterialTheme.typography.bodyMedium,
                 )
             }
             data.rating?.let {
@@ -639,7 +633,7 @@ fun AnimeDescriptionFooter(
                     modifier = Modifier.weight(1f),
                     textAlign = TextAlign.End,
                     text = it.animeRatingFormat(),
-                    style = MaterialTheme.typography.body2,
+                    style = MaterialTheme.typography.bodyMedium,
                 )
             }
         }
@@ -650,18 +644,18 @@ fun AnimeDescriptionFooter(
                     .padding(vertical = 4.dp),
                 textAlign = TextAlign.Center,
                 text = it.toAnimeGenre(),
-                style = MaterialTheme.typography.body2,
+                style = MaterialTheme.typography.bodyMedium,
             )
         }
         data.synopsis?.let {
             Text(
                 text = MyAnimeListConstant.MYANIMELIST_SYNOPSIS,
-                style = MaterialTheme.typography.h6,
+                style = MaterialTheme.typography.headlineLarge,
             )
             Text(
                 textAlign = TextAlign.Justify,
                 text = it.fromHtml(),
-                style = MaterialTheme.typography.body1,
+                style = MaterialTheme.typography.bodySmall,
             )
         }
         data.background?.let { background ->
@@ -669,12 +663,12 @@ fun AnimeDescriptionFooter(
                 Text(
                     modifier = Modifier.padding(top = 4.dp),
                     text = MyAnimeListConstant.MYANIMELIST_BACKGROUND,
-                    style = MaterialTheme.typography.h6,
+                    style = MaterialTheme.typography.headlineLarge,
                 )
                 Text(
                     textAlign = TextAlign.Justify,
                     text = background.fromHtml(),
-                    style = MaterialTheme.typography.body1,
+                    style = MaterialTheme.typography.bodySmall,
                 )
             }
         }
@@ -687,18 +681,11 @@ fun AnimeDetailsTopBar(
     upPress: () -> Unit
 ) {
     TopAppBar(
-        elevation = 0.dp,
-        contentColor = White,
         modifier = Modifier
             .wrapContentHeight()
-            .statusBarsPadding()
-    ) {
-        Row(
-            horizontalArrangement = Arrangement.Start,
-            modifier = Modifier
-                .wrapContentHeight()
-                .fillMaxWidth()
-        ) {
+            .statusBarsPadding(),
+        title = { },
+        actions = {
             IconButton(
                 modifier = Modifier.align(Alignment.CenterVertically),
                 onClick = { upPress() }
@@ -713,11 +700,11 @@ fun AnimeDetailsTopBar(
                 modifier = Modifier.align(Alignment.CenterVertically),
                 text = title,
                 softWrap = true,
-                style = MaterialTheme.typography.h6,
+                style = MaterialTheme.typography.headlineLarge,
                 color = White
             )
         }
-    }
+    )
 }
 
 @Composable
@@ -825,7 +812,7 @@ fun AnimeDetailsSheetContent(
                         )
                     }
                     scope.launch {
-                        scaffoldState.bottomSheetState.collapse()
+                        scaffoldState.bottomSheetState.hide()
                     }
                 },
                 modifier = Modifier.align(Alignment.End)
@@ -833,14 +820,14 @@ fun AnimeDetailsSheetContent(
                 Icon(
                     imageVector = Icons.Filled.Delete,
                     contentDescription = null,
-                    tint = Red700
+                    tint = Red
                 )
             }
         }
         data.title?.let {
             Text(
                 text = it,
-                style = MaterialTheme.typography.h6
+                style = MaterialTheme.typography.headlineLarge
             )
         }
         OutlinedTextField(
@@ -870,13 +857,12 @@ fun AnimeDetailsSheetContent(
         ) {
             statusList.forEach { item ->
                 DropdownMenuItem(
+                    text = { Text(text = item) },
                     onClick = {
                         statusText = item
                         statusExpanded = false
                     }
-                ) {
-                    Text(text = item)
-                }
+                )
             }
         }
         val fieldEnabled =
@@ -911,14 +897,13 @@ fun AnimeDetailsSheetContent(
         ) {
             scoreList.forEachIndexed { index, item ->
                 DropdownMenuItem(
+                    text = { Text(text = item) },
                     onClick = {
                         scoreText = item
                         scoreExpanded = false
                         scoreIndex = index
                     }
-                ) {
-                    Text(text = item)
-                }
+                )
             }
         }
         OutlinedTextField(
@@ -963,7 +948,7 @@ fun AnimeDetailsSheetContent(
                     setIfAnime = MyAnimeListConstant.MYANIMELIST_IS_REWATCHING,
                     setIfManga = MyAnimeListConstant.MYANIMELIST_IS_REREADING
                 ),
-                style = MaterialTheme.typography.subtitle1
+                style = MaterialTheme.typography.bodyLarge
             )
             Row(
                 modifier = Modifier.weight(1f),
@@ -1006,7 +991,7 @@ fun AnimeDetailsSheetContent(
                     )
                 }
 
-                scope.launch { scaffoldState.bottomSheetState.collapse() }
+                scope.launch { scaffoldState.bottomSheetState.hide() }
             }
         ) {
             val text = if (data.listStatus != null) {

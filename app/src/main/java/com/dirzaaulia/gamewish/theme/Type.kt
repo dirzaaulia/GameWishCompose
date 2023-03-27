@@ -1,11 +1,10 @@
 package com.dirzaaulia.gamewish.theme
 
-import androidx.compose.material.Typography
+import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import com.dirzaaulia.gamewish.R
 
@@ -15,93 +14,110 @@ private val fonts = FontFamily(
     Font(R.font.opensans_bold, FontWeight.Bold)
 )
 
-val typography = typographyFromDefaults(
-    h1 = TextStyle(
+val typography = Typography(
+    displayLarge = TextStyle(
         fontFamily = fonts,
-        fontWeight = FontWeight.Bold
+        fontWeight = FontWeight.Light,
+        fontSize = 57.sp,
+        lineHeight = 64.sp,
+        letterSpacing = 0.sp
     ),
-    h2 = TextStyle(
+    displayMedium = TextStyle(
         fontFamily = fonts,
-        fontWeight = FontWeight.Bold
+        fontWeight = FontWeight.Light,
+        fontSize = 45.sp,
+        lineHeight = 52.sp,
+        letterSpacing = 0.sp
     ),
-    h3 = TextStyle(
+    displaySmall = TextStyle(
         fontFamily = fonts,
-        fontWeight = FontWeight.Bold
+        fontWeight = FontWeight.Normal,
+        fontSize = 36.sp,
+        lineHeight = 44.sp,
+        letterSpacing = 0.sp
     ),
-    h4 = TextStyle(
+    headlineLarge = TextStyle(
+        fontFamily = fonts,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 32.sp,
+        lineHeight = 40.sp,
+        letterSpacing = 0.sp
+    ),
+    headlineMedium = TextStyle(
+        fontFamily = fonts,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 28.sp,
+        lineHeight = 36.sp,
+        letterSpacing = 0.sp
+    ),
+    headlineSmall = TextStyle(
+        fontFamily = fonts,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 24.sp,
+        lineHeight = 32.sp,
+        letterSpacing = 0.sp
+    ),
+    titleLarge = TextStyle(
+        fontFamily = fonts,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 22.sp,
+        lineHeight = 28.sp,
+        letterSpacing = 0.sp
+    ),
+    titleMedium = TextStyle(
+        fontFamily = fonts,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 16.sp,
+        lineHeight = 24.sp,
+        letterSpacing = 0.15.sp
+    ),
+    titleSmall = TextStyle(
         fontFamily = fonts,
         fontWeight = FontWeight.Bold,
-        lineHeight = 40.sp
+        fontSize = 14.sp,
+        lineHeight = 20.sp,
+        letterSpacing = 0.1.sp
     ),
-    h5 = TextStyle(
-        fontFamily = fonts,
-        fontWeight = FontWeight.Bold
-    ),
-    h6 = TextStyle(
-        fontFamily = fonts,
-        fontWeight = FontWeight.W500,
-        lineHeight = 28.sp
-    ),
-    subtitle1 = TextStyle(
-        fontFamily = fonts,
-        fontWeight = FontWeight.W500,
-        lineHeight = 22.sp
-    ),
-    subtitle2 = TextStyle(
-        fontFamily = fonts,
-        fontWeight = FontWeight.W500
-    ),
-    body1 = TextStyle(
+    bodyLarge = TextStyle(
         fontFamily = fonts,
         fontWeight = FontWeight.Normal,
-        lineHeight = 28.sp
+        fontSize = 16.sp,
+        lineHeight = 24.sp,
+        letterSpacing = 0.15.sp
     ),
-    body2 = TextStyle(
+    bodyMedium = TextStyle(
         fontFamily = fonts,
-        fontWeight = FontWeight.Normal,
-        lineHeight = 16.sp
+        fontWeight = FontWeight.Medium,
+        fontSize = 14.sp,
+        lineHeight = 20.sp,
+        letterSpacing = 0.25.sp
     ),
-    button = TextStyle(
+    bodySmall = TextStyle(
         fontFamily = fonts,
-        fontWeight = FontWeight.Bold
+        fontWeight = FontWeight.Bold,
+        fontSize = 12.sp,
+        lineHeight = 16.sp,
+        letterSpacing = 0.4.sp
     ),
-    caption = TextStyle(
-        fontFamily = fonts
+    labelLarge = TextStyle(
+        fontFamily = fonts,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 14.sp,
+        lineHeight = 20.sp,
+        letterSpacing = 0.1.sp
     ),
-    overline = TextStyle(
-        letterSpacing = 0.08.em
+    labelMedium = TextStyle(
+        fontFamily = fonts,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 12.sp,
+        lineHeight = 16.sp,
+        letterSpacing = 0.5.sp
+    ),
+    labelSmall = TextStyle(
+        fontFamily = fonts,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 11.sp,
+        lineHeight = 16.sp,
+        letterSpacing = 0.5.sp
     )
 )
-
-fun typographyFromDefaults(
-    h1: TextStyle?,
-    h2: TextStyle?,
-    h3: TextStyle?,
-    h4: TextStyle?,
-    h5: TextStyle?,
-    h6: TextStyle?,
-    subtitle1: TextStyle?,
-    subtitle2: TextStyle?,
-    body1: TextStyle?,
-    body2: TextStyle?,
-    button: TextStyle?,
-    caption: TextStyle?,
-    overline: TextStyle?
-): Typography {
-    val defaults = Typography()
-    return Typography(
-        h1 = defaults.h1.merge(h1),
-        h2 = defaults.h2.merge(h2),
-        h3 = defaults.h3.merge(h3),
-        h4 = defaults.h4.merge(h4),
-        h5 = defaults.h5.merge(h5),
-        h6 = defaults.h6.merge(h6),
-        subtitle1 = defaults.subtitle1.merge(subtitle1),
-        subtitle2 = defaults.subtitle2.merge(subtitle2),
-        body1 = defaults.body1.merge(body1),
-        body2 = defaults.body2.merge(body2),
-        button = defaults.button.merge(button),
-        caption = defaults.caption.merge(caption),
-        overline = defaults.overline.merge(overline)
-    )
-}

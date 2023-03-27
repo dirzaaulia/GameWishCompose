@@ -1,16 +1,11 @@
 package com.dirzaaulia.gamewish.ui.common
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.material.Button
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -88,43 +83,43 @@ private fun CommonVerticalListLoading(
                 PlaceholderConstant.GAME_WISHLIST -> {
                     CommonItemPlaceholder(
                         height = 240.dp,
-                        shape = MaterialTheme.shapes.medium
+                        shape = MaterialTheme.shapes.small
                     )
                 }
                 PlaceholderConstant.MOVIE_WISHLIST -> {
                     CommonItemPlaceholder(
                         height = 240.dp,
-                        shape = MaterialTheme.shapes.small
+                        shape = MaterialTheme.shapes.medium
                     )
                 }
                 PlaceholderConstant.DEALS -> {
                     CommonItemPlaceholder(
                         height = 150.dp,
-                        shape = MaterialTheme.shapes.large
+                        shape = MaterialTheme.shapes.medium
                     )
                 }
                 PlaceholderConstant.SEARCH_GAME_TAB -> {
                     CommonItemPlaceholder(
                         height = 240.dp,
-                        shape = MaterialTheme.shapes.small
+                        shape = MaterialTheme.shapes.large
                     )
                 }
                 PlaceholderConstant.SEARCH_GAME -> {
                     CommonItemPlaceholder(
                         height = 120.dp,
-                        shape = MaterialTheme.shapes.medium
+                        shape = MaterialTheme.shapes.large
                     )
                 }
                 PlaceholderConstant.ANIME -> {
                     CommonItemPlaceholder(
                         height = 150.dp,
-                        shape = MaterialTheme.shapes.large
+                        shape = MaterialTheme.shapes.medium
                     )
                 }
                 else -> {
                     CommonItemPlaceholder(
                         height = 240.dp,
-                        shape = MaterialTheme.shapes.small
+                        shape = MaterialTheme.shapes.medium
                     )
                 }
             }
@@ -143,8 +138,8 @@ private fun CommonVerticalListEmpty(emptyString: String) {
         Text(
             text = emptyString,
             textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.subtitle1,
-            color = MaterialTheme.colors.onBackground
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onBackground
         )
     }
 }
@@ -193,10 +188,12 @@ fun CommonPagingAppendError(
     ) {
         Text(
             text = message,
-            style = MaterialTheme.typography.subtitle2,
+            style = MaterialTheme.typography.bodySmall,
             textAlign = TextAlign.Center
         )
-        Button(onClick = { retry() }) {
+        Button(
+            onClick = { retry() }
+        ) {
             Text(text = stringResource(R.string.try_again))
         }
     }

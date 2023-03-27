@@ -1,16 +1,10 @@
 package com.dirzaaulia.gamewish.ui.common.item
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.material.Card
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.Card
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -41,7 +35,6 @@ fun WishlistMovieItem(
                     }
                 }
             ),
-        shape = MaterialTheme.shapes.large,
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -66,12 +59,12 @@ fun WishlistMovieItem(
             ) {
                 Text(
                     text = movieWishlist.status.toString(),
-                    style = MaterialTheme.typography.caption
+                    style = MaterialTheme.typography.labelSmall
                 )
                 Text(
                     modifier = Modifier.padding(top = 4.dp),
                     text = movieWishlist.name.toString(),
-                    style = MaterialTheme.typography.h6
+                    style = MaterialTheme.typography.headlineLarge
                 )
             }
         }

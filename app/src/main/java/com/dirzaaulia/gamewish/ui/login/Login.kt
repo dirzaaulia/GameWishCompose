@@ -5,9 +5,9 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MailOutline
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -18,7 +18,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.dirzaaulia.gamewish.R
-import com.dirzaaulia.gamewish.theme.LocalImages
 import com.dirzaaulia.gamewish.ui.home.HomeViewModel
 import com.dirzaaulia.gamewish.utils.FirebaseConstant
 import com.dirzaaulia.gamewish.utils.FirebaseState
@@ -28,14 +27,13 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.GoogleAuthProvider
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
-@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter", "UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun Login(viewModel: HomeViewModel) {
 
     val scope = rememberCoroutineScope()
-    val scaffoldState = rememberScaffoldState()
+    val snackbarHostState = remember { SnackbarHostState() }
     val state by viewModel.loadingState.collectAsState()
     val context = LocalContext.current
     val token = FirebaseConstant.GOOGLE_SIGN_IN_WEB_CLIENT_ID
@@ -49,7 +47,7 @@ fun Login(viewModel: HomeViewModel) {
                 viewModel.signWithCredential(credential)
             } catch (e: ApiException) {
                 scope.launch {
-                    scaffoldState.snackbarHostState.showSnackbar(e.message.toString())
+                    snackbarHostState.showSnackbar(e.message.toString())
                 }
             }
         }
@@ -58,13 +56,13 @@ fun Login(viewModel: HomeViewModel) {
         modifier = Modifier
             .fillMaxSize()
             .statusBarsPadding(),
-        scaffoldState = scaffoldState,
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             if (state.status == FirebaseState.Status.RUNNING) {
                 LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
             }
         },
-        backgroundColor = MaterialTheme.colors.primarySurface,
+        containerColor = MaterialTheme.colorScheme.surface,
     ) {
         when (state.status) {
             FirebaseState.Status.SUCCESS -> {
@@ -79,7 +77,7 @@ fun Login(viewModel: HomeViewModel) {
             }
             FirebaseState.Status.FAILED -> {
                 LaunchedEffect(FirebaseState) {
-                    scaffoldState.snackbarHostState.showSnackbar(
+                    snackbarHostState.showSnackbar(
                         FirebaseConstant.FIREBASE_LOGIN_ERROR_MESSAGE
                     )
                 }
@@ -95,7 +93,6 @@ fun Login(viewModel: HomeViewModel) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-
             Image(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -127,8 +124,8 @@ fun Login(viewModel: HomeViewModel) {
                                 contentDescription = OtherConstant.EMPTY_STRING,
                             )
                             Text(
-                                style = MaterialTheme.typography.button,
-                                color = MaterialTheme.colors.onSurface,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurface,
                                 text = stringResource(R.string.google)
                             )
                             Icon(

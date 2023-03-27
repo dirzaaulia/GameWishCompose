@@ -17,13 +17,13 @@ plugins {
 android {
     signingConfigs {
         getByName("debug") {
-            storeFile = file("D:\\AndroidStudio\\Keystore\\keystore.jks")
+            storeFile = file("/Users/dirzaaulia/keystore/keystore.jks")
             storePassword = AppConfig.KeyStore.password
             keyAlias = AppConfig.KeyStore.alias
             keyPassword = AppConfig.KeyStore.password
         }
         create("release") {
-            storeFile = file("D:\\AndroidStudio\\Keystore\\keystore.jks")
+            storeFile = file("/Users/dirzaaulia/keystore/keystore.jks")
             storePassword = AppConfig.KeyStore.password
             keyAlias = AppConfig.KeyStore.alias
             keyPassword = AppConfig.KeyStore.password
@@ -85,7 +85,8 @@ android {
             "-opt-in=com.google.accompanist.pager.ExperimentalPagerApi" +
             "-opt-in=androidx.compose.foundation.ExperimentalFoundationApi" +
             "-opt-in=androidx.compose.material.ExperimentalMaterialApi" +
-            "-opt-in=androidx.compose.animation.ExperimentalAnimationApi"
+            "-opt-in=androidx.compose.animation.ExperimentalAnimationApi" +
+            "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api"
     }
 
     buildFeatures {

@@ -8,18 +8,20 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.ClickableText
-import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.rounded.ArrowBack
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.Red
+import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -37,8 +39,6 @@ import com.dirzaaulia.gamewish.data.model.rawg.EsrbRating
 import com.dirzaaulia.gamewish.data.model.rawg.GameDetails
 import com.dirzaaulia.gamewish.data.model.rawg.Screenshots
 import com.dirzaaulia.gamewish.data.model.wishlist.GameWishlist
-import com.dirzaaulia.gamewish.theme.Red700
-import com.dirzaaulia.gamewish.theme.White
 import com.dirzaaulia.gamewish.ui.common.CommonGameCarousel
 import com.dirzaaulia.gamewish.ui.common.CommonLoading
 import com.dirzaaulia.gamewish.ui.common.ErrorConnect
@@ -50,7 +50,7 @@ import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter", "UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun GameDetails(
     gameId: Long,
@@ -166,13 +166,10 @@ fun GameDetails(
         }
 
         gameDetailsResult.isError -> {
-            val errorScaffoldState = rememberScaffoldState()
-
-            viewModel.setLoading(false)
-
+            val snackbarHostState = remember { SnackbarHostState() }
             Scaffold(
                 modifier = Modifier.navigationBarsPadding(),
-                scaffoldState = errorScaffoldState
+                snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
             ) {
                 Box(
                     modifier = Modifier.fillMaxSize(),
@@ -219,18 +216,21 @@ fun GameDetailsHeader(
         }
         TopAppBar(
             modifier = Modifier.statusBarsPadding(),
-            backgroundColor = Color.Transparent,
-            elevation = 0.dp,
-            contentColor = White,
-        ) {
-            IconButton(onClick = upPress) {
-                Icon(
-                    imageVector = Icons.Rounded.ArrowBack,
-                    contentDescription = stringResource(R.string.label_back),
-                    tint = White
-                )
+            title = { },
+            colors = TopAppBarDefaults.topAppBarColors(
+                containerColor = Color.Transparent,
+                titleContentColor = White
+            ),
+            navigationIcon = {
+                IconButton(onClick = upPress) {
+                    Icon(
+                        imageVector = Icons.Rounded.ArrowBack,
+                        contentDescription = stringResource(R.string.label_back),
+                        tint = White
+                    )
+                }
             }
-        }
+        )
     }
 }
 
@@ -249,7 +249,7 @@ fun GameDetailsMiddleContent(
         data.name?.let {
             Text(
                 text = stringResource(id = R.string.data_by_rawg),
-                style = MaterialTheme.typography.caption,
+                style = MaterialTheme.typography.labelSmall,
             )
         }
         Row(
@@ -259,28 +259,28 @@ fun GameDetailsMiddleContent(
                 Text(
                     modifier = Modifier.weight(1f),
                     text = it,
-                    style = MaterialTheme.typography.h4
+                    style = MaterialTheme.typography.displaySmall
                 )
             }
             OutlinedButton(
                 modifier = Modifier.size(50.dp),
                 onClick = {
                     scope.launch {
-                        if (scaffoldState.bottomSheetState.isCollapsed) {
+                        if (!scaffoldState.bottomSheetState.isVisible) {
                             scaffoldState.bottomSheetState.expand()
                         } else {
-                            scaffoldState.bottomSheetState.collapse()
+                            scaffoldState.bottomSheetState.hide()
                         }
                     }
                 },
                 shape = CircleShape,
-                border = BorderStroke(1.dp, MaterialTheme.colors.onSurface),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurface),
                 contentPadding = PaddingValues(0.dp),
             ) {
                 Icon(
                     imageVector = Icons.Filled.Favorite,
                     contentDescription = OtherConstant.EMPTY_STRING,
-                    tint = MaterialTheme.colors.onSurface
+                    tint = MaterialTheme.colorScheme.onSurface
                 )
             }
         }
@@ -298,48 +298,48 @@ fun GameDetailsMiddleContent(
 
                     Text(
                         text = stringResource(id = R.string.release_date),
-                        style = MaterialTheme.typography.h6
+                        style = MaterialTheme.typography.headlineLarge
 
                     )
                     Text(
                         text = releaseDate,
-                        style = MaterialTheme.typography.body2
+                        style = MaterialTheme.typography.bodyMedium
                     )
                 }
                 data.developers?.let {
                     Text(
                         text = stringResource(id = R.string.developer),
-                        style = MaterialTheme.typography.h6
+                        style = MaterialTheme.typography.headlineLarge
                     )
                     Text(
                         text = it.toDeveloper(),
-                        style = MaterialTheme.typography.body2
+                        style = MaterialTheme.typography.bodyMedium
                     )
                 }
                 data.publishers?.let {
                     Text(
                         text = stringResource(id = R.string.publishers),
-                        style = MaterialTheme.typography.h6
+                        style = MaterialTheme.typography.headlineLarge
                     )
                     Text(
                         text = it.toPublisher(),
-                        style = MaterialTheme.typography.body2
+                        style = MaterialTheme.typography.bodyMedium
                     )
                 }
                 data.website?.let { url ->
                     Text(
                         text = stringResource(id = R.string.link),
-                        style = MaterialTheme.typography.h6
+                        style = MaterialTheme.typography.headlineLarge
                     )
                     ClickableText(
                         text = AnnotatedString(
-                            "Homepage",
+                            RawgConstant.RAWG_HOMEPAGE,
                             SpanStyle(
-                                color = MaterialTheme.colors.onSurface,
+                                color = MaterialTheme.colorScheme.onSurface,
                                 textDecoration = TextDecoration.Underline
                             )
                         ),
-                        style = MaterialTheme.typography.body2,
+                        style = MaterialTheme.typography.bodyMedium,
                         onClick = { openLink(context, url) }
                     )
                 }
@@ -356,11 +356,11 @@ fun GameDetailsMiddleContent(
                                 text = AnnotatedString(
                                     url.getSubReddit(),
                                     SpanStyle(
-                                        color = MaterialTheme.colors.onSurface,
+                                        color = MaterialTheme.colorScheme.onSurface,
                                         textDecoration = TextDecoration.Underline
                                     )
                                 ),
-                                style = MaterialTheme.typography.caption,
+                                style = MaterialTheme.typography.labelSmall,
                                 modifier = Modifier.weight(1f),
                                 onClick = { openLink(context, url) }
                             )
@@ -375,7 +375,7 @@ fun GameDetailsMiddleContent(
                 data.esrbRating?.let {
                     Text(
                         text = stringResource(id = R.string.esrb_rating),
-                        style = MaterialTheme.typography.h6
+                        style = MaterialTheme.typography.headlineLarge
                     )
                     Image(
                         painter = painterResource(id = EsrbRating.getRatingDrawable(it)),
@@ -388,7 +388,7 @@ fun GameDetailsMiddleContent(
         data.platforms?.let {
             Text(
                 text = stringResource(id = R.string.platforms),
-                style = MaterialTheme.typography.h6,
+                style = MaterialTheme.typography.headlineLarge,
                 modifier = Modifier.padding(top = 8.dp)
             )
             GameDetailsPlatformList(data = it, code = 0)
@@ -396,7 +396,7 @@ fun GameDetailsMiddleContent(
         data.stores?.let {
             Text(
                 text = stringResource(id = R.string.stores),
-                style = MaterialTheme.typography.h6,
+                style = MaterialTheme.typography.headlineLarge,
                 modifier = Modifier.padding(top = 8.dp)
             )
             GameDetailsStoresList(data = it, code = 1)
@@ -404,13 +404,13 @@ fun GameDetailsMiddleContent(
         data.description?.let {
             Text(
                 text = stringResource(id = R.string.description),
-                style = MaterialTheme.typography.h6,
+                style = MaterialTheme.typography.headlineLarge,
                 modifier = Modifier.padding(top = 8.dp)
             )
             Text(
                 textAlign = TextAlign.Justify,
                 text = AnnotatedString(it.fromHtml()),
-                style = MaterialTheme.typography.body1
+                style = MaterialTheme.typography.bodySmall
             )
         }
     }
@@ -454,7 +454,7 @@ fun GameWishlistSheetContent(
                         viewModel.deleteGameWishlist(it)
                     }
                     scope.launch {
-                        scaffoldState.bottomSheetState.collapse()
+                        scaffoldState.bottomSheetState.hide()
                     }
                 },
                 modifier = Modifier.align(Alignment.End)
@@ -462,14 +462,14 @@ fun GameWishlistSheetContent(
                 Icon(
                     imageVector = Icons.Filled.Delete,
                     contentDescription = OtherConstant.EMPTY_STRING,
-                    tint = Red700
+                    tint = Red
                 )
             }
         }
         gameDetails.name?.let { name ->
             Text(
                 text = name,
-                style = MaterialTheme.typography.h6
+                style = MaterialTheme.typography.headlineLarge
             )
         }
         OutlinedTextField(
@@ -486,7 +486,7 @@ fun GameWishlistSheetContent(
             trailingIcon = {
                 Icon(
                     imageVector = icon,
-                    contentDescription = null,
+                    contentDescription = OtherConstant.EMPTY_STRING,
                     modifier = Modifier.clickable { expanded = !expanded }
                 )
             }
@@ -499,13 +499,12 @@ fun GameWishlistSheetContent(
         ) {
             statusList.forEach { item ->
                 DropdownMenuItem(
+                    text = { Text(text = item) },
                     onClick = {
                         statusText = item
                         expanded = false
                     }
-                ) {
-                    Text(text = item)
-                }
+                )
             }
         }
         OutlinedButton(
@@ -519,7 +518,7 @@ fun GameWishlistSheetContent(
                 viewModel.addToGameWishlist(data)
 
                 scope.launch {
-                    scaffoldState.bottomSheetState.collapse()
+                    scaffoldState.bottomSheetState.hide()
                 }
             }
         ) {

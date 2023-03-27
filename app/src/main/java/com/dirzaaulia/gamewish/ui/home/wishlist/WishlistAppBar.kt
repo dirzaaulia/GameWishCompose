@@ -2,19 +2,15 @@ package com.dirzaaulia.gamewish.ui.home.wishlist
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.material.BottomSheetScaffoldState
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Sort
+import androidx.compose.material3.BottomSheetScaffoldState
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,11 +31,8 @@ fun WishlistAppBar(
     myAnimeListUser: User,
     navigateToSearch: (Int) -> Unit = { },
 ) {
-    TopAppBar(
-        elevation = 0.dp,
-        modifier = Modifier
-            .statusBarsPadding()
-            .wrapContentHeight()
+    Row (
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
             modifier = Modifier
@@ -48,25 +41,18 @@ fun WishlistAppBar(
                         myAnimeListUser.id != null
                     else true
                 )
-                .padding(horizontal = 8.dp),
-            text = sortStatus,
-            style = MaterialTheme.typography.h6,
-        )
-        Row(
-            horizontalArrangement = Arrangement.End,
-            modifier = Modifier
                 .weight(1f)
-                .fillMaxWidth()
+                .padding(start = 16.dp),
+            text = sortStatus,
+            style = MaterialTheme.typography.titleLarge
+        )
+        Row (
+            horizontalArrangement = Arrangement.End
         ) {
             IconButton(
-                modifier = Modifier.align(Alignment.CenterVertically),
                 onClick = {
                     scope.launch {
-                        if (scaffoldState.bottomSheetState.isCollapsed) {
-                            scaffoldState.bottomSheetState.expand()
-                        } else {
-                            scaffoldState.bottomSheetState.collapse()
-                        }
+                        scaffoldState.bottomSheetState.expand()
                     }
                 }
             ) {
@@ -76,7 +62,6 @@ fun WishlistAppBar(
                 )
             }
             IconButton(
-                modifier = Modifier.align(Alignment.CenterVertically),
                 onClick = { navigateToSearch(searchMenu.ordinal) }
             ) {
                 Icon(

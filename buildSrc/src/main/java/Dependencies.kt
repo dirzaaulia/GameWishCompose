@@ -46,7 +46,7 @@ object Dependencies {
             private const val animation = "androidx.compose.animation:animation:${Version.composeAnimation}"
             private const val foundation = "androidx.compose.foundation:foundation:${Version.composeFoundation}"
             private const val materialIcons = "androidx.compose.material:material-icons-extended:${Version.composeMaterial}"
-            private const val material = "androidx.compose.material:material:${Version.composeMaterial}"
+            private const val material = "androidx.compose.material3:material3:${Version.composeMaterial3}"
             private const val runtime = "androidx.compose.runtime:runtime:${Version.composeRuntime}"
             private const val ui = "androidx.compose.ui:ui:${Version.composeUi}"
             private const val uiTooling = "androidx.compose.ui:ui-tooling:${Version.composeUi}"

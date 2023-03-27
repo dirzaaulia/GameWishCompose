@@ -6,23 +6,12 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.BottomNavigation
-import androidx.compose.material.BottomNavigationItem
-import androidx.compose.material.Icon
-import androidx.compose.material.LocalContentColor
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Games
 import androidx.compose.material.icons.filled.Theaters
 import androidx.compose.material.icons.filled.Tv
-import androidx.compose.material.primarySurface
-import androidx.compose.material.rememberScaffoldState
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -56,7 +45,7 @@ fun Search(
     val menu = SearchNavMenu.values()
     val searchMenuId: Int by viewModel.selectedBottomNav.collectAsState()
     val scope = rememberCoroutineScope()
-    val scaffoldStateGame = rememberScaffoldState()
+    val snackbarHostState = remember { SnackbarHostState() }
     val lazyListStateSearchGames = rememberLazyListState()
     val lazyListStateGenre = rememberLazyListState()
     val lazyListStatePublisher = rememberLazyListState()
@@ -100,8 +89,10 @@ fun Search(
     }
 
     Scaffold(
-        modifier = Modifier.navigationBarsPadding().imePadding(),
-        backgroundColor = MaterialTheme.colors.primarySurface,
+        modifier = Modifier
+            .navigationBarsPadding()
+            .imePadding(),
+        containerColor = MaterialTheme.colorScheme.surface,
         bottomBar = {
             SearchBottomBar(menu = menu, menuId = searchMenuId, viewModel = viewModel)
         },
@@ -118,7 +109,7 @@ fun Search(
                         modifier = innerModifier,
                         viewModel = viewModel,
                         upPress = upPress,
-                        scaffoldState = scaffoldStateGame,
+                        snackbarHostState = snackbarHostState,
                         searchGameList = searchGameList,
                         lazyListStateSearchGames = lazyListStateSearchGames,
                         lazyListStateGenre = lazyListStateGenre,
@@ -173,15 +164,13 @@ fun SearchBottomBar(
     menuId: Int,
     viewModel: SearchViewModel
 ) {
-    BottomNavigation {
+    NavigationBar {
         menu.forEach { menu ->
-            BottomNavigationItem(
+            NavigationBarItem(
+                modifier = Modifier.navigationBarsPadding(),
                 icon = { Icon(imageVector = menu.icon, contentDescription = null) },
                 selected = menu == SearchNavMenu.getSearchNavMenu(menuId),
                 onClick = { viewModel.selectBottomNavMenu(menu.ordinal) },
-                selectedContentColor = MaterialTheme.colors.secondary,
-                unselectedContentColor = LocalContentColor.current,
-                modifier = Modifier.navigationBarsPadding()
             )
         }
     }

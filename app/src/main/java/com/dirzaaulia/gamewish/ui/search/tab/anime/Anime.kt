@@ -14,12 +14,14 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowDropUp
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
@@ -32,7 +34,6 @@ import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import com.dirzaaulia.gamewish.R
 import com.dirzaaulia.gamewish.data.model.myanimelist.ParentNode
-import com.dirzaaulia.gamewish.theme.White
 import com.dirzaaulia.gamewish.ui.common.CommonVerticalList
 import com.dirzaaulia.gamewish.ui.common.MyAnimeListWebViewClient
 import com.dirzaaulia.gamewish.ui.common.item.CommonMyAnimeListItem
@@ -42,7 +43,7 @@ import com.dirzaaulia.gamewish.utils.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun SearchAnime(
     modifier: Modifier = Modifier,
@@ -71,7 +72,7 @@ fun SearchAnime(
             BottomSheetScaffold(
                 scaffoldState = scaffoldState,
                 modifier = modifier,
-                backgroundColor = MaterialTheme.colors.primarySurface,
+                containerColor = MaterialTheme.colorScheme.surface,
                 topBar = {
                     SearchAnimeAppBar(
                         menuId = menuId,
@@ -160,7 +161,7 @@ fun SearchMangaList(
             && data.loadState.refresh is LoadState.NotLoading
         ) Text(
             text = stringResource(id = R.string.manga_data_source),
-            style = MaterialTheme.typography.caption,
+            style = MaterialTheme.typography.labelSmall,
         )
         CommonVerticalList(
             data = data,
@@ -197,7 +198,7 @@ fun SearchAnimeList(
         if (data.itemCount != 0 && data.loadState.refresh is LoadState.NotLoading) {
             Text(
                 text = stringResource(id = R.string.anime_data_source),
-                style = MaterialTheme.typography.caption,
+                style = MaterialTheme.typography.labelSmall,
             )
         }
         CommonVerticalList(
@@ -240,17 +241,17 @@ fun SeasonalAnime(
                     season.capitalizeWords(),
                     year
                 ),
-                style = MaterialTheme.typography.body1,
+                style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier.align(Alignment.CenterVertically)
             )
             IconButton(
                 modifier = Modifier.align(Alignment.CenterVertically),
                 onClick = {
                     scope.launch {
-                        if (scaffoldState.bottomSheetState.isCollapsed) {
+                        if (!scaffoldState.bottomSheetState.isVisible) {
                             scaffoldState.bottomSheetState.expand()
                         } else {
-                            scaffoldState.bottomSheetState.collapse()
+                            scaffoldState.bottomSheetState.hide()
                         }
                     }
                 }
@@ -264,7 +265,7 @@ fun SeasonalAnime(
         Text(
             modifier = Modifier.visible(visibility = data.loadState.refresh is LoadState.NotLoading),
             text = stringResource(id = R.string.seasonal_data_source),
-            style = MaterialTheme.typography.caption,
+            style = MaterialTheme.typography.labelSmall,
         )
         CommonVerticalList(
             data = data,
@@ -338,6 +339,7 @@ fun SeasonalAnimeSheet(
         ) {
             statusList.forEach { item ->
                 DropdownMenuItem(
+                    text = { Text(text = item) },
                     onClick = {
                         seasonText = item
                         seasonExpanded = false
@@ -350,9 +352,7 @@ fun SeasonalAnimeSheet(
                             )
                         )
                     }
-                ) {
-                    Text(text = item)
-                }
+                )
             }
         }
         OutlinedTextField(
@@ -384,16 +384,11 @@ fun SearchAnimeAppBar(
     val localFocusManager = LocalFocusManager.current
 
     TopAppBar(
-        elevation = 0.dp,
         modifier = Modifier
             .wrapContentHeight()
-            .statusBarsPadding()
-    ) {
-        Row(
-            horizontalArrangement = Arrangement.Start,
-            modifier = Modifier
-                .fillMaxWidth()
-        ) {
+            .statusBarsPadding(),
+        title = { },
+        actions = {
             IconButton(
                 modifier = Modifier.align(Alignment.CenterVertically),
                 onClick = { upPress() }
@@ -427,12 +422,12 @@ fun SearchAnimeAppBar(
                 },
                 singleLine = true,
                 colors = TextFieldDefaults.textFieldColors(
-                    backgroundColor = MaterialTheme.colors.primarySurface,
+                    containerColor = MaterialTheme.colorScheme.surface,
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent,
                     disabledIndicatorColor = Color.Transparent,
                     cursorColor = White,
-                    textColor = White,
+                    focusedTextColor = White,
                 ),
                 keyboardOptions = KeyboardOptions(
                     imeAction = ImeAction.Done
@@ -445,7 +440,7 @@ fun SearchAnimeAppBar(
                 )
             )
         }
-    }
+    )
 }
 
 @Composable

@@ -5,12 +5,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedButton
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.SignalWifiBad
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,7 +30,7 @@ fun ErrorConnect(
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colors.background)
+            .background(MaterialTheme.colorScheme.background)
     ) {
         val (constraintLayout) = createRefs()
         ConstraintLayout(
@@ -50,14 +50,14 @@ fun ErrorConnect(
                 Icon(
                     imageVector = Icons.Filled.SignalWifiBad,
                     contentDescription = OtherConstant.EMPTY_STRING,
-                    tint = MaterialTheme.colors.onSurface,
+                    tint = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.size(100.dp)
                 )
                 Text(
                     text = text,
                     textAlign = TextAlign.Center,
-                    color = MaterialTheme.colors.onSurface,
-                    style = MaterialTheme.typography.h6,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    style = MaterialTheme.typography.headlineLarge,
                     modifier = Modifier.padding(30.dp)
                 )
                 OutlinedButton(

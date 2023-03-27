@@ -7,14 +7,15 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
@@ -24,13 +25,13 @@ import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import com.dirzaaulia.gamewish.R
 import com.dirzaaulia.gamewish.data.model.tmdb.Movie
-import com.dirzaaulia.gamewish.theme.White
 import com.dirzaaulia.gamewish.ui.common.CommonVerticalList
 import com.dirzaaulia.gamewish.ui.common.item.CommonTmdbItem
 import com.dirzaaulia.gamewish.ui.search.SearchViewModel
 import com.dirzaaulia.gamewish.utils.PlaceholderConstant
+import com.dirzaaulia.gamewish.utils.TmdbConstant
 
-@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter", "UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun Movie(
     modifier: Modifier = Modifier,
@@ -48,7 +49,7 @@ fun Movie(
 
     Scaffold(
         modifier = modifier,
-        backgroundColor = MaterialTheme.colors.primarySurface,
+        containerColor = MaterialTheme.colorScheme.surface,
         topBar = {
             SearchMovieAppBar(
                 searchQuery = searchMovieQuery,
@@ -109,7 +110,7 @@ fun SearchTvList(
         if (data.itemCount != 0 && data.loadState.refresh is LoadState.NotLoading) {
             Text(
                 text = stringResource(id = R.string.tv_show_data_source),
-                style = MaterialTheme.typography.caption,
+                style = MaterialTheme.typography.labelSmall,
             )
         }
         CommonVerticalList(
@@ -121,7 +122,7 @@ fun SearchTvList(
         ) { movie ->
             CommonTmdbItem(
                 movie = movie,
-                type = "TV Show",
+                type = TmdbConstant.TMDB_TYPE_MOVIE,
                 navigateToDetails = navigateToTvDetails
             )
         }
@@ -149,7 +150,7 @@ fun SearchMovieList(
         if (data.itemCount != 0 && data.loadState.refresh is LoadState.NotLoading) {
             Text(
                 text = stringResource(id = R.string.movie_data_source),
-                style = MaterialTheme.typography.caption,
+                style = MaterialTheme.typography.labelSmall,
             )
         }
         CommonVerticalList(
@@ -178,15 +179,11 @@ fun SearchMovieAppBar(
     val localFocusManager = LocalFocusManager.current
 
     TopAppBar(
-        elevation = 0.dp,
         modifier = Modifier
             .wrapContentHeight()
-            .statusBarsPadding()
-    ) {
-        Row(
-            horizontalArrangement = Arrangement.Start,
-            modifier = Modifier.fillMaxSize()
-        ) {
+            .statusBarsPadding(),
+        title = { },
+        actions = {
             IconButton(
                 modifier = Modifier.align(Alignment.CenterVertically),
                 onClick = { upPress() }
@@ -215,12 +212,12 @@ fun SearchMovieAppBar(
                 },
                 singleLine = true,
                 colors = TextFieldDefaults.textFieldColors(
-                    backgroundColor = MaterialTheme.colors.primarySurface,
+                    containerColor = MaterialTheme.colorScheme.surface,
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent,
                     disabledIndicatorColor = Color.Transparent,
                     cursorColor = White,
-                    textColor = White,
+                    focusedTextColor = White,
                 ),
                 keyboardOptions = KeyboardOptions(
                     imeAction = ImeAction.Done
@@ -233,7 +230,7 @@ fun SearchMovieAppBar(
                 )
             )
         }
-    }
+    )
 }
 
 @Composable

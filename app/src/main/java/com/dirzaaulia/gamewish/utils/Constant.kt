@@ -127,6 +127,8 @@ object TmdbConstant {
     const val TMDB_STATUS = "Status"
     const val TMDB_RELEASE_DATE = "Release Date"
     const val TMDB_NO_RELEASE_DATE = "No Release Date"
+    const val TMDB_MOVIE_RECOMMENDATIONS_EMPTY = "There is no recommendations for this Movie"
+    const val TMDB_TV_RECOMMENDATIONS_EMPTY = "There is no recommendations for this TV Show"
 }
 
 object RawgConstant {
@@ -150,6 +152,7 @@ object RawgConstant {
     const val RAWG_UPDATE_WISHLIST = "Update Wishlist"
     const val RAWG_ADD_WISHLIST = "Add To Wishlist"
     const val RAWG_RELEASE_DATE = "Release Date"
+    const val RAWG_HOMEPAGE = "Homepage"
 }
 
 object CheapSharkConstant {

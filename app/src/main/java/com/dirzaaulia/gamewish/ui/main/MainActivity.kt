@@ -15,6 +15,7 @@ import com.dirzaaulia.gamewish.ui.home.HomeViewModel
 import com.dirzaaulia.gamewish.ui.navigation.NavGraph
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import com.google.android.material.color.DynamicColors
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -36,6 +37,8 @@ class MainActivity : ComponentActivity() {
             }
         }
 
+        val isDynamicColor = DynamicColors.isDynamicColorAvailable()
+
         setContent {
             navController = rememberAnimatedNavController()
 
@@ -48,7 +51,7 @@ class MainActivity : ComponentActivity() {
                 )
             }
 
-            GameWishTheme {
+            GameWishTheme(isDynamicColor = isDynamicColor) {
                 NavGraph(
                     navController = navController,
                     homeViewModel = homeViewModel

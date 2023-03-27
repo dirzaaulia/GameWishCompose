@@ -1,34 +1,20 @@
 package com.dirzaaulia.gamewish.ui.common.item
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.material.Card
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material3.Card
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import com.dirzaaulia.gamewish.data.model.myanimelist.ParentNode
-import com.dirzaaulia.gamewish.utils.MyAnimeListConstant
-import com.dirzaaulia.gamewish.utils.NetworkImage
-import com.dirzaaulia.gamewish.utils.OtherConstant
-import com.dirzaaulia.gamewish.utils.doBasedOnMyAnimeListType
-import com.dirzaaulia.gamewish.utils.myAnimeListStatusApiFormat
-import com.dirzaaulia.gamewish.utils.myAnimeListStatusFormatted
-import com.dirzaaulia.gamewish.utils.visible
+import com.dirzaaulia.gamewish.utils.*
 
 @Composable
 fun CommonMyAnimeListItem(
@@ -63,7 +49,6 @@ fun CommonMyAnimeListItem(
                     }
                 }
             ),
-        shape = MaterialTheme.shapes.large,
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -97,7 +82,7 @@ fun CommonMyAnimeListItem(
                         )
                         Text(
                             text = score.toString(),
-                            style = MaterialTheme.typography.caption
+                            style = MaterialTheme.typography.labelSmall
                         )
                     }
                 }
@@ -107,12 +92,12 @@ fun CommonMyAnimeListItem(
                 Text(
                     modifier = Modifier.visible(status != MyAnimeListConstant.MYANIMELIST_STATUS_ALL),
                     text = status,
-                    style = MaterialTheme.typography.caption
+                    style = MaterialTheme.typography.labelSmall
                 )
                 Text(
                     modifier = Modifier.padding(top = 4.dp),
                     text = parentNode.node?.title.toString(),
-                    style = MaterialTheme.typography.h6
+                    style = MaterialTheme.typography.headlineLarge
                 )
 
                 if (type.equals(MyAnimeListConstant.MYANIMELIST_TYPE_ANIME, true)) {
@@ -128,7 +113,7 @@ fun CommonMyAnimeListItem(
                             MyAnimeListConstant.MYANIMELIST_EPISODES,
                             MyAnimeListConstant.MYANIMELIST_WATCHED
                         ),
-                        style = MaterialTheme.typography.caption
+                        style = MaterialTheme.typography.labelSmall
                     )
                 }
                 else
@@ -144,7 +129,7 @@ fun CommonMyAnimeListItem(
                             MyAnimeListConstant.MYANIMELIST_CHAPTERS,
                             MyAnimeListConstant.MYANIMELIST_READ
                         ),
-                        style = MaterialTheme.typography.caption
+                        style = MaterialTheme.typography.labelSmall
                     )
             }
         }
