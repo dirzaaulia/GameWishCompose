@@ -6,18 +6,11 @@ import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.BottomSheetScaffold
-import androidx.compose.material3.SheetState
-import androidx.compose.material3.SheetValue
-import androidx.compose.material3.rememberBottomSheetScaffoldState
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -39,6 +32,7 @@ import com.dirzaaulia.gamewish.utils.OtherConstant
 import com.dirzaaulia.gamewish.utils.myAnimeListStatusFormatted
 import com.dirzaaulia.gamewish.utils.tmdbStatusFormatted
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -64,15 +58,12 @@ fun Wishlist(
     val scope = rememberCoroutineScope()
     val keyboardController = LocalSoftwareKeyboardController.current
     val scaffoldState = rememberBottomSheetScaffoldState(
-        bottomSheetState = SheetState(
-            skipPartiallyExpanded = true,
-            confirmValueChange = { sheetValue ->
-                if (sheetValue == SheetValue.Hidden) {
-                    keyboardController?.hide()
-                }
-                true
+        bottomSheetState = rememberStandardBottomSheetState { sheetValue ->
+            if (sheetValue == SheetValue.Expanded) {
+                keyboardController?.hide()
             }
-        )
+            true
+        }
     )
     val lazyListStateGame = rememberLazyListState()
     val lazyListStateAnime = rememberLazyListState()
