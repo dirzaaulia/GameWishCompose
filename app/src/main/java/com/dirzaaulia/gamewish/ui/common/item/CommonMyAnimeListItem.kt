@@ -1,7 +1,15 @@
 package com.dirzaaulia.gamewish.ui.common.item
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Card
@@ -11,10 +19,16 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.dirzaaulia.gamewish.data.model.myanimelist.ParentNode
-import com.dirzaaulia.gamewish.utils.*
+import com.dirzaaulia.gamewish.utils.MyAnimeListConstant
+import com.dirzaaulia.gamewish.utils.NetworkImage
+import com.dirzaaulia.gamewish.utils.OtherConstant
+import com.dirzaaulia.gamewish.utils.doBasedOnMyAnimeListType
+import com.dirzaaulia.gamewish.utils.myAnimeListStatusApiFormat
+import com.dirzaaulia.gamewish.utils.myAnimeListStatusFormatted
+import com.dirzaaulia.gamewish.utils.visible
 
 @Composable
 fun CommonMyAnimeListItem(
@@ -51,16 +65,16 @@ fun CommonMyAnimeListItem(
             ),
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .height(150.dp)
+                .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
             NetworkImage(
-                url = parentNode.node?.mainPicture?.large,
                 modifier = modifier
                     .width(100.dp)
-                    .height(150.dp)
                     .fillMaxHeight(),
-                contentScale = ContentScale.FillBounds
+                url = parentNode.node?.mainPicture?.large,
             )
             Column(
                 modifier = modifier
@@ -82,7 +96,7 @@ fun CommonMyAnimeListItem(
                         )
                         Text(
                             text = score.toString(),
-                            style = MaterialTheme.typography.labelSmall
+                            style = MaterialTheme.typography.bodyLarge
                         )
                     }
                 }
@@ -95,17 +109,18 @@ fun CommonMyAnimeListItem(
                     style = MaterialTheme.typography.labelSmall
                 )
                 Text(
-                    modifier = Modifier.padding(top = 4.dp),
                     text = parentNode.node?.title.toString(),
-                    style = MaterialTheme.typography.headlineLarge
+                    style = MaterialTheme.typography.titleLarge,
+                    overflow = TextOverflow.Ellipsis
                 )
 
                 if (type.equals(MyAnimeListConstant.MYANIMELIST_TYPE_ANIME, true)) {
                     Text(
                         modifier = Modifier
-                            .visible(status ==
-                                    MyAnimeListConstant.MYANIMELIST_STATUS_PLAN_TO_WATCH
-                                        .myAnimeListStatusApiFormat()
+                            .visible(
+                                status ==
+                                        MyAnimeListConstant.MYANIMELIST_STATUS_PLAN_TO_WATCH
+                                            .myAnimeListStatusApiFormat()
                             ),
                         text = String.format(
                             OtherConstant.STRING_FORMAT_S_SPACE_S_SPACE_S,
@@ -115,13 +130,13 @@ fun CommonMyAnimeListItem(
                         ),
                         style = MaterialTheme.typography.labelSmall
                     )
-                }
-                else
+                } else
                     Text(
                         modifier = Modifier
-                            .visible(status ==
-                                    MyAnimeListConstant.MYANIMELIST_STATUS_PLAN_TO_READ
-                                        .myAnimeListStatusApiFormat()
+                            .visible(
+                                status ==
+                                        MyAnimeListConstant.MYANIMELIST_STATUS_PLAN_TO_READ
+                                            .myAnimeListStatusApiFormat()
                             ),
                         text = String.format(
                             OtherConstant.STRING_FORMAT_S_SPACE_S_SPACE_S,

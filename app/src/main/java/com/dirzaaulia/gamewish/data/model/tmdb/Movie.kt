@@ -23,4 +23,5 @@ data class Movie (
     val posterPath: String? = OtherConstant.EMPTY_STRING,
     @Json(name = "release_date")
     val releaseDate: String = OtherConstant.EMPTY_STRING,
+    val status: String = OtherConstant.EMPTY_STRING
 ) : Parcelable

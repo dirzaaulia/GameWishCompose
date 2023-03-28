@@ -6,12 +6,13 @@ import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.material3.BottomSheetScaffold
+import androidx.compose.material3.rememberBottomSheetScaffoldState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.paging.compose.LazyPagingItems
@@ -31,10 +32,7 @@ import com.dirzaaulia.gamewish.utils.MyAnimeListConstant
 import com.dirzaaulia.gamewish.utils.OtherConstant
 import com.dirzaaulia.gamewish.utils.myAnimeListStatusFormatted
 import com.dirzaaulia.gamewish.utils.tmdbStatusFormatted
-import kotlinx.coroutines.launch
-import timber.log.Timber
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun Wishlist(
     modifier: Modifier = Modifier,
@@ -56,15 +54,7 @@ fun Wishlist(
     val movieStatus by viewModel.movieStatus.collectAsState()
     val tvShowStatus by viewModel.tvShowStatus.collectAsState()
     val scope = rememberCoroutineScope()
-    val keyboardController = LocalSoftwareKeyboardController.current
-    val scaffoldState = rememberBottomSheetScaffoldState(
-        bottomSheetState = rememberStandardBottomSheetState { sheetValue ->
-            if (sheetValue == SheetValue.Expanded) {
-                keyboardController?.hide()
-            }
-            true
-        }
-    )
+    val scaffoldState = rememberBottomSheetScaffoldState()
     val lazyListStateGame = rememberLazyListState()
     val lazyListStateAnime = rememberLazyListState()
     val lazyListStateManga = rememberLazyListState()
@@ -216,10 +206,6 @@ fun Wishlist(
                             errorString = stringResource(id = R.string.movie_list_error)
                         )
                     }
-                }
-                LaunchedEffect(WishlistTab.getTabFromResource(menuId)) {
-                    viewModel.selectWishlistTab(menuId)
-                    scaffoldState.bottomSheetState.hide()
                 }
             }
         }

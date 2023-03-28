@@ -45,7 +45,6 @@ fun SearchGame(
     modifier: Modifier = Modifier,
     viewModel: SearchViewModel,
     upPress: () -> Unit,
-    snackbarHostState: SnackbarHostState,
     lazyListStateSearchGames: LazyListState,
     lazyListStateGenre: LazyListState,
     lazyListStatePublisher: LazyListState,
@@ -60,57 +59,53 @@ fun SearchGame(
     val menu = SearchGameTab.values()
     val menuId: Int by viewModel.selectedSearchGameTab.collectAsState(initial = 0)
 
-    Scaffold(
+    Column(
         modifier = modifier,
-        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
-        containerColor = MaterialTheme.colorScheme.surface,
-        topBar = {
-            SearchGameAppBar(
-                searchQuery = searchGameRequest.searchQuery,
-                viewModel = viewModel,
-                upPress = upPress
-            )
-        }
     ) {
-        Scaffold(
-            topBar = { SearchGameTabMenu(menu = menu, menuId = menuId, viewModel = viewModel) }
-        ) {
-            Crossfade(
-                targetState = SearchGameTab.getTabFromResource(menuId),
-                label = OtherConstant.EMPTY_STRING
-            ) { destination ->
-                when (destination) {
-                    SearchGameTab.LIST -> {
-                        SearchGameList(
-                            navigateToGameDetails = navigateToGameDetails,
-                            data = searchGameList,
-                            lazyListStateSearchGames = lazyListStateSearchGames,
-                        )
-                    }
-                    SearchGameTab.GENRES -> {
-                        SearchGameTabList(
-                            data = genre,
-                            type = SearchTabType.GENRE,
-                            lazyListState = lazyListStateGenre,
-                            viewModel = viewModel,
-                        )
-                    }
-                    SearchGameTab.PUBLISHER -> {
-                        SearchGameTabList(
-                            data = publisher,
-                            type = SearchTabType.PUBLISHER,
-                            lazyListState = lazyListStatePublisher,
-                            viewModel = viewModel,
-                        )
-                    }
-                    SearchGameTab.PLATFORMS -> {
-                        SearchGameTabList(
-                            data = platform,
-                            type = SearchTabType.PLATFORM,
-                            lazyListState = lazyListStatePlatform,
-                            viewModel = viewModel,
-                        )
-                    }
+        SearchGameAppBar(
+            searchQuery = searchGameRequest.searchQuery,
+            viewModel = viewModel,
+            upPress = upPress
+        )
+        SearchGameTabMenu(menu = menu, menuId = menuId, viewModel = viewModel)
+        Crossfade(
+            targetState = SearchGameTab.getTabFromResource(menuId),
+            label = OtherConstant.EMPTY_STRING
+        ) { destination ->
+            when (destination) {
+                SearchGameTab.LIST -> {
+                    SearchGameList(
+                        navigateToGameDetails = navigateToGameDetails,
+                        data = searchGameList,
+                        lazyListStateSearchGames = lazyListStateSearchGames,
+                    )
+                }
+
+                SearchGameTab.GENRES -> {
+                    SearchGameTabList(
+                        data = genre,
+                        type = SearchTabType.GENRE,
+                        lazyListState = lazyListStateGenre,
+                        viewModel = viewModel,
+                    )
+                }
+
+                SearchGameTab.PUBLISHER -> {
+                    SearchGameTabList(
+                        data = publisher,
+                        type = SearchTabType.PUBLISHER,
+                        lazyListState = lazyListStatePublisher,
+                        viewModel = viewModel,
+                    )
+                }
+
+                SearchGameTab.PLATFORMS -> {
+                    SearchGameTabList(
+                        data = platform,
+                        type = SearchTabType.PLATFORM,
+                        lazyListState = lazyListStatePlatform,
+                        viewModel = viewModel,
+                    )
                 }
             }
         }
@@ -187,10 +182,7 @@ fun SearchGameAppBar(
 
     Row(
         horizontalArrangement = Arrangement.Start,
-        modifier = Modifier
-            .fillMaxWidth()
-            .wrapContentHeight()
-            .statusBarsPadding()
+        modifier = Modifier.fillMaxWidth()
     ) {
         IconButton(
             modifier = Modifier.align(Alignment.CenterVertically),
@@ -203,9 +195,6 @@ fun SearchGameAppBar(
             )
         }
         TextField(
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxHeight(),
             value = query,
             onValueChange = {
                 query = it

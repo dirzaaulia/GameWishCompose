@@ -52,7 +52,7 @@ fun SearchGameTabItem(
             )
             Text(
                 text = searchTab.name,
-                style = MaterialTheme.typography.labelLarge,
+                style = MaterialTheme.typography.headlineLarge,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(start = 8.dp, top = 4.dp, bottom = 4.dp)

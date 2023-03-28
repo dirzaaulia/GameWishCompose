@@ -39,9 +39,7 @@ fun About(
 
     val accessToken by viewModel.token.collectAsState()
 
-    Scaffold(
-        modifier = modifier.statusBarsPadding(),
-    ) {
+    Scaffold(modifier = modifier) {
         LazyColumn {
             item {
                 GoogleSection(
@@ -113,21 +111,20 @@ fun GoogleSection(
                         modifier = Modifier.fillMaxWidth(),
                         textAlign = TextAlign.Center,
                         text = googleUsername,
-                        style = MaterialTheme.typography.headlineLarge
+                        style = MaterialTheme.typography.titleMedium
                     )
                     OutlinedButton(
                         modifier = Modifier
-                            .padding(top = 4.dp)
-                            .fillMaxWidth(),
+                            .fillMaxWidth()
+                            .defaultMinSize(minWidth = 1.dp, minHeight = 1.dp),
                         onClick = {
                             viewModel.logoutGoogle()
                             googleSignInClient.signOut()
                             viewModel.selectBottomNavMenu(R.string.wishlist)
                         },
+                        contentPadding = PaddingValues(4.dp)
                     ) {
                         Text(
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurface,
                             text = OtherConstant.LOGOUT_ACCOUNT
                         )
                     }
@@ -147,8 +144,7 @@ fun MyAnimeListSection(
 ) {
 
     Card(
-        modifier = Modifier.padding(8.dp),
-        shape = MaterialTheme.shapes.large
+        modifier = Modifier.padding(8.dp)
     ) {
         Column(modifier = Modifier.padding(8.dp)) {
             Text(text = MyAnimeListConstant.MYANIMELIST_ACCOUNT)
@@ -176,21 +172,20 @@ fun MyAnimeListSection(
                                     textAlign = TextAlign.Center,
                                     modifier = Modifier.fillMaxWidth(),
                                     text = username,
-                                    style = MaterialTheme.typography.headlineLarge
+                                    style = MaterialTheme.typography.titleMedium
                                 )
                             }
                             OutlinedButton(
                                 modifier = Modifier
-                                    .padding(top = 4.dp)
-                                    .fillMaxWidth(),
+                                    .fillMaxWidth()
+                                    .defaultMinSize(minWidth = 1.dp, minHeight = 1.dp),
                                 onClick = {
                                     viewModel.setAccessToken(OtherConstant.EMPTY_STRING)
                                     viewModel.getAccessToken()
                                 },
+                                contentPadding = PaddingValues(4.dp),
                             ) {
                                 Text(
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = MaterialTheme.colorScheme.onSurface,
                                     text = OtherConstant.UNLINK_ACOCUNT
                                 )
                             }
@@ -228,8 +223,7 @@ fun MyAnimeListSection(
 fun GameWishAboutSection() {
     val context = LocalContext.current
     Card(
-        modifier = Modifier.padding(8.dp),
-        shape = MaterialTheme.shapes.large
+        modifier = Modifier.padding(8.dp)
     ) {
         Column(modifier = Modifier.padding(8.dp)) {
             Text(text = OtherConstant.ABOUT_GAMEWISH)
@@ -265,8 +259,7 @@ fun GameWishAboutSection() {
 fun DataSourceSection() {
     val context = LocalContext.current
     Card(
-        modifier = Modifier.padding(8.dp),
-        shape = MaterialTheme.shapes.large
+        modifier = Modifier.padding(8.dp)
     ) {
         Column(modifier = Modifier.padding(8.dp)) {
             Text(text = OtherConstant.DATA_SOURCE)
@@ -326,8 +319,7 @@ fun DataSourceSection() {
 fun ContactMeSection() {
     val context = LocalContext.current
     Card(
-        modifier = Modifier.padding(8.dp),
-        shape = MaterialTheme.shapes.large
+        modifier = Modifier.padding(8.dp)
     ) {
         Column(modifier = Modifier.padding(8.dp)) {
             Text(text = stringResource(R.string.contact))
@@ -338,15 +330,13 @@ fun ContactMeSection() {
             )
             OutlinedButton(
                 modifier = Modifier
-                    .padding(top = 4.dp)
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .defaultMinSize(minWidth = 1.dp, minHeight = 1.dp),
                 onClick = {
                     context.sendEmail()
                 },
             ) {
                 Text(
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurface,
                     text = stringResource(R.string.send_e_mail)
                 )
             }

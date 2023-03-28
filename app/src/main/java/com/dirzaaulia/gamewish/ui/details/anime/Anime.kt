@@ -76,7 +76,6 @@ fun AnimeDetails(
         dataResult.isSucceeded -> {
             Scaffold(
                 modifier = Modifier.navigationBarsPadding(),
-                containerColor = MaterialTheme.colorScheme.surface,
                 topBar = {
                     data?.title?.let { title: String ->
                         AnimeDetailsTopBar(
@@ -85,8 +84,9 @@ fun AnimeDetails(
                         )
                     }
                 }
-            ) {
+            ) { scaffoldInnerPadding ->
                 BottomSheetScaffold(
+                    modifier = Modifier.padding(scaffoldInnerPadding),
                     scaffoldState = scaffoldState,
                     topBar = {
                         AnimeDetailsTabMenu(
@@ -130,7 +130,6 @@ fun AnimeDetails(
                                         type.doBasedOnMyAnimeListType(
                                             doIfAnime = { viewModel.getAnimeDetails(id) },
                                             doIfManga = { viewModel.getMangaDetails(id) }
-
                                         )
                                     }
                                 }
@@ -226,6 +225,7 @@ fun AnimeDetails(
                 }
             }
         }
+
         dataResult.isError -> {
             val snackbarHostState = remember { SnackbarHostState() }
 
@@ -427,13 +427,12 @@ fun AnimeDescriptionHeader(
     type: String,
     data: Details
 ) {
-    Row(modifier = Modifier.height(300.dp)) {
+    Row(modifier = Modifier.height(320.dp)) {
         Card(
             modifier = Modifier
                 .fillMaxHeight()
                 .padding(end = 4.dp)
                 .weight(1f),
-            shape = MaterialTheme.shapes.small
         ) {
             if (!data.pictures.isNullOrEmpty()) {
                 val pagerState = rememberPagerState()
@@ -443,6 +442,7 @@ fun AnimeDescriptionHeader(
                 )
             } else if (data.pictures?.isEmpty() == true) {
                 NetworkImage(
+                    modifier = Modifier.fillMaxSize(),
                     url = OtherConstant.NO_IMAGE_URL,
                     contentDescription = OtherConstant.EMPTY_STRING,
                 )
@@ -451,52 +451,33 @@ fun AnimeDescriptionHeader(
         Card(
             modifier = Modifier
                 .fillMaxHeight()
-                .padding(start = 8.dp)
                 .weight(1f),
-            shape = MaterialTheme.shapes.small
         ) {
             Column(
                 modifier = Modifier.padding(8.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.SpaceEvenly
             ) {
-                Card(
-                    shape = MaterialTheme.shapes.small,
-                    modifier = Modifier
-                        .padding(4.dp)
-                        .fillMaxWidth()
-                ) {
-                    Text(
-                        text = type,
-                        color = White,
-                        style = MaterialTheme.typography.labelSmall,
-                        modifier = Modifier.padding(4.dp),
-                        textAlign = TextAlign.Center
+                AssistChip(
+                    onClick = { },
+                    label = { Text(text = type) }
+                )
+                data.status?.let { status ->
+                    AssistChip(
+                        onClick = { },
+                        label = {
+                            Text(
+                                text = status.myAnimeListStatusFormatted(
+                                    OtherConstant.EMPTY_STRING
+                                )
+                            )
+                        }
                     )
-                }
-                Card(
-                    shape = MaterialTheme.shapes.small,
-                    modifier = Modifier
-                        .padding(4.dp)
-                        .fillMaxWidth()
-                ) {
-                    data.status?.let { status ->
-                        Text(
-                            text = status.myAnimeListStatusFormatted(
-                                OtherConstant.EMPTY_STRING
-                            ),
-                            color = White,
-                            style = MaterialTheme.typography.labelSmall,
-                            modifier = Modifier.padding(4.dp),
-                            textAlign = TextAlign.Center
-                        )
-                    }
                 }
                 Text(
                     text = data.mediaType.animeSourceFormat(),
-                    style = MaterialTheme.typography.bodyLarge,
+                    style = MaterialTheme.typography.titleMedium,
                 )
-
                 val episodes = type.setStringBasedOnMyAnimeListType(
                     setIfAnime = String.format(
                         OtherConstant.STRING_FORMAT_S_SPACE_S,
@@ -512,20 +493,20 @@ fun AnimeDescriptionHeader(
                 Text(
                     text = episodes,
                     color = Color.Gray,
-                    style = MaterialTheme.typography.labelSmall,
+                    style = MaterialTheme.typography.labelLarge,
                 )
                 Text(
                     text = MyAnimeListConstant.MYANIMELIST_SCORE,
-                    style = MaterialTheme.typography.bodyLarge,
+                    style = MaterialTheme.typography.titleMedium,
                 )
                 Text(
                     text = data.mean.toString(),
                     color = Color.Gray,
-                    style = MaterialTheme.typography.labelSmall,
+                    style = MaterialTheme.typography.labelLarge,
                 )
                 Text(
                     text = MyAnimeListConstant.MYANIMELIST_RANK,
-                    style = MaterialTheme.typography.bodyLarge,
+                    style = MaterialTheme.typography.titleMedium,
                 )
                 Text(
                     text = String.format(
@@ -534,11 +515,11 @@ fun AnimeDescriptionHeader(
                         data.rank.toString()
                     ),
                     color = Color.Gray,
-                    style = MaterialTheme.typography.labelSmall,
+                    style = MaterialTheme.typography.labelLarge,
                 )
                 Text(
                     text = MyAnimeListConstant.MYANIMELIST_POPULARITY,
-                    style = MaterialTheme.typography.bodyLarge,
+                    style = MaterialTheme.typography.titleMedium,
                 )
                 Text(
                     text = String.format(
@@ -547,16 +528,16 @@ fun AnimeDescriptionHeader(
                         data.popularity.toString()
                     ),
                     color = Color.Gray,
-                    style = MaterialTheme.typography.labelSmall,
+                    style = MaterialTheme.typography.labelLarge,
                 )
                 Text(
                     text = MyAnimeListConstant.MYANIMELIST_MEMBERS,
-                    style = MaterialTheme.typography.bodyLarge,
+                    style = MaterialTheme.typography.titleMedium,
                 )
                 Text(
                     text = data.members?.toDouble().toNumberFormat(),
                     color = Color.Gray,
-                    style = MaterialTheme.typography.labelSmall,
+                    style = MaterialTheme.typography.labelLarge,
                 )
             }
         }
@@ -655,7 +636,7 @@ fun AnimeDescriptionFooter(
             Text(
                 textAlign = TextAlign.Justify,
                 text = it.fromHtml(),
-                style = MaterialTheme.typography.bodySmall,
+                style = MaterialTheme.typography.bodyMedium,
             )
         }
         data.background?.let { background ->
@@ -668,7 +649,7 @@ fun AnimeDescriptionFooter(
                 Text(
                     textAlign = TextAlign.Justify,
                     text = background.fromHtml(),
-                    style = MaterialTheme.typography.bodySmall,
+                    style = MaterialTheme.typography.bodyMedium,
                 )
             }
         }
@@ -682,27 +663,24 @@ fun AnimeDetailsTopBar(
 ) {
     TopAppBar(
         modifier = Modifier
-            .wrapContentHeight()
-            .statusBarsPadding(),
-        title = { },
-        actions = {
-            IconButton(
-                modifier = Modifier.align(Alignment.CenterVertically),
-                onClick = { upPress() }
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.ArrowBack,
-                    contentDescription = OtherConstant.EMPTY_STRING,
-                    tint = White
-                )
-            }
+            .wrapContentHeight(),
+        title = {
             Text(
-                modifier = Modifier.align(Alignment.CenterVertically),
                 text = title,
                 softWrap = true,
                 style = MaterialTheme.typography.headlineLarge,
                 color = White
             )
+        },
+        navigationIcon = {
+            IconButton(
+                onClick = { upPress() }
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.ArrowBack,
+                    contentDescription = OtherConstant.EMPTY_STRING,
+                )
+            }
         }
     )
 }

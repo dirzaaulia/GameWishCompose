@@ -11,7 +11,7 @@ import com.dirzaaulia.gamewish.utils.OtherConstant
 
 @Database(
     entities = [GameWishlist::class, MovieWishlist::class],
-    version = OtherConstant.FOUR,
+    version = OtherConstant.FIVE,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {

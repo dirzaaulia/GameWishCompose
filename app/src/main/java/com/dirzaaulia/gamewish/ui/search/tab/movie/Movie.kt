@@ -28,10 +28,11 @@ import com.dirzaaulia.gamewish.data.model.tmdb.Movie
 import com.dirzaaulia.gamewish.ui.common.CommonVerticalList
 import com.dirzaaulia.gamewish.ui.common.item.CommonTmdbItem
 import com.dirzaaulia.gamewish.ui.search.SearchViewModel
+import com.dirzaaulia.gamewish.utils.OtherConstant
 import com.dirzaaulia.gamewish.utils.PlaceholderConstant
 import com.dirzaaulia.gamewish.utils.TmdbConstant
 
-@SuppressLint("UnusedMaterialScaffoldPaddingParameter", "UnusedMaterial3ScaffoldPaddingParameter")
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun Movie(
     modifier: Modifier = Modifier,
@@ -47,43 +48,33 @@ fun Movie(
     val menu = SearchMovieTab.values()
     val menuId: Int by viewModel.selectedSearchMovieTab.collectAsState(initial = 0)
 
-    Scaffold(
-        modifier = modifier,
-        containerColor = MaterialTheme.colorScheme.surface,
-        topBar = {
-            SearchMovieAppBar(
-                searchQuery = searchMovieQuery,
-                viewModel = viewModel,
-                upPress = upPress
-            )
-        },
-    ) {
-        Scaffold(
-            topBar = {
-                SearchMovieTabMenu(menu = menu, menuId = menuId, viewModel = viewModel)
-            }
-        ) {
-            Crossfade(
-                targetState = SearchMovieTab.getTabFromResource(menuId),
-                label = ""
-            ) { destination ->
-                when (destination) {
-                    SearchMovieTab.MOVIE -> {
-                        SearchMovieList(
-                            data = searchMovieList,
-                            lazyListState = lazyListStateMovie,
-                            searchMovieQuery = searchMovieQuery,
-                            navigateToMovieDetails = navigateToMovieDetails
-                        )
-                    }
-                    SearchMovieTab.TVSHOW -> {
-                        SearchTvList(
-                            data = searchTvList,
-                            lazyListState = lazyListStateTv,
-                            searchMovieQuery = searchMovieQuery,
-                            navigateToTvDetails = navigateToMovieDetails
-                        )
-                    }
+    Column(modifier = modifier) {
+        SearchMovieAppBar(
+            searchQuery = searchMovieQuery,
+            viewModel = viewModel,
+            upPress = upPress
+        )
+        SearchMovieTabMenu(menu = menu, menuId = menuId, viewModel = viewModel)
+        Crossfade(
+            targetState = SearchMovieTab.getTabFromResource(menuId),
+            label = OtherConstant.EMPTY_STRING
+        ) { destination ->
+            when (destination) {
+                SearchMovieTab.MOVIE -> {
+                    SearchMovieList(
+                        data = searchMovieList,
+                        lazyListState = lazyListStateMovie,
+                        searchMovieQuery = searchMovieQuery,
+                        navigateToMovieDetails = navigateToMovieDetails
+                    )
+                }
+                SearchMovieTab.TVSHOW -> {
+                    SearchTvList(
+                        data = searchTvList,
+                        lazyListState = lazyListStateTv,
+                        searchMovieQuery = searchMovieQuery,
+                        navigateToTvDetails = navigateToMovieDetails
+                    )
                 }
             }
         }
@@ -97,9 +88,9 @@ fun SearchTvList(
     searchMovieQuery: String,
     navigateToTvDetails: (Long, String) -> Unit
 ) {
-    Column (
+    Column(
         modifier = Modifier.padding(top = 4.dp, start = 8.dp, end = 8.dp)
-    ){
+    ) {
 
         val emptyString = if (searchMovieQuery.isBlank()) {
             stringResource(id = R.string.search_tv_empty_query)
@@ -122,7 +113,7 @@ fun SearchTvList(
         ) { movie ->
             CommonTmdbItem(
                 movie = movie,
-                type = TmdbConstant.TMDB_TYPE_MOVIE,
+                type = TmdbConstant.TMDB_TYPE_TVSHOW,
                 navigateToDetails = navigateToTvDetails
             )
         }
@@ -137,10 +128,7 @@ fun SearchMovieList(
     searchMovieQuery: String,
     navigateToMovieDetails: (Long, String) -> Unit
 ) {
-    Column (
-        modifier = Modifier.padding(top = 4.dp, start = 8.dp, end = 8.dp)
-    ){
-
+    Column {
         val emptyString = if (searchMovieQuery.isBlank()) {
             stringResource(id = R.string.search_movie_empty_query)
         } else {
@@ -162,7 +150,7 @@ fun SearchMovieList(
         ) { movie ->
             CommonTmdbItem(
                 movie = movie,
-                type = "Movie",
+                type = TmdbConstant.TMDB_TYPE_MOVIE,
                 navigateToDetails = navigateToMovieDetails
             )
         }
@@ -178,59 +166,50 @@ fun SearchMovieAppBar(
     var query by rememberSaveable { mutableStateOf(searchQuery) }
     val localFocusManager = LocalFocusManager.current
 
-    TopAppBar(
-        modifier = Modifier
-            .wrapContentHeight()
-            .statusBarsPadding(),
-        title = { },
-        actions = {
-            IconButton(
-                modifier = Modifier.align(Alignment.CenterVertically),
-                onClick = { upPress() }
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.ArrowBack,
-                    contentDescription = null,
-                    tint = White
-                )
-            }
-            TextField(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxHeight(),
-                value = query,
-                onValueChange = {
-                    query = it
-                    viewModel.setSearchMovieQuery(query)
-                },
-                shape = RectangleShape,
-                placeholder = {
-                    Text(
-                        text = stringResource(id = R.string.search_movie),
-                        color = White
-                    )
-                },
-                singleLine = true,
-                colors = TextFieldDefaults.textFieldColors(
-                    containerColor = MaterialTheme.colorScheme.surface,
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                    disabledIndicatorColor = Color.Transparent,
-                    cursorColor = White,
-                    focusedTextColor = White,
-                ),
-                keyboardOptions = KeyboardOptions(
-                    imeAction = ImeAction.Done
-                ),
-                keyboardActions = KeyboardActions(
-                    onDone = {
-                        localFocusManager.clearFocus()
-                        viewModel.setSearchMovieQuery(query)
-                    }
-                )
+    Row {
+        IconButton(
+            modifier = Modifier.align(Alignment.CenterVertically),
+            onClick = { upPress() }
+        ) {
+            Icon(
+                imageVector = Icons.Filled.ArrowBack,
+                contentDescription = null,
+                tint = White
             )
         }
-    )
+        TextField(
+            value = query,
+            onValueChange = {
+                query = it
+                viewModel.setSearchMovieQuery(query)
+            },
+            shape = RectangleShape,
+            placeholder = {
+                Text(
+                    text = stringResource(id = R.string.search_movie),
+                    color = White
+                )
+            },
+            singleLine = true,
+            colors = TextFieldDefaults.textFieldColors(
+                containerColor = MaterialTheme.colorScheme.surface,
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                disabledIndicatorColor = Color.Transparent,
+                cursorColor = White,
+                focusedTextColor = White,
+            ),
+            keyboardOptions = KeyboardOptions(
+                imeAction = ImeAction.Done
+            ),
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    localFocusManager.clearFocus()
+                    viewModel.setSearchMovieQuery(query)
+                }
+            )
+        )
+    }
 }
 
 @Composable
@@ -250,7 +229,7 @@ fun SearchMovieTabMenu(
     }
 }
 
-enum class SearchMovieTab (@StringRes val title: Int) {
+enum class SearchMovieTab(@StringRes val title: Int) {
     MOVIE(R.string.movie),
     TVSHOW(R.string.tv_show);
 

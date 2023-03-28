@@ -4,6 +4,7 @@ import android.os.Parcelable
 import androidx.annotation.Keep
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.dirzaaulia.gamewish.utils.OtherConstant
 import kotlinx.parcelize.Parcelize
 
 @Keep
@@ -11,9 +12,9 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class MovieWishlist(
     @PrimaryKey
-    var id: Long? = null,
-    var name: String? = null,
-    val image: String? = null,
-    val status: String? = null,
-    var type: String? = null,
+    var id: Long = OtherConstant.ZERO_LONG,
+    var name: String = OtherConstant.EMPTY_STRING,
+    val image: String = OtherConstant.EMPTY_STRING,
+    val status: String = OtherConstant.EMPTY_STRING,
+    var type: String = OtherConstant.EMPTY_STRING,
 ) : Parcelable

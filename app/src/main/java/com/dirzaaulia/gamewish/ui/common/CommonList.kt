@@ -88,7 +88,7 @@ private fun CommonVerticalListLoading(
                 }
                 PlaceholderConstant.MOVIE_WISHLIST -> {
                     CommonItemPlaceholder(
-                        height = 240.dp,
+                        height = 150.dp,
                         shape = MaterialTheme.shapes.medium
                     )
                 }

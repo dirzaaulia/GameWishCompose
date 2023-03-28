@@ -6,7 +6,6 @@ import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
@@ -70,8 +69,8 @@ fun SearchAnime(
     when {
         accessTokenResult.isSucceeded -> {
             BottomSheetScaffold(
-                scaffoldState = scaffoldState,
                 modifier = modifier,
+                scaffoldState = scaffoldState,
                 containerColor = MaterialTheme.colorScheme.surface,
                 topBar = {
                     SearchAnimeAppBar(
@@ -88,13 +87,9 @@ fun SearchAnime(
                     )
                 },
                 sheetPeekHeight = 0.dp,
-                sheetShape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp)
-            ) {
-                Scaffold(
-                    topBar = {
-                        SearchAnimeTabMenu(menu = menu, menuId = menuId, viewModel = viewModel)
-                    }
-                ) {
+            ) { bottomSheetPadding ->
+                Column {
+                    SearchAnimeTabMenu(menu = menu, menuId = menuId, viewModel = viewModel)
                     Crossfade(
                         targetState = SearchAnimeTab.getTabFromResource(menuId),
                         label = OtherConstant.EMPTY_STRING
@@ -102,6 +97,7 @@ fun SearchAnime(
                         when (destination) {
                             SearchAnimeTab.SEASONAL -> {
                                 SeasonalAnime(
+                                    modifier = Modifier.padding(bottomSheetPadding),
                                     seasonalAnimeQuery = seasonalAnimeQuery,
                                     data = seasonalAnimeList,
                                     lazyListState = lazyListStateSeasonalAnime,
@@ -219,6 +215,7 @@ fun SearchAnimeList(
 
 @Composable
 fun SeasonalAnime(
+    modifier: Modifier = Modifier,
     seasonalAnimeQuery: String,
     data: LazyPagingItems<ParentNode>,
     lazyListState: LazyListState,
@@ -232,7 +229,7 @@ fun SeasonalAnime(
     val year = seasonal[1]
 
     Column(
-        modifier = Modifier.padding(top = 4.dp, start = 8.dp, end = 8.dp)
+        modifier = modifier.padding(top = 4.dp, start = 8.dp, end = 8.dp)
     ) {
         Row {
             Text(
@@ -248,11 +245,7 @@ fun SeasonalAnime(
                 modifier = Modifier.align(Alignment.CenterVertically),
                 onClick = {
                     scope.launch {
-                        if (!scaffoldState.bottomSheetState.isVisible) {
-                            scaffoldState.bottomSheetState.expand()
-                        } else {
-                            scaffoldState.bottomSheetState.hide()
-                        }
+                        scaffoldState.bottomSheetState.expand()
                     }
                 }
             ) {
@@ -383,64 +376,57 @@ fun SearchAnimeAppBar(
     var query by rememberSaveable { mutableStateOf(searchQuery) }
     val localFocusManager = LocalFocusManager.current
 
-    TopAppBar(
-        modifier = Modifier
-            .wrapContentHeight()
-            .statusBarsPadding(),
-        title = { },
-        actions = {
-            IconButton(
-                modifier = Modifier.align(Alignment.CenterVertically),
-                onClick = { upPress() }
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.ArrowBack,
-                    contentDescription = OtherConstant.EMPTY_STRING,
-                    tint = White
-                )
-            }
-            TextField(
-                modifier = Modifier
-                    .align(Alignment.CenterVertically)
-                    .weight(1f)
-                    .fillMaxHeight(),
-                value = query,
-                onValueChange = {
-                    query = it
-
-                    if (menuId == 0) {
-                        viewModel.selectSearchAnimeTab(1)
-                    }
-                    viewModel.setSearchAnimeQuery(query)
-                },
-                shape = RectangleShape,
-                placeholder = {
-                    Text(
-                        text = stringResource(id = R.string.search_anime),
-                        color = White
-                    )
-                },
-                singleLine = true,
-                colors = TextFieldDefaults.textFieldColors(
-                    containerColor = MaterialTheme.colorScheme.surface,
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                    disabledIndicatorColor = Color.Transparent,
-                    cursorColor = White,
-                    focusedTextColor = White,
-                ),
-                keyboardOptions = KeyboardOptions(
-                    imeAction = ImeAction.Done
-                ),
-                keyboardActions = KeyboardActions(
-                    onDone = {
-                        localFocusManager.clearFocus()
-                        viewModel.setSearchAnimeQuery(query)
-                    }
-                )
+    Row {
+        IconButton(
+            modifier = Modifier.align(Alignment.CenterVertically),
+            onClick = { upPress() }
+        ) {
+            Icon(
+                imageVector = Icons.Filled.ArrowBack,
+                contentDescription = OtherConstant.EMPTY_STRING,
+                tint = White
             )
         }
-    )
+        TextField(
+            modifier = Modifier
+                .align(Alignment.CenterVertically)
+                .weight(1f),
+            value = query,
+            onValueChange = {
+                query = it
+
+                if (menuId == 0) {
+                    viewModel.selectSearchAnimeTab(1)
+                }
+                viewModel.setSearchAnimeQuery(query)
+            },
+            shape = RectangleShape,
+            placeholder = {
+                Text(
+                    text = stringResource(id = R.string.search_anime),
+                    color = White
+                )
+            },
+            singleLine = true,
+            colors = TextFieldDefaults.textFieldColors(
+                containerColor = MaterialTheme.colorScheme.surface,
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                disabledIndicatorColor = Color.Transparent,
+                cursorColor = White,
+                focusedTextColor = White,
+            ),
+            keyboardOptions = KeyboardOptions(
+                imeAction = ImeAction.Done
+            ),
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    localFocusManager.clearFocus()
+                    viewModel.setSearchAnimeQuery(query)
+                }
+            )
+        )
+    }
 }
 
 @Composable

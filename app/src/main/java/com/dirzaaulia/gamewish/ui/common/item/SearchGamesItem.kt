@@ -44,7 +44,7 @@ fun SearchGamesItem(
             )
             Text(
                 text = games.name.toString(),
-                style = MaterialTheme.typography.headlineLarge,
+                style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier
                     .padding(start = 8.dp, end = 4.dp, top = 4.dp)
                     .fillMaxWidth()

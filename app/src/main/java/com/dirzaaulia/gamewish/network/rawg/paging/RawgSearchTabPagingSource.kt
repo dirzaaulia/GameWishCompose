@@ -28,12 +28,12 @@ class RawgSearchTabPagingSource(
         val page = params.key.replaceIfNull(OtherConstant.ONE)
         return when (searchTabType) {
             SearchTabType.GENRE -> repository.getGenres(page).pagingSucceeded { data ->
-                LoadResult.Page(
-                    data = data.map { it.toSearchTab() },
-                    prevKey = if (page == OtherConstant.ONE) null else page - OtherConstant.ONE,
-                    nextKey = if (data.isEmpty()) null else page.plus(OtherConstant.ONE)
-                )
-            }
+                    LoadResult.Page(
+                        data = data.map { it.toSearchTab() },
+                        prevKey = if (page == OtherConstant.ONE) null else page - OtherConstant.ONE,
+                        nextKey = if (data.isEmpty()) null else page.plus(OtherConstant.ONE)
+                    )
+                }
             SearchTabType.PUBLISHER -> repository.getPublishers(page).pagingSucceeded { data ->
                 LoadResult.Page(
                     data = data.map { it.toSearchTab() },

@@ -93,21 +93,21 @@ fun setPlatformsBackgroundColor(data: Any, code: Int): Color {
         return when {
             name?.contains(PlatformsConstant.XBOX) == true
                     || name?.contains(PlatformsConstant.ANDROID) == true -> {
-                Color.Green
+                Color(0xFF00C853)
             }
 
             name?.contains(PlatformsConstant.PLAYSTATION) == true
                     || name?.contains(PlatformsConstant.PS) == true -> {
-                Color.Blue
+                Color(0xFF0091EA)
             }
 
             name?.contains(PlatformsConstant.NINTENDO) == true
                     || name?.contains(PlatformsConstant.WII) == true
                     || name?.contains(PlatformsConstant.NES) == true -> {
-                Color.Red
+                Color(0xFFD50000)
             }
 
-            else -> Color.Gray
+            else -> Color(0xFF424242)
         }
     } else {
         val stores = data as Stores
@@ -115,16 +115,16 @@ fun setPlatformsBackgroundColor(data: Any, code: Int): Color {
 
         return when {
             name?.contains(PlatformsConstant.XBOX) == true
-                    || name?.contains(PlatformsConstant.ANDROID) == true -> Color.Green
+                    || name?.contains(PlatformsConstant.ANDROID) == true ->  Color(0xFF00C853)
 
             name?.contains(PlatformsConstant.PLAYSTATION) == true
-                    || name?.contains(PlatformsConstant.PS) == true -> Color.Blue
+                    || name?.contains(PlatformsConstant.PS) == true -> Color(0xFF0091EA)
 
             name?.contains(PlatformsConstant.NINTENDO) == true
                     || name?.contains(PlatformsConstant.WII) == true
-                    || name?.contains(PlatformsConstant.NES) == true -> Color.Red
+                    || name?.contains(PlatformsConstant.NES) == true -> Color(0xFFD50000)
 
-            else -> Color.Gray
+            else -> Color(0xFF424242)
         }
     }
 }

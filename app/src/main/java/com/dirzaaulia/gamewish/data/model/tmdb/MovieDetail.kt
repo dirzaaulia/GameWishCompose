@@ -2,20 +2,21 @@ package com.dirzaaulia.gamewish.data.model.tmdb
 
 import android.os.Parcelable
 import androidx.annotation.Keep
+import com.dirzaaulia.gamewish.utils.OtherConstant
 import com.squareup.moshi.Json
 import kotlinx.parcelize.Parcelize
 
 @Keep
 @Parcelize
 data class MovieDetail (
-    val id: Long?,
+    val id: Long = OtherConstant.ZERO_LONG,
     val budget: Long?,
     val genres: List<Genre>?,
     val homepage: String?,
     @Json(name = "original_title")
-    val title: String?,
+    val title: String = OtherConstant.EMPTY_STRING,
     @Json(name = "original_name")
-    val name: String?,
+    val name: String = OtherConstant.EMPTY_STRING,
     val tagline: String?,
     val overview: String?,
     @Json(name = "production_companies")
@@ -29,7 +30,7 @@ data class MovieDetail (
     val voteAverage: Double?,
     val popularity: Double?,
     @Json(name = "poster_path")
-    val posterPath: String?,
+    val posterPath: String = OtherConstant.EMPTY_STRING,
     @Json(name = "episode_run_time")
     val episodeRunTime: List<Int>?,
     @Json(name = "number_of_episodes")

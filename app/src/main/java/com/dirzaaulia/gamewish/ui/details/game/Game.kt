@@ -93,9 +93,7 @@ fun GameDetails(
                 sheetPeekHeight = 0.dp,
             ) {
                 LazyColumn(
-                    modifier = Modifier
-                        .navigationBarsPadding()
-                        .fillMaxSize()
+                    modifier = Modifier.fillMaxSize()
                 ) {
                     screenshots?.results?.let { screenshots ->
                         item {
@@ -266,11 +264,7 @@ fun GameDetailsMiddleContent(
                 modifier = Modifier.size(50.dp),
                 onClick = {
                     scope.launch {
-                        if (!scaffoldState.bottomSheetState.isVisible) {
-                            scaffoldState.bottomSheetState.expand()
-                        } else {
-                            scaffoldState.bottomSheetState.hide()
-                        }
+                        scaffoldState.bottomSheetState.expand()
                     }
                 },
                 shape = CircleShape,
@@ -298,7 +292,7 @@ fun GameDetailsMiddleContent(
 
                     Text(
                         text = stringResource(id = R.string.release_date),
-                        style = MaterialTheme.typography.headlineLarge
+                        style = MaterialTheme.typography.titleSmall
 
                     )
                     Text(
@@ -309,7 +303,7 @@ fun GameDetailsMiddleContent(
                 data.developers?.let {
                     Text(
                         text = stringResource(id = R.string.developer),
-                        style = MaterialTheme.typography.headlineLarge
+                        style = MaterialTheme.typography.titleSmall
                     )
                     Text(
                         text = it.toDeveloper(),
@@ -319,7 +313,7 @@ fun GameDetailsMiddleContent(
                 data.publishers?.let {
                     Text(
                         text = stringResource(id = R.string.publishers),
-                        style = MaterialTheme.typography.headlineLarge
+                        style = MaterialTheme.typography.titleSmall
                     )
                     Text(
                         text = it.toPublisher(),
@@ -329,7 +323,7 @@ fun GameDetailsMiddleContent(
                 data.website?.let { url ->
                     Text(
                         text = stringResource(id = R.string.link),
-                        style = MaterialTheme.typography.headlineLarge
+                        style = MaterialTheme.typography.titleSmall
                     )
                     ClickableText(
                         text = AnnotatedString(
@@ -375,11 +369,11 @@ fun GameDetailsMiddleContent(
                 data.esrbRating?.let {
                     Text(
                         text = stringResource(id = R.string.esrb_rating),
-                        style = MaterialTheme.typography.headlineLarge
+                        style = MaterialTheme.typography.titleSmall
                     )
                     Image(
                         painter = painterResource(id = EsrbRating.getRatingDrawable(it)),
-                        contentDescription = null,
+                        contentDescription = OtherConstant.EMPTY_STRING,
                         modifier = Modifier.size(60.dp, 70.dp)
                     )
                 }
@@ -388,7 +382,7 @@ fun GameDetailsMiddleContent(
         data.platforms?.let {
             Text(
                 text = stringResource(id = R.string.platforms),
-                style = MaterialTheme.typography.headlineLarge,
+                style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier.padding(top = 8.dp)
             )
             GameDetailsPlatformList(data = it, code = 0)
@@ -396,7 +390,7 @@ fun GameDetailsMiddleContent(
         data.stores?.let {
             Text(
                 text = stringResource(id = R.string.stores),
-                style = MaterialTheme.typography.headlineLarge,
+                style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier.padding(top = 8.dp)
             )
             GameDetailsStoresList(data = it, code = 1)
@@ -404,13 +398,13 @@ fun GameDetailsMiddleContent(
         data.description?.let {
             Text(
                 text = stringResource(id = R.string.description),
-                style = MaterialTheme.typography.headlineLarge,
+                style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier.padding(top = 8.dp)
             )
             Text(
                 textAlign = TextAlign.Justify,
                 text = AnnotatedString(it.fromHtml()),
-                style = MaterialTheme.typography.bodySmall
+                style = MaterialTheme.typography.bodyLarge
             )
         }
     }

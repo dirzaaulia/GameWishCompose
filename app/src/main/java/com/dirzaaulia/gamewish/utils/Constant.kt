@@ -193,7 +193,7 @@ object PlaceholderConstant {
 object PlatformsConstant {
     const val XBOX = "Xbox"
     const val ANDROID = "Android"
-    const val PLAYSTATION = "Playstation"
+    const val PLAYSTATION = "PlayStation"
     const val PS = "PS"
     const val NINTENDO = "Nintendo"
     const val WII = "Wii"
@@ -247,7 +247,6 @@ object OtherConstant {
 
     const val NO_IMAGE_URL =
         "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/1200px-No-Image-Placeholder.svg.png"
-    const val LOCAL_IMAGES_ERROR = "No LocalImages specified"
     const val NOT_FOUND_EXCEPTION = "Data Not Found"
     const val HTTP_ERROR_401 = "HTTP 401"
     const val GOOGLE_ACCOUNT = "Google Account"

@@ -3,15 +3,21 @@ package com.dirzaaulia.gamewish.ui.search
 import androidx.annotation.StringRes
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Games
 import androidx.compose.material.icons.filled.Theaters
 import androidx.compose.material.icons.filled.Tv
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Icon
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -45,7 +51,6 @@ fun Search(
     val menu = SearchNavMenu.values()
     val searchMenuId: Int by viewModel.selectedBottomNav.collectAsState()
     val scope = rememberCoroutineScope()
-    val snackbarHostState = remember { SnackbarHostState() }
     val lazyListStateSearchGames = rememberLazyListState()
     val lazyListStateGenre = rememberLazyListState()
     val lazyListStatePublisher = rememberLazyListState()
@@ -89,10 +94,7 @@ fun Search(
     }
 
     Scaffold(
-        modifier = Modifier
-            .navigationBarsPadding()
-            .imePadding(),
-        containerColor = MaterialTheme.colorScheme.surface,
+        modifier = Modifier.imePadding(),
         bottomBar = {
             SearchBottomBar(menu = menu, menuId = searchMenuId, viewModel = viewModel)
         },
@@ -109,7 +111,6 @@ fun Search(
                         modifier = innerModifier,
                         viewModel = viewModel,
                         upPress = upPress,
-                        snackbarHostState = snackbarHostState,
                         searchGameList = searchGameList,
                         lazyListStateSearchGames = lazyListStateSearchGames,
                         lazyListStateGenre = lazyListStateGenre,
@@ -167,8 +168,12 @@ fun SearchBottomBar(
     NavigationBar {
         menu.forEach { menu ->
             NavigationBarItem(
-                modifier = Modifier.navigationBarsPadding(),
-                icon = { Icon(imageVector = menu.icon, contentDescription = null) },
+                icon = {
+                    Icon(
+                        imageVector = menu.icon,
+                        contentDescription = OtherConstant.EMPTY_STRING
+                    )
+                },
                 selected = menu == SearchNavMenu.getSearchNavMenu(menuId),
                 onClick = { viewModel.selectBottomNavMenu(menu.ordinal) },
             )
@@ -176,7 +181,7 @@ fun SearchBottomBar(
     }
 }
 
-enum class SearchNavMenu (
+enum class SearchNavMenu(
     @StringRes val title: Int,
     val icon: ImageVector
 ) {
@@ -185,7 +190,7 @@ enum class SearchNavMenu (
     MOVIE(R.string.movie_tv_show, Icons.Filled.Theaters);
 
     companion object {
-        fun getSearchNavMenu(menu: Int) : SearchNavMenu {
+        fun getSearchNavMenu(menu: Int): SearchNavMenu {
             return when (menu) {
                 SearchMenu.GAME.ordinal -> GAME
                 SearchMenu.ANIME.ordinal -> ANIME

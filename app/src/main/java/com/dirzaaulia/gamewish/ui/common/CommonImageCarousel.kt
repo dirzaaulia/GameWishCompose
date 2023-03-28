@@ -1,9 +1,11 @@
 package com.dirzaaulia.gamewish.ui.common
 
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Card
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
@@ -45,7 +47,7 @@ fun CommonGameCarousel(
         count = screenshots.size
     ) { pageIndex ->
         val screenshot = screenshots[pageIndex]
-        Card {
+        Card(shape = MaterialTheme.shapes.large) {
             NetworkImage(
                 url = screenshot.image,
                 contentDescription = OtherConstant.EMPTY_STRING
@@ -72,13 +74,16 @@ fun CommonAnimeCarousel(
 
     HorizontalPager(
         state = pagerState,
-        modifier = Modifier.width(100.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .width(100.dp),
         count = screenshots.size
     ) { pageIndex ->
         val screenshot = screenshots[pageIndex]
-        Card {
+        Card(modifier = Modifier.fillMaxSize()) {
             screenshot.large?.let { image ->
                 NetworkImage(
+                    modifier = Modifier.fillMaxSize(),
                     url = image,
                     contentDescription = OtherConstant.EMPTY_STRING
                 )
@@ -108,7 +113,7 @@ fun CommonMovieCarousel(
         count = imageList.size
     ) { pageIndex ->
         val image = imageList[pageIndex]
-        Card {
+        Card(shape = MaterialTheme.shapes.large) {
             image.filePath?.let { filePath ->
                 NetworkImage(
                     url = String.format(

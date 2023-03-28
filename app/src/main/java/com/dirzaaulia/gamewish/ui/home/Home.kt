@@ -3,6 +3,7 @@ package com.dirzaaulia.gamewish.ui.home
 import HomeBottomBar
 import HomeBottomNavMenu
 import androidx.compose.animation.Crossfade
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Scaffold
@@ -49,6 +50,7 @@ fun Home(
     val snackbarHostState = remember { SnackbarHostState() }
 
     Scaffold(
+        modifier = Modifier.imePadding(),
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         bottomBar = {
             HomeBottomBar(menu = menu, menuId = menuId, viewModel = viewModel)
@@ -80,11 +82,13 @@ fun Home(
                     )
                 }
                 HomeBottomNavMenu.DEALS -> Deals(
+                    modifier = Modifier.padding(innerPadding),
                     viewModel = viewModel,
                     lazyListState = lazyListStateDeals,
                     data = lazyDeals
                 )
                 HomeBottomNavMenu.ABOUT -> About(
+                    modifier = Modifier.padding(innerPadding),
                     viewModel = viewModel,
                     googleProfileImage = googleProfileImage,
                     googleUsername = googleUsername,

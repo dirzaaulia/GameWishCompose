@@ -65,8 +65,7 @@ fun Deals(
                             )
                         }
                     }
-
-                         },
+                },
                 sheetShape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp),
                 sheetPeekHeight = 0.dp,
                 sheetContent = {
@@ -311,27 +310,23 @@ fun DealsAppBar(
     scope: CoroutineScope,
     scaffoldState: BottomSheetScaffoldState
 ) {
-    TopAppBar(
-        modifier = Modifier
-            .statusBarsPadding()
-            .wrapContentHeight(),
-        title = {
-            Text(
-                text = storeName,
-                style = MaterialTheme.typography.headlineLarge,
-                modifier = Modifier.padding(horizontal = 8.dp)
-            )
-        },
-        actions = {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            text = storeName,
+            style = MaterialTheme.typography.titleLarge,
+            modifier = Modifier.padding(horizontal = 8.dp)
+        )
+        Row(
+            modifier = Modifier.weight(1f),
+            horizontalArrangement = Arrangement.End
+        ) {
             IconButton(
                 modifier = Modifier.align(Alignment.CenterVertically),
                 onClick = {
                     scope.launch {
-                        if (!scaffoldState.bottomSheetState.isVisible) {
-                            scaffoldState.bottomSheetState.expand()
-                        } else {
-                            scaffoldState.bottomSheetState.hide()
-                        }
+                        scaffoldState.bottomSheetState.expand()
                     }
                 }
             ) {
@@ -341,5 +336,5 @@ fun DealsAppBar(
                 )
             }
         }
-    )
+    }
 }

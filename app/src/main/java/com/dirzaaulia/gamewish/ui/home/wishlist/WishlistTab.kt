@@ -1,6 +1,7 @@
 import androidx.annotation.StringRes
-import androidx.compose.material3.ScrollableTabRow
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
@@ -14,11 +15,18 @@ fun WishlistTabMenu(
     menuId: Int,
     viewModel: HomeViewModel
 ) {
-    ScrollableTabRow(selectedTabIndex = menuId) {
+    TabRow(
+        selectedTabIndex = menuId,
+    ) {
         menu.forEachIndexed { index, wishlistTab ->
             Tab(
                 selected = menuId == index,
-                text = { Text(stringResource(id = wishlistTab.title)) },
+                text = {
+                    Text(
+                        text = stringResource(id = wishlistTab.title),
+                        style = MaterialTheme.typography.labelSmall,
+                    )
+                },
                 onClick = { viewModel.selectWishlistTab(index) }
             )
         }

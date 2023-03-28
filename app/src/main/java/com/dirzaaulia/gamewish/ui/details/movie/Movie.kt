@@ -19,7 +19,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Red
-import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
@@ -144,8 +143,9 @@ fun MovieDetails(
                         imageList = images,
                     )
                 }
-            ) {
+            ) { scaffoldInnerPadding ->
                 BottomSheetScaffold(
+                    modifier = Modifier.padding(scaffoldInnerPadding),
                     scaffoldState = scaffoldState,
                     topBar = {
                         MovieDetailsTabMenu(
@@ -290,105 +290,91 @@ fun MovieDescriptionHeader(
     data: MovieDetail?,
     type: String
 ) {
-    Row {
+    Row(modifier = Modifier.height(200.dp)) {
         Card(
             modifier = Modifier
                 .fillMaxHeight()
+                .weight(1f)
                 .padding(end = 4.dp)
-                .weight(1f),
-            shape = MaterialTheme.shapes.small
         ) {
-            if (data?.posterPath.isNullOrBlank()) {
-                NetworkImage(
-                    url = OtherConstant.NO_IMAGE_URL,
-                    contentDescription = OtherConstant.EMPTY_STRING
-                )
-            } else {
-                NetworkImage(
-                    url = String.format(
-                        OtherConstant.STRING_FORMAT_S_S,
-                        TmdbConstant.TMDB_BASE_IMAGE_URL,
-                        data?.posterPath
-                    ),
-                    contentDescription = OtherConstant.EMPTY_STRING,
-                )
-            }
+            NetworkImage(
+                modifier = Modifier.fillMaxSize(),
+                url = String.format(
+                    OtherConstant.STRING_FORMAT_S_S,
+                    TmdbConstant.TMDB_BASE_IMAGE_URL,
+                    data?.posterPath
+                ),
+                contentDescription = OtherConstant.EMPTY_STRING,
+            )
         }
         Card(
-            modifier = Modifier.weight(1f),
-            shape = MaterialTheme.shapes.small
+            modifier = Modifier
+                .fillMaxHeight()
+                .weight(1f)
+                .fillMaxHeight(),
         ) {
             Column(
                 modifier = Modifier.padding(8.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.SpaceEvenly
             ) {
-                Card(
-                    shape = MaterialTheme.shapes.small,
-                    modifier = Modifier
-                        .padding(4.dp)
-                        .fillMaxWidth()
-                ) {
-                    data?.status?.let { status ->
-                        Text(
-                            text = status
-                                .replace(
-                                    OtherConstant.UNDERSCORE,
-                                    OtherConstant.BLANK_SPACE
-                                )
-                                .capitalizeWords(),
-                            color = White,
-                            style = MaterialTheme.typography.labelSmall,
-                            modifier = Modifier.padding(4.dp),
-                            textAlign = TextAlign.Center
-                        )
+                AssistChip(
+                    onClick = { },
+                    label = {
+                        data?.status?.let { status ->
+                            Text(
+                                text = status
+                                    .replace(
+                                        OtherConstant.UNDERSCORE,
+                                        OtherConstant.BLANK_SPACE
+                                    )
+                                    .capitalizeWords(),
+                            )
+                        }
                     }
-                }
+                )
                 Text(
                     text = stringResource(R.string.runtime),
-                    style = MaterialTheme.typography.bodyMedium,
+                    style = MaterialTheme.typography.titleMedium,
                 )
                 if (type.equals(TmdbConstant.TMDB_TYPE_MOVIE, true)) {
                     Text(
                         text = data?.runtime.toString(),
                         color = Color.Gray,
-                        style = MaterialTheme.typography.labelSmall,
+                        style = MaterialTheme.typography.labelLarge,
                     )
                 } else {
                     Text(
                         text = (data?.episodeRunTime?.get(0)
                             ?: stringResource(R.string.unknown)).toString(),
                         color = Color.Gray,
-                        style = MaterialTheme.typography.labelSmall,
+                        style = MaterialTheme.typography.labelLarge,
                     )
                 }
                 Text(
+                    modifier = Modifier.fillMaxWidth(),
                     text = TmdbConstant.TMDB_SCORE,
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-                Text(
-                    text = data?.voteAverage.toString(),
-                    color = Color.Gray,
-                    style = MaterialTheme.typography.labelSmall,
-                )
-                Text(
-                    text = TmdbConstant.TMDB_POPULARITY,
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-                Text(
-                    text = data?.popularity.toString(),
-                    color = Color.Gray,
-                    style = MaterialTheme.typography.labelSmall,
-                )
-                Text(
-                    text = TmdbConstant.TMDB_PRODUCTION_COMAPNIES,
-                    style = MaterialTheme.typography.bodyMedium,
+                    style = MaterialTheme.typography.titleMedium,
                     textAlign = TextAlign.Center
                 )
                 Text(
-                    text = data?.productionCompanies.toProductionCompany(),
+                    modifier = Modifier.fillMaxWidth(),
+                    text = data?.voteAverage.toString(),
                     color = Color.Gray,
-                    style = MaterialTheme.typography.labelSmall,
+                    style = MaterialTheme.typography.labelLarge,
+                    textAlign = TextAlign.Center
+                )
+                Text(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = TmdbConstant.TMDB_POPULARITY,
+                    style = MaterialTheme.typography.titleMedium,
+                    textAlign = TextAlign.Center
+                )
+                Text(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = data?.popularity.toString(),
+                    color = Color.Gray,
+                    style = MaterialTheme.typography.labelLarge,
                     textAlign = TextAlign.Center
                 )
             }
@@ -563,6 +549,20 @@ fun MovieDescriptionFooter(
                 style = MaterialTheme.typography.bodyMedium,
             )
         }
+        Text(
+            modifier = Modifier.fillMaxWidth(),
+            text = TmdbConstant.TMDB_PRODUCTION_COMAPNIES,
+            style = MaterialTheme.typography.titleMedium,
+            textAlign = TextAlign.Center
+        )
+        Text(
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.CenterHorizontally),
+            text = data?.productionCompanies.toProductionCompany(),
+            style = MaterialTheme.typography.labelLarge,
+            textAlign = TextAlign.Center
+        )
         data?.overview?.let {
             Text(
                 text = stringResource(R.string.synopsis),
@@ -599,28 +599,20 @@ fun MovieDetailsTopBar(
                 contentDescription = OtherConstant.EMPTY_STRING,
             )
         }
-        TopAppBar(
+        Row(
             modifier = Modifier
                 .height(80.dp)
                 .statusBarsPadding(),
-            title = { },
-            colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = Color.Transparent,
-                titleContentColor = White
-            ),
-            actions = {
-                IconButton(
-                    modifier = Modifier.align(Alignment.CenterVertically),
-                    onClick = { upPress() }
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.ArrowBack,
-                        contentDescription = null,
-                        tint = White
-                    )
-                }
+        ) {
+            IconButton(
+                onClick = { upPress() }
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.ArrowBack,
+                    contentDescription = OtherConstant.EMPTY_STRING,
+                )
             }
-        )
+        }
     }
 }
 
@@ -683,12 +675,10 @@ fun MovieDetailsSheetContent(
                 )
             }
         }
-        data.title?.let { title ->
-            Text(
-                text = title,
-                style = MaterialTheme.typography.headlineLarge
-            )
-        }
+        Text(
+            text = data.title,
+            style = MaterialTheme.typography.headlineLarge
+        )
         OutlinedTextField(
             readOnly = true,
             value = statusText,
