@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Red
+import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
@@ -423,16 +424,11 @@ fun MovieDescriptionFooter(
                     )
                 }
             }
-
             OutlinedButton(
                 modifier = Modifier.size(50.dp),
                 onClick = {
                     scope.launch {
-                        if (!scaffoldState.bottomSheetState.isVisible) {
-                            scaffoldState.bottomSheetState.expand()
-                        } else {
-                            scaffoldState.bottomSheetState.hide()
-                        }
+                        scaffoldState.bottomSheetState.expand()
                     }
                 },
                 shape = CircleShape,
@@ -610,6 +606,7 @@ fun MovieDetailsTopBar(
                 Icon(
                     imageVector = Icons.Filled.ArrowBack,
                     contentDescription = OtherConstant.EMPTY_STRING,
+                    tint = White
                 )
             }
         }

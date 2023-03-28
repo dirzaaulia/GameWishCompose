@@ -106,7 +106,7 @@ private fun CommonVerticalListLoading(
                 }
                 PlaceholderConstant.SEARCH_GAME -> {
                     CommonItemPlaceholder(
-                        height = 120.dp,
+                        height = 50.dp,
                         shape = MaterialTheme.shapes.large
                     )
                 }

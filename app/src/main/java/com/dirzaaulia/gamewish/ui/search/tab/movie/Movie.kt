@@ -173,8 +173,8 @@ fun SearchMovieAppBar(
         ) {
             Icon(
                 imageVector = Icons.Filled.ArrowBack,
-                contentDescription = null,
-                tint = White
+                contentDescription = OtherConstant.EMPTY_STRING,
+                tint = MaterialTheme.colorScheme.onSurface
             )
         }
         TextField(
@@ -187,7 +187,7 @@ fun SearchMovieAppBar(
             placeholder = {
                 Text(
                     text = stringResource(id = R.string.search_movie),
-                    color = White
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             },
             singleLine = true,
@@ -196,8 +196,8 @@ fun SearchMovieAppBar(
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent,
                 disabledIndicatorColor = Color.Transparent,
-                cursorColor = White,
-                focusedTextColor = White,
+                cursorColor = MaterialTheme.colorScheme.onSurface,
+                focusedTextColor = MaterialTheme.colorScheme.onSurface,
             ),
             keyboardOptions = KeyboardOptions(
                 imeAction = ImeAction.Done

@@ -27,7 +27,7 @@ fun CommonItemPlaceholder(
             .padding(vertical = 4.dp)
             .placeholder(
                 visible = true,
-                color = MaterialTheme.colorScheme.surface,
+                color = MaterialTheme.colorScheme.surfaceVariant,
                 shape = shape,
                 highlight = PlaceholderHighlight.shimmer()
             )

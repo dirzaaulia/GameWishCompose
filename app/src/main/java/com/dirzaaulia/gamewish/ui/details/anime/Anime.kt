@@ -571,11 +571,7 @@ fun AnimeDescriptionFooter(
                 modifier = Modifier.size(50.dp),
                 onClick = {
                     scope.launch {
-                        if (!scaffoldState.bottomSheetState.isVisible) {
-                            scaffoldState.bottomSheetState.expand()
-                        } else {
-                            scaffoldState.bottomSheetState.hide()
-                        }
+                        scaffoldState.bottomSheetState.expand()
                     }
                 },
                 shape = CircleShape,
@@ -669,7 +665,6 @@ fun AnimeDetailsTopBar(
                 text = title,
                 softWrap = true,
                 style = MaterialTheme.typography.headlineLarge,
-                color = White
             )
         },
         navigationIcon = {
@@ -797,7 +792,7 @@ fun AnimeDetailsSheetContent(
             ) {
                 Icon(
                     imageVector = Icons.Filled.Delete,
-                    contentDescription = null,
+                    contentDescription = OtherConstant.EMPTY_STRING,
                     tint = Red
                 )
             }

@@ -384,7 +384,7 @@ fun SearchAnimeAppBar(
             Icon(
                 imageVector = Icons.Filled.ArrowBack,
                 contentDescription = OtherConstant.EMPTY_STRING,
-                tint = White
+                tint = MaterialTheme.colorScheme.onSurface
             )
         }
         TextField(
@@ -404,7 +404,7 @@ fun SearchAnimeAppBar(
             placeholder = {
                 Text(
                     text = stringResource(id = R.string.search_anime),
-                    color = White
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             },
             singleLine = true,
@@ -413,8 +413,8 @@ fun SearchAnimeAppBar(
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent,
                 disabledIndicatorColor = Color.Transparent,
-                cursorColor = White,
-                focusedTextColor = White,
+                cursorColor = MaterialTheme.colorScheme.onSurface,
+                focusedTextColor = MaterialTheme.colorScheme.onSurface,
             ),
             keyboardOptions = KeyboardOptions(
                 imeAction = ImeAction.Done

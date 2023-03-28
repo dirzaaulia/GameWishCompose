@@ -23,6 +23,7 @@ import com.dirzaaulia.gamewish.utils.ResponseResult
 import com.dirzaaulia.gamewish.utils.TmdbConstant
 import com.dirzaaulia.gamewish.utils.getAnimeSeason
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
